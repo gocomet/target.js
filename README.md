@@ -1,7 +1,7 @@
 
 # Target.js!
 
-Target.js doesn't do much. But what it does, it does well. It is a simple UI library that adds functionality to your DOM elements using data-attributes. It lets you:
+Target.js doesn't do much. But what it does, it does well. It adds functionality to your DOM elements using data-attributes. It lets you:
 
 - Show elements
 - Hide elements
