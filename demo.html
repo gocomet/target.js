@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="UTF-8">
+    <title>Target.js by gocomet</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="stylesheets/normalize.css" media="screen">
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/github-light.css" media="screen">
+
+    <style>
+      .demo-div {
+        background: #155799;
+        border-radius: 5px;
+        min-height: 200px;
+        padding: 30px;
+      }
+
+      .fader {
+        opacity: 0;
+        transition: opacity .3s, visibility .3s;
+        visibility: hidden;
+      }
+
+      .fader.target-active {
+        opacity: 1;
+        visibility: visible;
+      }
+    </style>
+  </head>
+  <body>
+    <section class="page-header">
+      <h1 class="project-name">Target.js Demo</h1>
+      <h2 class="project-tagline">Target.js doesn&#39;t do much; but what it does, it does well. It adds functionality to your DOM elements using data-attributes.</h2>
+      <a href="demo.html" class="btn">View Demo</a>
+      <a href="https://github.com/gocomet/target.js" class="btn">View on GitHub</a>
+      <a href="https://github.com/gocomet/target.js/zipball/master" class="btn">Download .zip</a>
+      <a href="https://github.com/gocomet/target.js/tarball/master" class="btn">Download .tar.gz</a>
+    </section>
+
+    <section class="main-content">
+
+      <h3>Show</h3>
+
+      <p>Show an element</p>
+      
+      <p><button class="btn btn--dark" data-target-show="#show-demo-div">
+        Show Div Below
+      </button></p>
+
+      <div id="show-demo-div" class="demo-div fader">
+      </div>
+
+      <hr>
+
+      <h3>Hide</h3>
+
+      <p>Hide an element</p>
+      
+      <p><button class="btn btn--dark" data-target-hide="#hide-demo-div">
+        Hide Div Below
+      </button></p>
+
+      <div id="hide-demo-div" class="demo-div fader target-active">
+      </div>
+
+      <hr>
+
+      <h3>Toggle</h3>
+
+      <p>Toggle an element</p>
+      
+      <p><button class="btn btn--dark" data-target-toggle="#toggle-demo-div">
+        Toggle Div Below
+      </button></p>
+
+      <div id="toggle-demo-div" class="demo-div fader">
+      </div>
+
+      <hr>
+
+      <h3>Clickoff</h3>
+
+      <p>Click off of an element to hide</p>
+
+      <button class="btn btn--dark" data-target-show="#clickoff-demo-div">
+        Show div
+      </button>
+
+      <div id="clickoff-demo-div" class="demo-div fader target-active" data-target-clickoff>
+        <p class="white">Click away from div to hide</p>
+      </div>
+
+      <hr>
+
+      <h3>Increment/Decrement</h3>
+
+      <p>Increment and Decrement the value of an input</p>
+
+      <button class="btn btn--dark" data-target-decrement="#qty">-</button>
+      <input class="btn btn--dark" id="qty" value="1">
+      <button class="btn btn--dark" data-target-increment="#qty" data-target-max="10">+</button>
+
+      <hr>
+
+      <h3>Scrollbox</h3>
+
+      <p>Add scrollbars to element when height over threshold</p>
+
+      <div data-target-scrollbox="300" class="demo-div">
+        <p class="white">This will scroll if the content is over 300px tall.</p>
+        <p class="white">This will scroll if the content is over 300px tall.</p>
+        <p class="white">This will scroll if the content is over 300px tall.</p>
+        <p class="white">This will scroll if the content is over 300px tall.</p>
+        <p class="white">This will scroll if the content is over 300px tall.</p>
+        <p class="white">This will scroll if the content is over 300px tall.</p>
+        <p class="white">This will scroll if the content is over 300px tall.</p>
+        <p class="white">This will scroll if the content is over 300px tall.</p>
+        <p class="white">This will scroll if the content is over 300px tall.</p>
+      </div>
+
+    </section>
+
+    <script src="js/mediator.min.js"></script>
+    <script src="js/MutationObserver.js"></script>
+    <script src="js/target.js"></script>
+    <script>
+      target.init();
+    </script>
+  </body>
+</html>
