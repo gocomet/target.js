@@ -3,7 +3,12 @@
 
 ## Bugfixes
 
-- overwriting config with user options doesn't do deep copy; fix
+- overwriting config object with user options doesn't do deep copy
+	- create fn to do deep copies
+- domObserver causes components to be initialized more than once on one element in some cases
+	- componentFactory should check existence before initializing
+- scrollbox does not proper initialize until window.resize
+	- check initialization sequence
 
 ## allow library consumers to create their own UI components
 

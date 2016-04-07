@@ -1,6 +1,8 @@
 
 # Target.js!
 
+(This project is still in development and has no stable release as of yet. Expect bugs.)
+
 Target.js doesn't do much. But what it does, it does well. It adds functionality to your DOM elements using data-attributes. It lets you:
 
 - Show elements
