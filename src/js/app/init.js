@@ -21,8 +21,9 @@
 		this.events = new window.Mediator();
 		this.window = new this.Window(this);
 		this.domObserver = new this.DomObserver(this);
-		this.componentFactory = new this.ComponentFactory(this);
 
+		// init components
+		this.componentFactory = new this.ComponentFactory(this);
 		document.addEventListener('DOMContentLoaded', function() {
 
 			_this.componentFactory.init();

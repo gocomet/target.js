@@ -56,7 +56,7 @@
 			// they will request layout data
 			// pass to the via resize event
 			this.events.subscribe('update.ui', () => {
-		
+
 				_this.onResize();
 		
 			});

@@ -22,10 +22,10 @@
 			Clickoff: 'data-target-clickoff',
 			Increment: 'data-target-increment',
 			Decrement: 'data-target-decrement',
+			Scrollbox: 'data-target-scrollbox',
 			disable: 'data-target-disable',
 			max: 'data-target-max',
-			min: 'data-target-min',
-			Scrollbox: 'data-target-scrollbox'
+			min: 'data-target-min'
 		
 		},
 

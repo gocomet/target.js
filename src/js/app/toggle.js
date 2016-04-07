@@ -15,9 +15,9 @@
 
 	target.Toggle = class TargetToggle extends target.UI {
 	
-		constructor(el, _id, target) {
+		constructor(el, _id, target, name) {
 	
-			super(el, _id, target);
+			super(el, _id, target, name);
 			
 			this.targets = this.utils.qsa(
 	

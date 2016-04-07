@@ -16,12 +16,32 @@
 		mixin: (origObj, newObj) => {
 		
 			var k;
+			var origV;
+			var newV;
+			var kk;
 		
 			for (k in newObj) {
 		
 				if (newObj.hasOwnProperty(k)) {
 		
+					newV = newObj[k];
+					origV = origObj[k];
+
 					origObj[k] = newObj[k];
+
+					if (typeof origV === 'object' && typeof newV === 'object') {
+
+						for (kk in newV) {
+
+							if (newV.hasOwnProperty(kk)) {
+
+								origV[kk] = newV[kk];
+
+							}
+
+						}
+
+					}
 		
 				}
 		

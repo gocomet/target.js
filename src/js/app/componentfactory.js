@@ -33,11 +33,26 @@
 		
 		}
 
+		/**
+		 * create an element after a DOM mutation
+		 * need to check if this element is already created
+		 */
 		create(name, el) {
 
 			var Component;
 
+			// don't initialise a component because of an att
+			// we should ignore: (disable, min, max)
 			if (this.ignoreAtts.indexOf(name) !== -1) {
+
+				return;
+
+			}
+
+			// if the component is already initialised
+			// on the element,
+			// exit
+			if (el.getAttribute(`data-target-${name}-id`) !== null) {
 
 				return;
 
@@ -47,7 +62,7 @@
 
 			this.topId++;
 
-			this.components[this.topId] = new Component(el, this.topId, this.target);
+			this.components[this.topId] = new Component(el, this.topId, this.target, name);
 			
 		}
 
@@ -64,7 +79,7 @@
 				
 					_this.topId++;
 
-					_this.components[_this.topId] = new Component(el, _this.topId, _this.target);
+					_this.components[_this.topId] = new Component(el, _this.topId, _this.target, name);
 				
 				}
 			

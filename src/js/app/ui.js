@@ -13,7 +13,7 @@
 
 	target.UI = class TargetUI {
 		
-		constructor(el, _id, target) {
+		constructor(el, _id, target, name) {
 		
 			this._id = _id;
 
@@ -27,10 +27,15 @@
 			this.el = el;
 			this.disabled = false;
 
+			// bind id
+			this.componentName = name;
+			this.el.setAttribute(`data-target-${name}-id`, this._id);
+			
 			// event handlers
 			this.eventHandlers = {};
 			this.addEventHandler('resize.window', this.setDisabled);
 			this.addEventHandler('attributes.mutation', this.handleAttMutation);
+
 
 			// DOM event handlers
 			this.domEventHandlers = {};

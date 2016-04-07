@@ -21,13 +21,13 @@
 	
 	target.Scrollbox = class TargetScrollbox extends target.UI {
 		
-		constructor(el, _id, target) {
+		constructor(el, _id, target, name) {
 	
-			super(el, _id, target);
+			super(el, _id, target, name);
 
 			this.maxHeight = this.el.getAttribute(
 			
-				this.utils.stripBrackets(this.config.attributes.Scrollbox)
+				this.config.attributes.Scrollbox
 			
 			);
 			this.maxHeight = parseInt(this.maxHeight, 10);
@@ -39,7 +39,8 @@
 			}
 			
 			this.addEventHandler('resize.window', this.onResize);
-			this.events.publish('init.ui');
+			
+			this.events.publish('update.ui');
 
 		}
 		
@@ -54,7 +55,7 @@
 				return document.documentElement.clientHeight + this.maxHeight;
 		
 			}
-		
+
 		}
 
 		getContentsHeight() {
