@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="UTF-8">
+    <title>Target.js by gocomet</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="stylesheets/normalize.css" media="screen">
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/github-light.css" media="screen">
+
+    <style>
+      /* utils */
+      .rel {
+        position: relative;
+      }
+
+      .oh {
+        overflow: hidden;
+      }
+  
+      .fill {
+        height: 100%;
+        left: 0;
+        position: absolute;
+        top: 0;
+        width: 100%;
+      }
+
+      .half {
+        position: relative;
+        width: 50%;
+      }
+
+      .third {
+        position: relative;
+        width: 33.333%;
+      }
+
+      .two-thirds {
+        position: relative;
+        width: 66.667%;
+      }
+
+      .right {
+        float: right;
+      }
+
+      .left {
+        float: left;
+      }
+
+      .pad {
+        padding: 30px;
+      }
+
+      .fader {
+        opacity: 0;
+        transition: opacity .3s, visibility .3s;
+        visibility: hidden;
+      }
+
+      .fader.target-active {
+        opacity: 1;
+        visibility: visible;
+      }
+
+      /* modals */
+      .modal-bg {
+        background: rgba(0, 0, 0, .25);
+      }
+
+      .modal {
+        background: #fff;
+        border: 1px solid rgba(0, 0, 0, .25);
+        border-radius: 4px;
+        height: 100%;
+        left: 20%;
+        position: absolute;
+        top: 200px;
+        width: 60%;
+      }
+
+      /* minicart */
+      .minicart-toggle {
+        position: absolute;
+        right: 30px;
+        top: 30px;
+      }
+
+      .minicart {
+        background: #43b2a1;
+        border: 1px solid #fff;
+        border-radius: 3px;
+        color: #fff;
+        position: absolute;
+        right: 30px;
+        width: 400px;
+        top: 90px;
+      }
+
+      .qty-input {
+        width: 55px;
+      }
+    </style>
+  </head>
+  <body>
+    <section class="page-header">
+      <h1 class="project-name">Target.js Demo</h1>
+      <h2 class="project-tagline">Target.js doesn&#39;t do much; but what it does, it does well. It adds functionality to your DOM elements using data-attributes.</h2>
+      <a href="demo.html" class="btn">View Demo</a>
+      <a href="examples.html" class="btn">View Examples</a>
+      <a href="https://github.com/gocomet/target.js" class="btn">View on GitHub</a>
+      <a href="https://github.com/gocomet/target.js/zipball/master" class="btn">Download .zip</a>
+      <a href="https://github.com/gocomet/target.js/tarball/master" class="btn">Download .tar.gz</a>
+    </section>
+
+    <a class="minicart-toggle btn" href="#" data-target-toggle="#minicart" data-target-disable="mobile">Cart</a>
+
+    <div id="minicart" class="minicart fader pad" data-target-clickoff>
+      <div class="rel line-item oh">
+        <p>My Product</p>
+        <div class="left third">
+          <img src="http://placehold.it/80x80">
+        </div>
+        <div class="right two-thirds">
+          <button class="btn" data-target-decrement="#qty-1">-</button>
+          <input class="btn qty-input" id="qty-1" value="0">
+          <button class="btn" data-target-increment="#qty-1" data-target-max="10">+</button>
+        </div>
+      </div>
+
+      <hr>
+
+      <div class="rel line-item oh">
+        <p>My Product</p>
+        <div class="left third">
+          <img src="http://placehold.it/80x80">
+        </div>
+        <div class="right two-thirds">
+          <button class="btn" data-target-decrement="#qty-2">-</button>
+          <input class="btn qty-input" id="qty-2" value="0">
+          <button class="btn" data-target-increment="#qty-2" data-target-max="10">+</button>
+        </div>
+      </div>
+    </div>
+
+    <section id="main" class="main-content">
+
+      <p><a href="#" data-target-show="#modal-bg,#modal" class="btn btn--dark">See the Popup!</a></p>      
+
+    </section>
+
+    <div id="modal-bg" class="fill modal-bg fader" data-target-hide="#modal,#modal-bg"></div>
+
+    <div id="modal" class="modal pad fader" data-target-scrollbox="-400">
+      <h3>Popup</h3>
+      <p>asdf adsfds dfdfsddf asdfdfdfss dfadfsadsf adsf adfs adfs asdfadsf adfssfsd sadfssdfadfsadsfdsds asdddfs dsaf adsf adsf adsfadsf adsf adfsdfs</p>
+      <p>asdfadsf dfsa ads ffddsafkjfhdosaiuh dfiouh diosuh fdsiugysadf fuyviuadsyg iugyf gydsuyg M</p>
+      <p>asdf adsfds dfdfsddf asdfdfdfss dfadfsadsf adsf adfs adfs asdfadsf adfssfsd sadfssdfadfsadsfdsds asdddfs dsaf adsf adsf adsfadsf adsf adfsdfs</p>
+      <p>asdfadsf dfsa ads ffddsafkjfhdosaiuh dfiouh diosuh fdsiugysadf fuyviuadsyg iugyf gydsuyg M</p>
+      <p>asdf adsfds dfdfsddf asdfdfdfss dfadfsadsf adsf adfs adfs asdfadsf adfssfsd sadfssdfadfsadsfdsds asdddfs dsaf adsf adsf adsfadsf adsf adfsdfs</p>
+      <p>asdfadsf dfsa ads ffddsafkjfhdosaiuh dfiouh diosuh fdsiugysadf fuyviuadsyg iugyf gydsuyg M</p>
+      <p>asdf adsfds dfdfsddf asdfdfdfss dfadfsadsf adsf adfs adfs asdfadsf adfssfsd sadfssdfadfsadsfdsds asdddfs dsaf adsf adsf adsfadsf adsf adfsdfs</p>
+      <p>asdfadsf dfsa ads ffddsafkjfhdosaiuh dfiouh diosuh fdsiugysadf fuyviuadsyg iugyf gydsuyg M</p>
+      <p>asdf adsfds dfdfsddf asdfdfdfss dfadfsadsf adsf adfs adfs asdfadsf adfssfsd sadfssdfadfsadsfdsds asdddfs dsaf adsf adsf adsfadsf adsf adfsdfs</p>
+      <p>asdfadsf dfsa ads ffddsafkjfhdosaiuh dfiouh diosuh fdsiugysadf fuyviuadsyg iugyf gydsuyg M</p>
+      <p>asdf adsfds dfdfsddf asdfdfdfss dfadfsadsf adsf adfs adfs asdfadsf adfssfsd sadfssdfadfsadsfdsds asdddfs dsaf adsf adsf adsfadsf adsf adfsdfs</p>
+      <p>asdfadsf dfsa ads ffddsafkjfhdosaiuh dfiouh diosuh fdsiugysadf fuyviuadsyg iugyf gydsuyg M</p>
+      <p>asdf adsfds dfdfsddf asdfdfdfss dfadfsadsf adsf adfs adfs asdfadsf adfssfsd sadfssdfadfsadsfdsds asdddfs dsaf adsf adsf adsfadsf adsf adfsdfs</p>
+      <p>asdfadsf dfsa ads ffddsafkjfhdosaiuh dfiouh diosuh fdsiugysadf fuyviuadsyg iugyf gydsuyg M</p>
+      <p>asdf adsfds dfdfsddf asdfdfdfss dfadfsadsf adsf adfs adfs asdfadsf adfssfsd sadfssdfadfsadsfdsds asdddfs dsaf adsf adsf adsfadsf adsf adfsdfs</p>
+      <p>asdfadsf dfsa ads ffddsafkjfhdosaiuh dfiouh diosuh fdsiugysadf fuyviuadsyg iugyf gydsuyg M</p>
+      <p>asdf adsfds dfdfsddf asdfdfdfss dfadfsadsf adsf adfs adfs asdfadsf adfssfsd sadfssdfadfsadsfdsds asdddfs dsaf adsf adsf adsfadsf adsf adfsdfs</p>
+      <p>asdfadsf dfsa ads ffddsafkjfhdosaiuh dfiouh diosuh fdsiugysadf fuyviuadsyg iugyf gydsuyg M</p>
+      <p>asdf adsfds dfdfsddf asdfdfdfss dfadfsadsf adsf adfs adfs asdfadsf adfssfsd sadfssdfadfsadsfdsds asdddfs dsaf adsf adsf adsfadsf adsf adfsdfs</p>
+      <p>asdfadsf dfsa ads ffddsafkjfhdosaiuh dfiouh diosuh fdsiugysadf fuyviuadsyg iugyf gydsuyg M</p>
+      <p>asdf adsfds dfdfsddf asdfdfdfss dfadfsadsf adsf adfs adfs asdfadsf adfssfsd sadfssdfadfsadsfdsds asdddfs dsaf adsf adsf adsfadsf adsf adfsdfs</p>
+      <p>asdfadsf dfsa ads ffddsafkjfhdosaiuh dfiouh diosuh fdsiugysadf fuyviuadsyg iugyf gydsuyg M</p>
+      <p>asdf adsfds dfdfsddf asdfdfdfss dfadfsadsf adsf adfs adfs asdfadsf adfssfsd sadfssdfadfsadsfdsds asdddfs dsaf adsf adsf adsfadsf adsf adfsdfs</p>
+      <p>asdfadsf dfsa ads ffddsafkjfhdosaiuh dfiouh diosuh fdsiugysadf fuyviuadsyg iugyf gydsuyg M</p>
+      <p>asdf adsfds dfdfsddf asdfdfdfss dfadfsadsf adsf adfs adfs asdfadsf adfssfsd sadfssdfadfsadsfdsds asdddfs dsaf adsf adsf adsfadsf adsf adfsdfs</p>
+      <p>asdfadsf dfsa ads ffddsafkjfhdosaiuh dfiouh diosuh fdsiugysadf fuyviuadsyg iugyf gydsuyg M</p><p>asdf adsfds dfdfsddf asdfdfdfss dfadfsadsf adsf adfs adfs asdfadsf adfssfsd sadfssdfadfsadsfdsds asdddfs dsaf adsf adsf adsfadsf adsf adfsdfs</p>
+      <p>asdfadsf dfsa ads ffddsafkjfhdosaiuh dfiouh diosuh fdsiugysadf fuyviuadsyg iugyf gydsuyg M</p>
+      <p>asdf adsfds dfdfsddf asdfdfdfss dfadfsadsf adsf adfs adfs asdfadsf adfssfsd sadfssdfadfsadsfdsds asdddfs dsaf adsf adsf adsfadsf adsf adfsdfs</p>
+      <p>asdfadsf dfsa ads ffddsafkjfhdosaiuh dfiouh diosuh fdsiugysadf fuyviuadsyg iugyf gydsuyg M</p>
+      <p>asdf adsfds dfdfsddf asdfdfdfss dfadfsadsf adsf adfs adfs asdfadsf adfssfsd sadfssdfadfsadsfdsds asdddfs dsaf adsf adsf adsfadsf adsf adfsdfs</p>
+      <p>asdfadsf dfsa ads ffddsafkjfhdosaiuh dfiouh diosuh fdsiugysadf fuyviuadsyg iugyf gydsuyg M</p>
+    </div>
+
+    <script src="js/mediator.min.js"></script>
+    <script src="js/MutationObserver.js"></script>
+    <script src="js/target.js"></script>
+    <script>
+      target.init();
+    </script>
+  </body>
+</html>
