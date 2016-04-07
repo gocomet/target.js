@@ -28,49 +28,6 @@
         visibility: visible;
       }
     </style>
-
-    <script src="js/mediator.min.js"></script>
-    <script src="js/MutationObserver.js"></script>
-    <script src="js/target.js"></script>
-    <script>
-      target.init();
-    </script>
-    <script>
-      (function(undefined) {
-        
-        'use strict';
-      
-        document.addEventListener('DOMContentLoaded', function() {
-
-          var adder = document.getElementById('inject-dom-el');
-          var main = document.getElementById('main');
-          var i = 0;
-
-          adder.addEventListener('click', function() {
-
-            var btn = document.createElement('button');
-            var div = document.createElement('div');
-
-            i++;
-
-            btn.setAttribute('data-target-toggle', '#dom-div-' + i);
-            btn.classList.add('btn');
-            btn.classList.add('btn--dark');
-            btn.innerHTML = 'Click to Toggle Div';
-
-            div.id = 'dom-div-' + i;
-            div.classList.add('demo-div');
-            div.classList.add('fader');
-
-            main.appendChild(btn);
-            main.appendChild(div);
-
-          });
-
-        });
-        
-      })();
-    </script>
   </head>
   <body>
     <section class="page-header">
@@ -268,5 +225,48 @@
       <br>
 
     </section>
+
+    <script src="js/mediator.min.js"></script>
+    <script src="js/MutationObserver.js"></script>
+    <script src="js/target.js"></script>
+    <script>
+      target.init();
+    </script>
+    <script>
+      (function(undefined) {
+        
+        'use strict';
+      
+        document.addEventListener('DOMContentLoaded', function() {
+
+          var adder = document.getElementById('inject-dom-el');
+          var main = document.getElementById('main');
+          var i = 0;
+
+          adder.addEventListener('click', function() {
+
+            var btn = document.createElement('button');
+            var div = document.createElement('div');
+
+            i++;
+
+            btn.setAttribute('data-target-toggle', '#dom-div-' + i);
+            btn.classList.add('btn');
+            btn.classList.add('btn--dark');
+            btn.innerHTML = 'Click to Toggle Div';
+
+            div.id = 'dom-div-' + i;
+            div.classList.add('demo-div');
+            div.classList.add('fader');
+
+            main.appendChild(btn);
+            main.appendChild(div);
+
+          });
+
+        });
+        
+      })();
+    </script>
   </body>
 </html>
