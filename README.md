@@ -59,7 +59,7 @@ Target.js watches the DOM for changes: if a new element is introduced with one o
 
 ### 1. Include the files under `dist/` into your markup:
 
-- mediator.js (target.js' only dependency -- used as the event buss)
+- mediator.min.js (target.js' only dependency -- used as the event buss)
 - MutationObserver.js (a polyfill -- only include for IE9 support)
 - target.js
 

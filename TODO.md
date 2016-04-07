@@ -1,6 +1,10 @@
 
 # TODO
 
+## Bugfixes
+
+- overwriting config with user options doesn't do deep copy; fix
+
 ## allow library consumers to create their own UI components
 
 ```javascript
