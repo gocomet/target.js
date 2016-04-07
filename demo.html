@@ -45,6 +45,14 @@
 
       <p>Show an element</p>
       
+      <pre><code class="language-html"><span class="hljs-tag">&lt;<span class="hljs-title">button</span> <span class="hljs-attribute">data-target-show</span>=<span class="hljs-value">"#show-demo-div"</span>&gt;</span>
+  Show Div Below
+<span class="hljs-tag">&lt;/<span class="hljs-title">button</span>&gt;</span>
+
+<span class="hljs-tag">&lt;<span class="hljs-title">div</span> <span class="hljs-attribute">id</span>=<span class="hljs-value">"show-demo-div"</span>&gt;</span>
+<span class="hljs-tag">&lt;/<span class="hljs-title">div</span>&gt;</span>
+</code></pre>
+
       <p><button class="btn btn--dark" data-target-show="#show-demo-div">
         Show Div Below
       </button></p>
@@ -58,6 +66,14 @@
 
       <p>Hide an element</p>
       
+      <pre><code class="language-html"><span class="hljs-tag">&lt;<span class="hljs-title">button</span> <span class="hljs-attribute">data-target-hide</span>=<span class="hljs-value">"#hide-demo-div"</span>&gt;</span>
+  Hide Div Below
+<span class="hljs-tag">&lt;/<span class="hljs-title">button</span>&gt;</span>
+
+<span class="hljs-tag">&lt;<span class="hljs-title">div</span> <span class="hljs-attribute">id</span>=<span class="hljs-value">"hide-demo-div"</span>&gt;</span>
+<span class="hljs-tag">&lt;/<span class="hljs-title">div</span>&gt;</span>
+</code></pre>
+
       <p><button class="btn btn--dark" data-target-hide="#hide-demo-div">
         Hide Div Below
       </button></p>
@@ -71,6 +87,14 @@
 
       <p>Toggle an element</p>
       
+      <pre><code class="language-html"><span class="hljs-tag">&lt;<span class="hljs-title">button</span> <span class="hljs-attribute">data-target-toggle</span>=<span class="hljs-value">"#toggle-demo-div"</span>&gt;</span>
+  Toggle Div Below
+<span class="hljs-tag">&lt;/<span class="hljs-title">button</span>&gt;</span>
+
+<span class="hljs-tag">&lt;<span class="hljs-title">div</span> <span class="hljs-attribute">id</span>=<span class="hljs-value">"toggle-demo-div"</span>&gt;</span>
+<span class="hljs-tag">&lt;/<span class="hljs-title">div</span>&gt;</span>
+</code></pre>
+
       <p><button class="btn btn--dark" data-target-toggle="#toggle-demo-div">
         Toggle Div Below
       </button></p>
@@ -83,6 +107,15 @@
       <h3>Clickoff</h3>
 
       <p>Click off of an element to hide</p>
+  
+      <pre><code class="language-html"><span class="hljs-tag">&lt;<span class="hljs-title">button</span> <span class="hljs-attribute">data-target-show</span>=<span class="hljs-value">"#clickoff-demo-div"</span>&gt;</span>
+  Show div
+<span class="hljs-tag">&lt;/<span class="hljs-title">button</span>&gt;</span>
+
+<span class="hljs-tag">&lt;<span class="hljs-title">div</span> <span class="hljs-attribute">id</span>=<span class="hljs-value">"clickoff-demo-div"</span> <span class="hljs-attribute">data-target-clickoff</span>&gt;</span>
+  <span class="hljs-tag">&lt;<span class="hljs-title">p</span>&gt;</span>Click away from div to hide<span class="hljs-tag">&lt;/<span class="hljs-title">p</span>&gt;</span>
+<span class="hljs-tag">&lt;/<span class="hljs-title">div</span>&gt;</span>
+</code></pre>
 
       <button class="btn btn--dark" data-target-show="#clickoff-demo-div">
         Show div
@@ -98,6 +131,11 @@
 
       <p>Increment and Decrement the value of an input</p>
 
+      <pre><code class="language-html"><span class="hljs-tag">&lt;<span class="hljs-title">button</span> <span class="hljs-attribute">data-target-decrement</span>=<span class="hljs-value">"#qty"</span>&gt;</span>-<span class="hljs-tag">&lt;/<span class="hljs-title">button</span>&gt;</span>
+<span class="hljs-tag">&lt;<span class="hljs-title">input</span> <span class="hljs-attribute">id</span>=<span class="hljs-value">"qty"</span> <span class="hljs-attribute">value</span>=<span class="hljs-value">"1"</span>&gt;</span>
+<span class="hljs-tag">&lt;<span class="hljs-title">button</span> <span class="hljs-attribute">data-target-increment</span>=<span class="hljs-value">"#qty"</span> <span class="hljs-attribute">data-target-max</span>=<span class="hljs-value">"10"</span>&gt;</span>+<span class="hljs-tag">&lt;/<span class="hljs-title">button</span>&gt;</span>
+</code></pre>
+
       <button class="btn btn--dark" data-target-decrement="#qty">-</button>
       <input class="btn btn--dark" id="qty" value="1">
       <button class="btn btn--dark" data-target-increment="#qty" data-target-max="10">+</button>
@@ -107,6 +145,19 @@
       <h3>Scrollbox</h3>
 
       <p>Add scrollbars to element when height over threshold</p>
+
+      <pre><code class="language-html"><span class="hljs-tag">&lt;<span class="hljs-title">div</span> <span class="hljs-attribute">data-target-scrollbox</span>=<span class="hljs-value">"300"</span>&gt;</span>
+  <span class="hljs-tag">&lt;<span class="hljs-title">p</span>&gt;</span>This will scroll if the content is over 300px tall.<span class="hljs-tag">&lt;/<span class="hljs-title">p</span>&gt;</span>
+  <span class="hljs-tag">&lt;<span class="hljs-title">p</span>&gt;</span>This will scroll if the content is over 300px tall.<span class="hljs-tag">&lt;/<span class="hljs-title">p</span>&gt;</span>
+  <span class="hljs-tag">&lt;<span class="hljs-title">p</span>&gt;</span>This will scroll if the content is over 300px tall.<span class="hljs-tag">&lt;/<span class="hljs-title">p</span>&gt;</span>
+  <span class="hljs-tag">&lt;<span class="hljs-title">p</span>&gt;</span>This will scroll if the content is over 300px tall.<span class="hljs-tag">&lt;/<span class="hljs-title">p</span>&gt;</span>
+  <span class="hljs-tag">&lt;<span class="hljs-title">p</span>&gt;</span>This will scroll if the content is over 300px tall.<span class="hljs-tag">&lt;/<span class="hljs-title">p</span>&gt;</span>
+  <span class="hljs-tag">&lt;<span class="hljs-title">p</span>&gt;</span>This will scroll if the content is over 300px tall.<span class="hljs-tag">&lt;/<span class="hljs-title">p</span>&gt;</span>
+  <span class="hljs-tag">&lt;<span class="hljs-title">p</span>&gt;</span>This will scroll if the content is over 300px tall.<span class="hljs-tag">&lt;/<span class="hljs-title">p</span>&gt;</span>
+  <span class="hljs-tag">&lt;<span class="hljs-title">p</span>&gt;</span>This will scroll if the content is over 300px tall.<span class="hljs-tag">&lt;/<span class="hljs-title">p</span>&gt;</span>
+  <span class="hljs-tag">&lt;<span class="hljs-title">p</span>&gt;</span>This will scroll if the content is over 300px tall.<span class="hljs-tag">&lt;/<span class="hljs-title">p</span>&gt;</span>
+<span class="hljs-tag">&lt;/<span class="hljs-title">div</span>&gt;</span>
+</code></pre>
 
       <div data-target-scrollbox="300" class="demo-div">
         <p class="white">This will scroll if the content is over 300px tall.</p>
