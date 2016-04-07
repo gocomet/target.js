@@ -28,6 +28,49 @@
         visibility: visible;
       }
     </style>
+
+    <script src="js/mediator.min.js"></script>
+    <script src="js/MutationObserver.js"></script>
+    <script src="js/target.js"></script>
+    <script>
+      target.init();
+    </script>
+    <script>
+      (function(undefined) {
+        
+        'use strict';
+      
+        document.addEventListener('DOMContentLoaded', function() {
+
+          var adder = document.getElementById('inject-dom-el');
+          var main = document.getElementById('main');
+          var i = 0;
+
+          adder.addEventListener('click', function() {
+
+            var btn = document.createElement('button');
+            var div = document.createElement('div');
+
+            i++;
+
+            btn.setAttribute('data-target-toggle', '#dom-div-' + i);
+            btn.classList.add('btn');
+            btn.classList.add('btn--dark');
+            btn.innerHTML = 'Click to Toggle Div';
+
+            div.id = 'dom-div-' + i;
+            div.classList.add('demo-div');
+            div.classList.add('fader');
+
+            main.appendChild(btn);
+            main.appendChild(div);
+
+          });
+
+        });
+        
+      })();
+    </script>
   </head>
   <body>
     <section class="page-header">
@@ -39,9 +82,13 @@
       <a href="https://github.com/gocomet/target.js/tarball/master" class="btn">Download .tar.gz</a>
     </section>
 
-    <section class="main-content">
+    <section id="main" class="main-content">
 
-      <h3>Show</h3>
+      <h3>Basic Component Usage</h3>
+      
+      <hr>
+
+      <h4>Show</h4>
 
       <p>Show an element</p>
       
@@ -62,7 +109,7 @@
 
       <hr>
 
-      <h3>Hide</h3>
+      <h4>Hide</h4>
 
       <p>Hide an element</p>
       
@@ -83,7 +130,7 @@
 
       <hr>
 
-      <h3>Toggle</h3>
+      <h4>Toggle</h4>
 
       <p>Toggle an element</p>
       
@@ -104,7 +151,7 @@
 
       <hr>
 
-      <h3>Clickoff</h3>
+      <h4>Clickoff</h4>
 
       <p>Click off of an element to hide</p>
   
@@ -127,7 +174,7 @@
 
       <hr>
 
-      <h3>Increment/Decrement</h3>
+      <h4>Increment/Decrement</h4>
 
       <p>Increment and Decrement the value of an input</p>
 
@@ -142,20 +189,12 @@
 
       <hr>
 
-      <h3>Scrollbox</h3>
+      <h4>Scrollbox</h4>
 
       <p>Add scrollbars to element when height over threshold</p>
 
       <pre><code class="language-html"><span class="hljs-tag">&lt;<span class="hljs-title">div</span> <span class="hljs-attribute">data-target-scrollbox</span>=<span class="hljs-value">"300"</span>&gt;</span>
-  <span class="hljs-tag">&lt;<span class="hljs-title">p</span>&gt;</span>This will scroll if the content is over 300px tall.<span class="hljs-tag">&lt;/<span class="hljs-title">p</span>&gt;</span>
-  <span class="hljs-tag">&lt;<span class="hljs-title">p</span>&gt;</span>This will scroll if the content is over 300px tall.<span class="hljs-tag">&lt;/<span class="hljs-title">p</span>&gt;</span>
-  <span class="hljs-tag">&lt;<span class="hljs-title">p</span>&gt;</span>This will scroll if the content is over 300px tall.<span class="hljs-tag">&lt;/<span class="hljs-title">p</span>&gt;</span>
-  <span class="hljs-tag">&lt;<span class="hljs-title">p</span>&gt;</span>This will scroll if the content is over 300px tall.<span class="hljs-tag">&lt;/<span class="hljs-title">p</span>&gt;</span>
-  <span class="hljs-tag">&lt;<span class="hljs-title">p</span>&gt;</span>This will scroll if the content is over 300px tall.<span class="hljs-tag">&lt;/<span class="hljs-title">p</span>&gt;</span>
-  <span class="hljs-tag">&lt;<span class="hljs-title">p</span>&gt;</span>This will scroll if the content is over 300px tall.<span class="hljs-tag">&lt;/<span class="hljs-title">p</span>&gt;</span>
-  <span class="hljs-tag">&lt;<span class="hljs-title">p</span>&gt;</span>This will scroll if the content is over 300px tall.<span class="hljs-tag">&lt;/<span class="hljs-title">p</span>&gt;</span>
-  <span class="hljs-tag">&lt;<span class="hljs-title">p</span>&gt;</span>This will scroll if the content is over 300px tall.<span class="hljs-tag">&lt;/<span class="hljs-title">p</span>&gt;</span>
-  <span class="hljs-tag">&lt;<span class="hljs-title">p</span>&gt;</span>This will scroll if the content is over 300px tall.<span class="hljs-tag">&lt;/<span class="hljs-title">p</span>&gt;</span>
+        Put any HTML here.
 <span class="hljs-tag">&lt;/<span class="hljs-title">div</span>&gt;</span>
 </code></pre>
 
@@ -171,13 +210,63 @@
         <p class="white">This will scroll if the content is over 300px tall.</p>
       </div>
 
-    </section>
+      <hr>
 
-    <script src="js/mediator.min.js"></script>
-    <script src="js/MutationObserver.js"></script>
-    <script src="js/target.js"></script>
-    <script>
-      target.init();
-    </script>
+      <h3>Responsive Usage</h3>
+
+      <hr>
+
+      <h4>Example: Toggle on Mobile Only</h4>
+
+      <pre><code class="language-html"><span class="hljs-tag">&lt;<span class="hljs-title">button</span> <span class="hljs-attribute">data-target-toggle</span>=<span class="hljs-value">"#responsive-toggle-div"</span> <span class="hljs-attribute">data-target-disable</span>=<span class="hljs-value">"tablet desktop"</span>&gt;</span>
+  Toggle Div (only on mobile)
+<span class="hljs-tag">&lt;/<span class="hljs-title">button</span>&gt;</span>
+
+<span class="hljs-tag">&lt;<span class="hljs-title">div</span> <span class="hljs-attribute">id</span>=<span class="hljs-value">"responsive-toggle-div"</span>&gt;</span>
+<span class="hljs-tag">&lt;/<span class="hljs-title">div</span>&gt;</span>
+</code></pre>
+
+      <button class="btn btn--dark" data-target-toggle="#responsive-toggle-div" data-target-disable="tablet desktop">
+        Toggle Div (only on mobile)
+      </button>
+
+      <div id="responsive-toggle-div" class="demo-div fader">
+      </div>
+
+      <hr>
+
+      <h4>Example: Scrollbox height = window height - 600px</h4>
+
+      <pre><code class="language-html"><span class="hljs-tag">&lt;<span class="hljs-title">div</span> <span class="hljs-attribute">data-target-scrollbox</span>=<span class="hljs-value">"-200"</span> <span class="hljs-attribute">class</span>=<span class="hljs-value">"demo-div"</span>&gt;</span>
+    Put any HTML here.
+<span class="hljs-tag">&lt;/<span class="hljs-title">div</span>&gt;</span>
+</code></pre>
+
+
+      <div data-target-scrollbox="-600" class="demo-div">
+        <p class="white">This will scroll if the content is over (window.height - 600px) tall.</p>
+        <p class="white">This will scroll if the content is over (window.height - 600px) tall.</p>
+        <p class="white">This will scroll if the content is over (window.height - 600px) tall.</p>
+        <p class="white">This will scroll if the content is over (window.height - 600px) tall.</p>
+        <p class="white">This will scroll if the content is over (window.height - 600px) tall.</p>
+        <p class="white">This will scroll if the content is over (window.height - 600px) tall.</p>
+        <p class="white">This will scroll if the content is over (window.height - 600px) tall.</p>
+        <p class="white">This will scroll if the content is over (window.height - 600px) tall.</p>
+        <p class="white">This will scroll if the content is over (window.height - 600px) tall.</p>
+      </div>
+
+      <hr>
+
+      <h3>Realtime DOM reactivity usage</h3>
+
+      <p>Click below to inject a DOM element into the page. That DOM element uses a Target.js component. That component will automatically initiliase without you running any code.</p>
+
+      <button id="inject-dom-el" class="btn btn--dark">
+        Inject a DOM element
+      </button>
+
+      <br>
+
+    </section>
   </body>
 </html>
