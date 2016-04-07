@@ -1,0 +1,16 @@
+[
+	"app/config",
+	"app/utils",
+	"app/window",
+	"app/domobserver",
+	"app/componentfactory",
+	"app/ui",
+	"app/show",
+	"app/hide",
+	"app/toggle",
+	"app/clickoff",
+	"app/increment",
+	"app/decrement",
+	"app/scrollbox",
+	"app/init"
+]

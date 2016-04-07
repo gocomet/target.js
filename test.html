@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Testing</title>
+  <style>
+    div {
+      color: white;
+      display: none;
+      padding: 20px;
+    }
+    .green {
+      background: green;
+    }
+    .blue {
+      background: blue;
+    }
+    div.target-active {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="green" id="green-div" data-target-clickoff>
+    <p>Click off of this div to hide it!</p>
+    <button data-target-hide="#green-div">Hide green div</button>
+  </div>
+
+  <hr>
+
+  <button data-target-toggle="#green-div">Toggle green div</button>
+  <button data-target-show="#green-div" data-target-disable="mobile tablet">Show green div</button>
+
+  <hr>
+
+  <div class="blue" id="blue-div">
+    <p>See!</p>
+    <button data-target-hide="#blue-div">Hide blue div</button>
+  </div>
+
+  <hr>
+
+  <button data-target-toggle="#blue-div">Toggle blue div</button>
+  <button id="show-blue" data-target-show="#blue-div" data-target-disable="mobile tablet">Show blue div</button>
+  <button data-target-show="#green-div" data-target-hide="#blue-div">
+    Show Green div, hide blue div
+  </button>
+
+  
+  <p>
+    <button data-target-decrement="#qty" data-target-min="1">-</button>
+    <input type="text" id="qty" value="1">
+    <button data-target-increment="#qty" data-target-max="10">+</button>
+  </p>
+
+  <div data-target-scrollbox="-300" style="color: black; display: block;">
+    <p>adfsl;kj opasij adopsijas als;dfjsals ;ddfjs io;fjs fs iopj</p>
+    <p>adfsl;kj opasij adopsijas als;dfjsals ;ddfjs io;fjs fs iopj</p>
+    <p>adfsl;kj opasij adopsijas als;dfjsals ;ddfjs io;fjs fs iopj</p>
+    <p>adfsl;kj opasij adopsijas als;dfjsals ;ddfjs io;fjs fs iopj</p>
+    <p>adfsl;kj opasij adopsijas als;dfjsals ;ddfjs io;fjs fs iopj</p>
+    <p>adfsl;kj opasij adopsijas als;dfjsals ;ddfjs io;fjs fs iopj</p>
+    <p>adfsl;kj opasij adopsijas als;dfjsals ;ddfjs io;fjs fs iopj</p>
+    <p>adfsl;kj opasij adopsijas als;dfjsals ;ddfjs io;fjs fs iopj</p>
+    <p>adfsl;kj opasij adopsijas als;dfjsals ;ddfjs io;fjs fs iopj</p>
+    <p>adfsl;kj opasij adopsijas als;dfjsals ;ddfjs io;fjs fs iopj</p>
+    <p>adfsl;kj opasij adopsijas als;dfjsals ;ddfjs io;fjs fs iopj</p>
+    <p>adfsl;kj opasij adopsijas als;dfjsals ;ddfjs io;fjs fs iopj</p>
+    <p>adfsl;kj opasij adopsijas als;dfjsals ;ddfjs io;fjs fs iopj</p>
+    <p>adfsl;kj opasij adopsijas als;dfjsals ;ddfjs io;fjs fs iopj</p>
+  </div>
+
+
+  <script src="dest/MutationObserver.js"></script>
+  <script src="dest/mediator.min.js"></script>
+  <script src="dest/target.js"></script>
+  <script>target.init()</script>
+</body>
+</html>
