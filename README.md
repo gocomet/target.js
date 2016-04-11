@@ -177,7 +177,7 @@ An element will hide itself when you click away from it
 Increments or decrements the value of an input
 
 ```html
-<button data-target-increment="#qty">-</button>
+<button data-target-decrement="#qty">-</button>
 <input id="qty">1</input>
 <button data-target-increment="#qty">+</button>
 ```
@@ -185,9 +185,9 @@ Increments or decrements the value of an input
 Increments and decrements can have optional min and max values
 
 ```html
-<button data-target-increment="#qty" data-target-max="10">-</button>
+<button data-target-decrement="#qty" data-target-min="-10">-</button>
 <input id="qty">1</input>
-<button data-target-increment="#qty" data-target-min="-10">+</button>
+<button data-target-increment="#qty" data-target-max="10">+</button>
 ```
 
 The default minimum value for decrementers is 0
