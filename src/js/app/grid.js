@@ -48,18 +48,13 @@
 			
 			};
 
-			this.addEventListener('resize.window', this.calculateRows);
+			this.addEventListener('resize.window', this.calculateGrid);
 
 		}
 
-		calculateRows(is) {
+		setPerRow() {
 
 			var _this = this;
-			var lastChild = this.children[this.children.length - 1];
-			var row = [];
-			var i = 0;
-
-			this.rows = [];
 
 			// set default
 			this.perRow = this.breakpoints.mobile;
@@ -74,6 +69,19 @@
 				}
 
 			});
+
+			return _this.perRow;
+
+		}
+
+		buildRows() {
+
+			var _this = this;
+			var lastChild = this.children[this.children.length - 1];
+			var row = [];
+			var i = 0;
+
+			this.rows = [];
 
 			// loop through children
 			// and add element to row
@@ -98,6 +106,18 @@
 				}
 
 			});
+
+			return this.rows;
+
+		}
+
+		calculateGrid(is) {
+
+			var _this = this;
+			
+			this.setPerRow();
+
+			this.buildRows();
 
 			this.rows.forEach(function(row) {
 
