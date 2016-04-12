@@ -93,7 +93,7 @@ For example:
 </div>
 ```
 
->Fun fact: Target.js declarations don't care what type of element they're applied to.
+>gFun fact: Target.js declarations don't care what type of element they're applied to.
 
 ## How does Target.js show/hide elements?
 
@@ -114,10 +114,11 @@ You can customize Target.js so that it doesn't conflict with any of your existin
 			Clickoff: 'data-target-clickoff',
 			Increment: 'data-target-increment',
 			Decrement: 'data-target-decrement',
+			Scrollbox: 'data-target-scrollbox',
+			Grid: 'data-target-grid',
 			disable: 'data-target-disable',
 			max: 'data-target-max',
 			min: 'data-target-min',
-			Scrollbox: 'data-target-scrollbox'
 		},
 		breakpoints: {
 			tablet: 768,
