@@ -93,7 +93,7 @@ For example:
 </div>
 ```
 
-Target.js declarations don't care what type of element they're applied to
+>Fun fact: Target.js declarations don't care what type of element they're applied to.
 
 ## How does Target.js show/hide elements?
 
