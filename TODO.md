@@ -3,10 +3,7 @@
 
 ## Bugfixes
 
-- domObserver causes components to be initialized more than once on one element in some cases
-	- componentFactory should check existence before initializing
-- scrollbox does not proper initialize until window.resize
-	- check initialization sequence
+- none currently
 
 ## allow library consumers to create their own UI components
 

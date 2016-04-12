@@ -212,6 +212,36 @@ The threshold can be set relative to the window size instead by using a negative
 
 As with all Target.js elements, Scrollbox updates itself on window.resize.
 
+### Grid
+
+Makes elements in a row all the same height. This doesn't replace your CSS grid; rather, it works in conjunction with it.
+
+<div data-target-grid="2 3 4">
+	<div>Product thumbnail here</div>
+	<div>Product thumbnail here</div>
+	<div>Product thumbnail here (these will all have equal height)</div>
+	<div>Product thumbnail here</div>
+	<div>Product thumbnail here</div>
+	<div>Product thumbnail here</div>
+	<div>Product thumbnail here (these will all have equal height)</div>
+	<div>Product thumbnail here</div>
+</div>
+
+Provide a space-separated list of columns per row. In the above example, there are 2 columns per row on mobile, 3 columns per row on tablet, and 4 columns per row on desktop.
+
+An example using Foundation's grid classes:
+
+<div class="row" data-target-grid="2 3 4">
+	<div class="column small-6 medium-4 large-3">Product thumbnail here</div>
+	<div class="column small-6 medium-4 large-3">Product thumbnail here</div>
+	<div class="column small-6 medium-4 large-3">Product thumbnail here (these will all have equal height)</div>
+	<div class="column small-6 medium-4 large-3">Product thumbnail here</div>
+	<div class="column small-6 medium-4 large-3">Product thumbnail here</div>
+	<div class="column small-6 medium-4 large-3">Product thumbnail here</div>
+	<div class="column small-6 medium-4 large-3">Product thumbnail here (these will all have equal height)</div>
+	<div class="column small-6 medium-4 large-3">Product thumbnail here</div>
+</div>
+
 ## Disabling elements responsively
 
 To disable any Target.js element, use Target's disable attribute and pass it the layouts you want to disable the element on:
