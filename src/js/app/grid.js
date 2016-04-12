@@ -28,31 +28,58 @@
 	
 		constructor(el, _id, target, name) {
 	
+			super(el, _id, target, name);
+			
 			var breakpoints;
 
-			super(el, _id, target, name);
+			this.TEXT_NODE = 3;
 
-			if (this.el.hasChildNodes()) {
-			
-				this.children = this.el.childNodes;
-
-			}
+			this.setChildren();
 
 			breakpoints = this.el.getAttribute(this.config.attributes.Grid).split(' ');
 
 			this.breakpoints = {
 				
-				mobile: breakpoints[0],
-				tablet: breakpoints[1],
-				desktop: breakpoints[2]
+				mobile: parseInt(breakpoints[0], 10),
+				tablet: parseInt(breakpoints[1], 10),
+				desktop: parseInt(breakpoints[2], 10)
 			
 			};
 
-			this.addEventListener('resize.window', this.calculateGrid);
+			this.addEventHandler('resize.window', this.calculateGrid);
+
+			this.events.publish('update.ui');
 
 		}
 
-		setPerRow() {
+		setChildren() {
+
+			var _this = this;
+			var childNodes;
+
+			this.children = [];
+
+			if (!this.el.hasChildNodes()) {
+
+				return [];
+
+			}
+			
+			childNodes = this.el.childNodes;
+
+			this.utils.forEach.call(childNodes, function(child) {
+
+				if (child.nodeType !== _this.TEXT_NODE) {
+
+					_this.children.push(child);
+
+				}
+
+			});
+
+		}
+
+		setPerRow(is) {
 
 			var _this = this;
 
@@ -89,19 +116,23 @@
 			// add row to rows array
 			this.utils.forEach.call(this.children, function(child) {
 
-				if (i < _this.perRow && child !== lastChild) {
-
-					row.push(child);
-
-					i++;
-
-				} else {
+				if (i >= _this.perRow) {
 
 					_this.rows.push(row);
 					
 					i = 0;
 
 					row = [];
+
+				}
+					
+				row.push(child);
+
+				i++;
+
+				if (child === lastChild) {
+
+					_this.rows.push(row);
 
 				}
 
@@ -115,15 +146,19 @@
 
 			var _this = this;
 			
-			this.setPerRow();
+			this.setPerRow(is);
 
 			this.buildRows();
+
+
 
 			this.rows.forEach(function(row) {
 
 				var maxHeight = 0;
 
 				row.forEach(function(item) {
+
+					item.style.height = '';
 
 					maxHeight = Math.max(item.offsetHeight, maxHeight);
 

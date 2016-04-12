@@ -3,17 +3,60 @@
 <head>
   <title>Testing</title>
   <style>
+    * {
+      box-sizing: border-box;
+    }
+
     div {
       color: white;
       display: none;
       padding: 20px;
     }
+
+    .block {
+      display: block;
+    }
+
+    .row {
+      overflow: hidden;
+      position: relative;
+    }
+
+    .column {
+      border: 1px solid black;
+      display: block;
+      float: left;
+      position: relative;
+    }
+
+    .column p {
+      color: black;
+    }
+
+    .half-mobile {
+      width: 50%;
+    }
+
+    @media only screen and (min-width: 768px) {
+      .third-tablet {
+        width: 33.333%;
+      }
+    }
+
+    @media only screen and (min-width: 1025px) {
+      .quarter-desktop {
+        width: 25%;
+      }
+    }
+
     .green {
       background: green;
     }
+    
     .blue {
       background: blue;
     }
+    
     div.target-active {
       display: block;
     }
@@ -72,6 +115,55 @@
     <p>adfsl;kj opasij adopsijas als;dfjsals ;ddfjs io;fjs fs iopj</p>
     <p>adfsl;kj opasij adopsijas als;dfjsals ;ddfjs io;fjs fs iopj</p>
     <p>adfsl;kj opasij adopsijas als;dfjsals ;ddfjs io;fjs fs iopj</p>
+  </div>
+
+  <div class="row block" data-target-grid="2 3 4">
+    <div class="column half-mobile third-tablet quarter-desktop">
+      <p>Thumb in a grid</p>
+      <p>Thumb in a grid</p>
+      <p>Thumb in a grid</p>
+      <p>Thumb in a grid</p>
+      <p>Thumb in a grid</p>
+    </div>
+    <div class="column half-mobile third-tablet quarter-desktop">
+      <p>Thumb in a grid</p>
+      <p>Thumb in a grid</p>
+    </div>
+    <div class="column half-mobile third-tablet quarter-desktop">
+      <p>Thumb in a grid</p>
+      <p>Thumb in a grid</p>
+      <p>Thumb in a grid</p>
+      <p>Thumb in a grid</p>
+    </div>
+    <div class="column half-mobile third-tablet quarter-desktop">
+      <p>Thumb in a grid</p>
+      <p>Thumb in a grid</p>
+      <p>Thumb in a grid</p>
+      <p>Thumb in a grid</p>
+      <p>Thumb in a grid</p>
+      <p>Thumb in a grid</p>
+      <p>Thumb in a grid</p>
+      <p>Thumb in a grid</p>
+      <p>Thumb in a grid</p>
+      <p>Thumb in a grid</p>
+    </div>
+    <div class="column half-mobile third-tablet quarter-desktop">
+      <p>Thumb in a grid</p>
+    </div>
+    <div class="column half-mobile third-tablet quarter-desktop">
+      <p>Thumb in a grid</p>
+      <p>Thumb in a grid</p>
+      <p>Thumb in a grid</p>
+      <p>Thumb in a grid</p>
+      <p>Thumb in a grid</p>
+      <p>Thumb in a grid</p>
+      <p>Thumb in a grid</p>
+    </div>
+    <div class="column half-mobile third-tablet quarter-desktop">
+      <p>Thumb in a grid</p>
+      <p>Thumb in a grid</p>
+      <p>Thumb in a grid</p>
+    </div>
   </div>
 </body>
 </html>

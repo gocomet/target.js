@@ -63,6 +63,7 @@ function _classCallCheck(instance, Constructor) {
             Increment: "data-target-increment",
             Decrement: "data-target-decrement",
             Scrollbox: "data-target-scrollbox",
+            Grid: "data-target-grid",
             disable: "data-target-disable",
             max: "data-target-max",
             min: "data-target-min"
@@ -719,6 +720,98 @@ function _classCallCheck(instance, Constructor) {
             }
         } ]);
         return TargetScrollbox;
+    }(target.UI);
+})(window.target = window.target || {});
+
+(function(target, undefined) {
+    "use strict";
+    target.Grid = function(_target$UI8) {
+        _inherits(TargetGrid, _target$UI8);
+        function TargetGrid(el, _id, target, name) {
+            _classCallCheck(this, TargetGrid);
+            var _this9 = _possibleConstructorReturn(this, Object.getPrototypeOf(TargetGrid).call(this, el, _id, target, name));
+            var breakpoints;
+            _this9.TEXT_NODE = 3;
+            _this9.setChildren();
+            breakpoints = _this9.el.getAttribute(_this9.config.attributes.Grid).split(" ");
+            _this9.breakpoints = {
+                mobile: parseInt(breakpoints[0], 10),
+                tablet: parseInt(breakpoints[1], 10),
+                desktop: parseInt(breakpoints[2], 10)
+            };
+            _this9.addEventHandler("resize.window", _this9.calculateGrid);
+            _this9.events.publish("update.ui");
+            return _this9;
+        }
+        _createClass(TargetGrid, [ {
+            key: "setChildren",
+            value: function setChildren() {
+                var _this = this;
+                var childNodes;
+                this.children = [];
+                if (!this.el.hasChildNodes()) {
+                    return [];
+                }
+                childNodes = this.el.childNodes;
+                this.utils.forEach.call(childNodes, function(child) {
+                    if (child.nodeType !== _this.TEXT_NODE) {
+                        _this.children.push(child);
+                    }
+                });
+            }
+        }, {
+            key: "setPerRow",
+            value: function setPerRow(is) {
+                var _this = this;
+                this.perRow = this.breakpoints.mobile;
+                Object.keys(this.breakpoints).forEach(function(layout) {
+                    if (_this.breakpoints[layout] && is[layout]()) {
+                        _this.perRow = _this.breakpoints[layout];
+                    }
+                });
+                return _this.perRow;
+            }
+        }, {
+            key: "buildRows",
+            value: function buildRows() {
+                var _this = this;
+                var lastChild = this.children[this.children.length - 1];
+                var row = [];
+                var i = 0;
+                this.rows = [];
+                this.utils.forEach.call(this.children, function(child) {
+                    if (i >= _this.perRow) {
+                        _this.rows.push(row);
+                        i = 0;
+                        row = [];
+                    }
+                    row.push(child);
+                    i++;
+                    if (child === lastChild) {
+                        _this.rows.push(row);
+                    }
+                });
+                return this.rows;
+            }
+        }, {
+            key: "calculateGrid",
+            value: function calculateGrid(is) {
+                var _this = this;
+                this.setPerRow(is);
+                this.buildRows();
+                this.rows.forEach(function(row) {
+                    var maxHeight = 0;
+                    row.forEach(function(item) {
+                        item.style.height = "";
+                        maxHeight = Math.max(item.offsetHeight, maxHeight);
+                    });
+                    row.forEach(function(item) {
+                        item.style.height = maxHeight + "px";
+                    });
+                });
+            }
+        } ]);
+        return TargetGrid;
     }(target.UI);
 })(window.target = window.target || {});
 
