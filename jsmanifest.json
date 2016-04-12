@@ -12,5 +12,6 @@
 	"app/increment",
 	"app/decrement",
 	"app/scrollbox",
+	"app/grid",
 	"app/init"
 ]

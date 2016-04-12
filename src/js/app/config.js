@@ -23,6 +23,7 @@
 			Increment: 'data-target-increment',
 			Decrement: 'data-target-decrement',
 			Scrollbox: 'data-target-scrollbox',
+			Grid: 'data-target-grid',
 			disable: 'data-target-disable',
 			max: 'data-target-max',
 			min: 'data-target-min'
