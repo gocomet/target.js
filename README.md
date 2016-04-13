@@ -11,6 +11,7 @@ Target.js doesn't do much. But what it does, it does well. It adds functionality
 - Click away from elements to close them
 - Create responsive scrollboxes
 - Increment/decrement quantity boxes
+- Give your thumbnails equal heights
 
 _It does_ this in a declarative way:
 
