@@ -23,6 +23,14 @@
 			this.config = target.config;
 			this.utils = target.utils;
 
+			// "is" object
+			// allows UI components to update their functionality
+			// based on layout
+			// usage:
+			// if (is['mobile']())
+			// or, dynamically, for example:
+			// for (layout in this.layouts)
+			//   if (is[layout]())
 			this.is = {
 		
 				mobile: function() {
@@ -63,18 +71,30 @@
 		
 		}
 		
+		/**
+		 * get width
+		 */
 		width() {
 		
 			return this.w;
 		
 		}
 		
+		/**
+		 * get height
+		 */
 		height() {
 		
 			return this.h;
 		
 		}
 		
+		/**
+		 * on window.resize
+		 * update internal window properties
+		 * fire event for UI components to update themselves
+		 * pass "is" layout object for responsive changes
+		 */
 		onResize() {
 		
 			this.w = document.documentElement.clientWidth;

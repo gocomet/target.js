@@ -45,6 +45,11 @@
 		
 		}
 
+		/**
+		 * add an event handler to a UI element
+		 * using Target's internal event buss
+		 * store a reference to it for later removal
+		 */
 		addEventHandler(eventName, cb) {
 
 			this.eventHandlers[eventName] = this.events.subscribe(eventName, cb, {}, this);
@@ -119,6 +124,13 @@
 
 		}
 
+		/**
+		 * when attributes are changed in the DOM
+		 * the DOM observer watches and will run this callback
+		 * ensure our element has been modified
+		 * if so, update the component's properties
+		 * based on the new attribute values
+		 */
 		handleAttMutation(target) {
 
 			if (target === this.el) {
@@ -129,6 +141,11 @@
 
 		}
 
+		/**
+		 * get attributes on element
+		 * set internal properties based on attributes
+		 * these properties are used by other methods
+		 */
 		updateAtts() {
 
 			this.disableLayouts = this.el.getAttribute(this.config.attributes.disable);
@@ -148,6 +165,12 @@
 
 		}
 
+		/**
+		 * on window.resize
+		 * determine whether or not a component should be disabled
+		 * if so, disable it
+		 * if not, enable it
+		 */
 		setDisabled(is) {
 
 			var disable = false;
@@ -175,6 +198,9 @@
 		
 		}
 
+		/**
+		 * get "disabled" property
+		 */
 		isDisabled() {
 		
 			return this.disabled;

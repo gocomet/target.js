@@ -40,6 +40,13 @@
 		
 		}
 
+		/**
+		 * when a node is added
+		 * strip out text nodes
+		 * then fire event
+		 * for componentfactory service to pickup
+		 * and initialize new components if required
+		 */
 		publishAddedNodes(nodes) {
 
 			var _this = this;
@@ -69,6 +76,11 @@
 
 		}
 
+		/**
+		 * when a DOM mutation happens
+		 * determine the type of mutation
+		 * and fire the appropriate event
+		 */
 		onMutation(mutations, observer) {
 
 			var _this = this;
