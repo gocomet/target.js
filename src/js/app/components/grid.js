@@ -52,6 +52,10 @@
 
 		}
 
+		/**
+		 * find child nodes of element
+		 * filter out any text nodes
+		 */
 		setChildren() {
 
 			var _this = this;
@@ -79,6 +83,12 @@
 
 		}
 
+		/**
+		 * determine how many thumbnails per row
+		 * based on responsive layout
+		 * "is" object passed from our "window" service
+		 * via events
+		 */
 		setPerRow(is) {
 
 			var _this = this;
@@ -101,6 +111,11 @@
 
 		}
 
+		/**
+		 * set which thumbnails are in a row together
+		 * based on the number of thumbs per row
+		 * which is based on the current responsive layout
+		 */
 		buildRows() {
 
 			var _this = this;
@@ -142,6 +157,14 @@
 
 		}
 
+		/**
+		 * on window.resize
+		 * determine how many thumbs per row
+		 * group those thumbs together in rows
+		 * reset the height of thumbs to their default
+		 * get, calculate, and set the correct height
+		 * so thumbs in the same row have the same height
+		 */
 		calculateGrid(is) {
 
 			var _this = this;
@@ -149,8 +172,6 @@
 			this.setPerRow(is);
 
 			this.buildRows();
-
-
 
 			this.rows.forEach(function(row) {
 

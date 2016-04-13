@@ -44,6 +44,9 @@
 
 		}
 		
+		/**
+		 * get the user-declared max height threshold
+		 */
 		getMaxHeight() {
 		
 			if (this.maxHeight >= 0) {
@@ -58,6 +61,10 @@
 
 		}
 
+		/**
+		 * get the total height of all the contents
+		 * within our scrollbox element
+		 */
 		getContentsHeight() {
 		
 			var height = 0;
@@ -72,6 +79,11 @@
 
 		}
 
+		/**
+		 * determine if we need to add a scrollbar to our element
+		 * if so, add it
+		 * if not, remove it
+		 */
 		setOverflow() {
 			
 			if (this.getContentsHeight() > this.getMaxHeight() && !this.isDisabled()) {
@@ -86,6 +98,12 @@
 		
 		}
 
+		/**
+		 * determine whether or not we need to set a maxHeight property
+		 * on element
+		 * if so, set it
+		 * if not, remove it
+		 */
 		setMaxHeight() {
 			
 			if (this.isDisabled()) {
@@ -100,6 +118,12 @@
 		
 		}
 
+		/**
+		 * on window.resize
+		 * determine if we need a max height on our element
+		 * determine if we need a scrollbar on our element
+		 * if so, set them
+		 */
 		onResize() {
 
 			this.setMaxHeight();

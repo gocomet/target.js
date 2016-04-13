@@ -23,6 +23,11 @@
 
 		}
 
+		/**
+		 * when the user clicks anywhere in the document
+		 * determine if the click came from outside this element
+		 * if so, close this element
+		 */
 		onClick(e) {
 
 			var _this = this;

@@ -29,6 +29,10 @@
 
 		}
 
+		/**
+		 * when the element is clicked
+		 * toggle the target element's visibility
+		 */
 		onClick(e) {
 
 			var _this = this;
@@ -45,6 +49,11 @@
 		
 		}
 
+		/**
+		 * if the target is shown, hide it
+		 * if the target is hidden, show it
+		 * all using css
+		 */
 		toggle(el) {
 		
 			if (!el.classList.contains(this.config.activeClass)) {

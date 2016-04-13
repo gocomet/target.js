@@ -31,6 +31,11 @@
 
 		}
 
+		/**
+		 * get min and max values
+		 * declared on the element itself
+		 * use defaults if not declared
+		 */
 		setLimits() {
 
 			this.max = this.el.getAttribute(this.config.attributes.max);
@@ -50,6 +55,10 @@
 
 		}
 
+		/**
+		 * increment the value of the target input
+		 * only if lower than the specified maximum value
+		 */
 		increment(target) {
 
 			var curVal = parseInt(target.value, 10);
@@ -65,6 +74,10 @@
 		
 		}
 
+		/**
+		 * when the incrementer is clicked,
+		 * increment the target input element
+		 */
 		onClick(e) {
 
 			var _this = this;

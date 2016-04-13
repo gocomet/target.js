@@ -29,6 +29,11 @@
 
 		}
 
+		/**
+		 * when the element is clicked,
+		 * show the target element
+		 * (using css)
+		 */
 		onClick(e) {
 
 			var _this = this;

@@ -31,6 +31,11 @@
 
 		}
 
+		/**
+		 * get min and max values
+		 * declared on the element itself
+		 * use defaults if not declared
+		 */
 		setLimits() {
 
 			this.max = this.el.getAttribute(this.config.attributes.max);
@@ -54,6 +59,10 @@
 
 		}
 
+		/**
+		 * decrement the value of the target input
+		 * only if higher than the specified minimum value
+		 */
 		decrement(target) {
 
 			var curVal 	= parseInt(target.value, 10);
@@ -65,6 +74,10 @@
 		
 		}
 
+		/**
+		 * when the decrementer is clicked,
+		 * decrement the target input element
+		 */
 		onClick(e) {
 
 			var _this = this;

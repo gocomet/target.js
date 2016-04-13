@@ -30,6 +30,11 @@
 			
 		}
 
+		/**
+		 * when the element is clicked,
+		 * hide the target element
+		 * (using css)
+		 */
 		onClick(e) {
 
 			var _this = this;
