@@ -2,7 +2,7 @@
  *
  * target.UI
  *
- * Base class object
+ * Base class component object
  *
  * define default functionality that all UI elements will share
  *

@@ -160,6 +160,121 @@ function _classCallCheck(instance, Constructor) {
 
 (function(target, undefined) {
     "use strict";
+    target.UI = function() {
+        function TargetUI(el, _id, target, name) {
+            _classCallCheck(this, TargetUI);
+            this._id = _id;
+            this.config = target.config;
+            this.events = target.events;
+            this.utils = target.utils;
+            this.el = el;
+            this.disabled = false;
+            this.componentName = name;
+            this.el.setAttribute("data-target-" + name + "-id", this._id);
+            this.eventHandlers = {};
+            this.addEventHandler("resize.window", this.setDisabled);
+            this.addEventHandler("attributes.mutation", this.handleAttMutation);
+            this.domEventHandlers = {};
+            this.updateAtts();
+        }
+        _createClass(TargetUI, [ {
+            key: "addEventHandler",
+            value: function addEventHandler(eventName, cb) {
+                this.eventHandlers[eventName] = this.events.subscribe(eventName, cb, {}, this);
+            }
+        }, {
+            key: "addDomEventHandler",
+            value: function addDomEventHandler(eventName, cb, el) {
+                var _this = this;
+                var attachedCb = function attachedCb(e) {
+                    cb.apply(_this, [ e ]);
+                };
+                if (!el) {
+                    el = this.el;
+                }
+                this.domEventHandlers[eventName] = {
+                    cb: attachedCb,
+                    el: el
+                };
+                el.addEventListener(eventName, attachedCb, false);
+            }
+        }, {
+            key: "destroy",
+            value: function destroy() {
+                var handler;
+                var domHandler;
+                for (handler in this.eventHandlers) {
+                    if (this.eventHandlers.hasOwnProperty()) {
+                        this.events.remove(handler, this.eventHandlers[handler].id);
+                    }
+                }
+                for (domHandler in this.domEventHandlers) {
+                    if (this.domEventHandlers.hasOwnProperty()) {
+                        this.domEventHandlers[domHandler].el.removeEventListener(domHandler, this.domEventHandlers[domHandler]);
+                    }
+                }
+            }
+        }, {
+            key: "handleAttMutation",
+            value: function handleAttMutation(target) {
+                if (target === this.el) {
+                    this.updateAtts();
+                }
+            }
+        }, {
+            key: "updateAtts",
+            value: function updateAtts() {
+                this.disableLayouts = this.el.getAttribute(this.config.attributes.disable);
+                if (this.disableLayouts) {
+                    this.disableLayouts = this.disableLayouts.split(" ");
+                } else {
+                    this.disableLayouts = [];
+                }
+                this.events.publish("update.ui");
+            }
+        }, {
+            key: "setDisabled",
+            value: function setDisabled(is) {
+                var disable = false;
+                var i, len, layout;
+                for (i = 0, len = this.disableLayouts.length; i < len; i++) {
+                    layout = this.disableLayouts[i];
+                    if (is[layout]()) {
+                        disable = true;
+                        this.disabled = true;
+                        break;
+                    }
+                }
+                if (!disable) {
+                    this.disabled = false;
+                }
+            }
+        }, {
+            key: "isDisabled",
+            value: function isDisabled() {
+                return this.disabled;
+            }
+        }, {
+            key: "show",
+            value: function show(el) {
+                if (!el.classList.contains(this.config.activeClass)) {
+                    el.classList.add(this.config.activeClass);
+                }
+            }
+        }, {
+            key: "hide",
+            value: function hide(el) {
+                if (el.classList.contains(this.config.activeClass)) {
+                    el.classList.remove(this.config.activeClass);
+                }
+            }
+        } ]);
+        return TargetUI;
+    }();
+})(window.target = window.target || {});
+
+(function(target, undefined) {
+    "use strict";
     target.Window = function() {
         function TargetWindow(target) {
             _classCallCheck(this, TargetWindow);
@@ -323,121 +438,6 @@ function _classCallCheck(instance, Constructor) {
             }
         } ]);
         return TargetComponentFactory;
-    }();
-})(window.target = window.target || {});
-
-(function(target, undefined) {
-    "use strict";
-    target.UI = function() {
-        function TargetUI(el, _id, target, name) {
-            _classCallCheck(this, TargetUI);
-            this._id = _id;
-            this.config = target.config;
-            this.events = target.events;
-            this.utils = target.utils;
-            this.el = el;
-            this.disabled = false;
-            this.componentName = name;
-            this.el.setAttribute("data-target-" + name + "-id", this._id);
-            this.eventHandlers = {};
-            this.addEventHandler("resize.window", this.setDisabled);
-            this.addEventHandler("attributes.mutation", this.handleAttMutation);
-            this.domEventHandlers = {};
-            this.updateAtts();
-        }
-        _createClass(TargetUI, [ {
-            key: "addEventHandler",
-            value: function addEventHandler(eventName, cb) {
-                this.eventHandlers[eventName] = this.events.subscribe(eventName, cb, {}, this);
-            }
-        }, {
-            key: "addDomEventHandler",
-            value: function addDomEventHandler(eventName, cb, el) {
-                var _this = this;
-                var attachedCb = function attachedCb(e) {
-                    cb.apply(_this, [ e ]);
-                };
-                if (!el) {
-                    el = this.el;
-                }
-                this.domEventHandlers[eventName] = {
-                    cb: attachedCb,
-                    el: el
-                };
-                el.addEventListener(eventName, attachedCb, false);
-            }
-        }, {
-            key: "destroy",
-            value: function destroy() {
-                var handler;
-                var domHandler;
-                for (handler in this.eventHandlers) {
-                    if (this.eventHandlers.hasOwnProperty()) {
-                        this.events.remove(handler, this.eventHandlers[handler].id);
-                    }
-                }
-                for (domHandler in this.domEventHandlers) {
-                    if (this.domEventHandlers.hasOwnProperty()) {
-                        this.domEventHandlers[domHandler].el.removeEventListener(domHandler, this.domEventHandlers[domHandler]);
-                    }
-                }
-            }
-        }, {
-            key: "handleAttMutation",
-            value: function handleAttMutation(target) {
-                if (target === this.el) {
-                    this.updateAtts();
-                }
-            }
-        }, {
-            key: "updateAtts",
-            value: function updateAtts() {
-                this.disableLayouts = this.el.getAttribute(this.config.attributes.disable);
-                if (this.disableLayouts) {
-                    this.disableLayouts = this.disableLayouts.split(" ");
-                } else {
-                    this.disableLayouts = [];
-                }
-                this.events.publish("update.ui");
-            }
-        }, {
-            key: "setDisabled",
-            value: function setDisabled(is) {
-                var disable = false;
-                var i, len, layout;
-                for (i = 0, len = this.disableLayouts.length; i < len; i++) {
-                    layout = this.disableLayouts[i];
-                    if (is[layout]()) {
-                        disable = true;
-                        this.disabled = true;
-                        break;
-                    }
-                }
-                if (!disable) {
-                    this.disabled = false;
-                }
-            }
-        }, {
-            key: "isDisabled",
-            value: function isDisabled() {
-                return this.disabled;
-            }
-        }, {
-            key: "show",
-            value: function show(el) {
-                if (!el.classList.contains(this.config.activeClass)) {
-                    el.classList.add(this.config.activeClass);
-                }
-            }
-        }, {
-            key: "hide",
-            value: function hide(el) {
-                if (el.classList.contains(this.config.activeClass)) {
-                    el.classList.remove(this.config.activeClass);
-                }
-            }
-        } ]);
-        return TargetUI;
     }();
 })(window.target = window.target || {});
 
