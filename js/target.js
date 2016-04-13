@@ -63,6 +63,7 @@ function _classCallCheck(instance, Constructor) {
             Increment: "data-target-increment",
             Decrement: "data-target-decrement",
             Scrollbox: "data-target-scrollbox",
+            Grid: "data-target-grid",
             disable: "data-target-disable",
             max: "data-target-max",
             min: "data-target-min"
@@ -155,6 +156,121 @@ function _classCallCheck(instance, Constructor) {
             }
         }
     };
+})(window.target = window.target || {});
+
+(function(target, undefined) {
+    "use strict";
+    target.UI = function() {
+        function TargetUI(el, _id, target, name) {
+            _classCallCheck(this, TargetUI);
+            this._id = _id;
+            this.config = target.config;
+            this.events = target.events;
+            this.utils = target.utils;
+            this.el = el;
+            this.disabled = false;
+            this.componentName = name;
+            this.el.setAttribute("data-target-" + name + "-id", this._id);
+            this.eventHandlers = {};
+            this.addEventHandler("resize.window", this.setDisabled);
+            this.addEventHandler("attributes.mutation", this.handleAttMutation);
+            this.domEventHandlers = {};
+            this.updateAtts();
+        }
+        _createClass(TargetUI, [ {
+            key: "addEventHandler",
+            value: function addEventHandler(eventName, cb) {
+                this.eventHandlers[eventName] = this.events.subscribe(eventName, cb, {}, this);
+            }
+        }, {
+            key: "addDomEventHandler",
+            value: function addDomEventHandler(eventName, cb, el) {
+                var _this = this;
+                var attachedCb = function attachedCb(e) {
+                    cb.apply(_this, [ e ]);
+                };
+                if (!el) {
+                    el = this.el;
+                }
+                this.domEventHandlers[eventName] = {
+                    cb: attachedCb,
+                    el: el
+                };
+                el.addEventListener(eventName, attachedCb, false);
+            }
+        }, {
+            key: "destroy",
+            value: function destroy() {
+                var handler;
+                var domHandler;
+                for (handler in this.eventHandlers) {
+                    if (this.eventHandlers.hasOwnProperty()) {
+                        this.events.remove(handler, this.eventHandlers[handler].id);
+                    }
+                }
+                for (domHandler in this.domEventHandlers) {
+                    if (this.domEventHandlers.hasOwnProperty()) {
+                        this.domEventHandlers[domHandler].el.removeEventListener(domHandler, this.domEventHandlers[domHandler]);
+                    }
+                }
+            }
+        }, {
+            key: "handleAttMutation",
+            value: function handleAttMutation(target) {
+                if (target === this.el) {
+                    this.updateAtts();
+                }
+            }
+        }, {
+            key: "updateAtts",
+            value: function updateAtts() {
+                this.disableLayouts = this.el.getAttribute(this.config.attributes.disable);
+                if (this.disableLayouts) {
+                    this.disableLayouts = this.disableLayouts.split(" ");
+                } else {
+                    this.disableLayouts = [];
+                }
+                this.events.publish("update.ui");
+            }
+        }, {
+            key: "setDisabled",
+            value: function setDisabled(is) {
+                var disable = false;
+                var i, len, layout;
+                for (i = 0, len = this.disableLayouts.length; i < len; i++) {
+                    layout = this.disableLayouts[i];
+                    if (is[layout]()) {
+                        disable = true;
+                        this.disabled = true;
+                        break;
+                    }
+                }
+                if (!disable) {
+                    this.disabled = false;
+                }
+            }
+        }, {
+            key: "isDisabled",
+            value: function isDisabled() {
+                return this.disabled;
+            }
+        }, {
+            key: "show",
+            value: function show(el) {
+                if (!el.classList.contains(this.config.activeClass)) {
+                    el.classList.add(this.config.activeClass);
+                }
+            }
+        }, {
+            key: "hide",
+            value: function hide(el) {
+                if (el.classList.contains(this.config.activeClass)) {
+                    el.classList.remove(this.config.activeClass);
+                }
+            }
+        } ]);
+        return TargetUI;
+    }();
 })(window.target = window.target || {});
 
 (function(target, undefined) {
@@ -322,121 +438,6 @@ function _classCallCheck(instance, Constructor) {
             }
         } ]);
         return TargetComponentFactory;
-    }();
-})(window.target = window.target || {});
-
-(function(target, undefined) {
-    "use strict";
-    target.UI = function() {
-        function TargetUI(el, _id, target, name) {
-            _classCallCheck(this, TargetUI);
-            this._id = _id;
-            this.config = target.config;
-            this.events = target.events;
-            this.utils = target.utils;
-            this.el = el;
-            this.disabled = false;
-            this.componentName = name;
-            this.el.setAttribute("data-target-" + name + "-id", this._id);
-            this.eventHandlers = {};
-            this.addEventHandler("resize.window", this.setDisabled);
-            this.addEventHandler("attributes.mutation", this.handleAttMutation);
-            this.domEventHandlers = {};
-            this.updateAtts();
-        }
-        _createClass(TargetUI, [ {
-            key: "addEventHandler",
-            value: function addEventHandler(eventName, cb) {
-                this.eventHandlers[eventName] = this.events.subscribe(eventName, cb, {}, this);
-            }
-        }, {
-            key: "addDomEventHandler",
-            value: function addDomEventHandler(eventName, cb, el) {
-                var _this = this;
-                var attachedCb = function attachedCb(e) {
-                    cb.apply(_this, [ e ]);
-                };
-                if (!el) {
-                    el = this.el;
-                }
-                this.domEventHandlers[eventName] = {
-                    cb: attachedCb,
-                    el: el
-                };
-                el.addEventListener(eventName, attachedCb, false);
-            }
-        }, {
-            key: "destroy",
-            value: function destroy() {
-                var handler;
-                var domHandler;
-                for (handler in this.eventHandlers) {
-                    if (this.eventHandlers.hasOwnProperty()) {
-                        this.events.remove(handler, this.eventHandlers[handler].id);
-                    }
-                }
-                for (domHandler in this.domEventHandlers) {
-                    if (this.domEventHandlers.hasOwnProperty()) {
-                        this.domEventHandlers[domHandler].el.removeEventListener(domHandler, this.domEventHandlers[domHandler]);
-                    }
-                }
-            }
-        }, {
-            key: "handleAttMutation",
-            value: function handleAttMutation(target) {
-                if (target === this.el) {
-                    this.updateAtts();
-                }
-            }
-        }, {
-            key: "updateAtts",
-            value: function updateAtts() {
-                this.disableLayouts = this.el.getAttribute(this.config.attributes.disable);
-                if (this.disableLayouts) {
-                    this.disableLayouts = this.disableLayouts.split(" ");
-                } else {
-                    this.disableLayouts = [];
-                }
-                this.events.publish("update.ui");
-            }
-        }, {
-            key: "setDisabled",
-            value: function setDisabled(is) {
-                var disable = false;
-                var i, len, layout;
-                for (i = 0, len = this.disableLayouts.length; i < len; i++) {
-                    layout = this.disableLayouts[i];
-                    if (is[layout]()) {
-                        disable = true;
-                        this.disabled = true;
-                        break;
-                    }
-                }
-                if (!disable) {
-                    this.disabled = false;
-                }
-            }
-        }, {
-            key: "isDisabled",
-            value: function isDisabled() {
-                return this.disabled;
-            }
-        }, {
-            key: "show",
-            value: function show(el) {
-                if (!el.classList.contains(this.config.activeClass)) {
-                    el.classList.add(this.config.activeClass);
-                }
-            }
-        }, {
-            key: "hide",
-            value: function hide(el) {
-                if (el.classList.contains(this.config.activeClass)) {
-                    el.classList.remove(this.config.activeClass);
-                }
-            }
-        } ]);
-        return TargetUI;
     }();
 })(window.target = window.target || {});
 
@@ -719,6 +720,98 @@ function _classCallCheck(instance, Constructor) {
             }
         } ]);
         return TargetScrollbox;
+    }(target.UI);
+})(window.target = window.target || {});
+
+(function(target, undefined) {
+    "use strict";
+    target.Grid = function(_target$UI8) {
+        _inherits(TargetGrid, _target$UI8);
+        function TargetGrid(el, _id, target, name) {
+            _classCallCheck(this, TargetGrid);
+            var _this9 = _possibleConstructorReturn(this, Object.getPrototypeOf(TargetGrid).call(this, el, _id, target, name));
+            var breakpoints;
+            _this9.TEXT_NODE = 3;
+            _this9.setChildren();
+            breakpoints = _this9.el.getAttribute(_this9.config.attributes.Grid).split(" ");
+            _this9.breakpoints = {
+                mobile: parseInt(breakpoints[0], 10),
+                tablet: parseInt(breakpoints[1], 10),
+                desktop: parseInt(breakpoints[2], 10)
+            };
+            _this9.addEventHandler("resize.window", _this9.calculateGrid);
+            _this9.events.publish("update.ui");
+            return _this9;
+        }
+        _createClass(TargetGrid, [ {
+            key: "setChildren",
+            value: function setChildren() {
+                var _this = this;
+                var childNodes;
+                this.children = [];
+                if (!this.el.hasChildNodes()) {
+                    return [];
+                }
+                childNodes = this.el.childNodes;
+                this.utils.forEach.call(childNodes, function(child) {
+                    if (child.nodeType !== _this.TEXT_NODE) {
+                        _this.children.push(child);
+                    }
+                });
+            }
+        }, {
+            key: "setPerRow",
+            value: function setPerRow(is) {
+                var _this = this;
+                this.perRow = this.breakpoints.mobile;
+                Object.keys(this.breakpoints).forEach(function(layout) {
+                    if (_this.breakpoints[layout] && is[layout]()) {
+                        _this.perRow = _this.breakpoints[layout];
+                    }
+                });
+                return _this.perRow;
+            }
+        }, {
+            key: "buildRows",
+            value: function buildRows() {
+                var _this = this;
+                var lastChild = this.children[this.children.length - 1];
+                var row = [];
+                var i = 0;
+                this.rows = [];
+                this.utils.forEach.call(this.children, function(child) {
+                    if (i >= _this.perRow) {
+                        _this.rows.push(row);
+                        i = 0;
+                        row = [];
+                    }
+                    row.push(child);
+                    i++;
+                    if (child === lastChild) {
+                        _this.rows.push(row);
+                    }
+                });
+                return this.rows;
+            }
+        }, {
+            key: "calculateGrid",
+            value: function calculateGrid(is) {
+                var _this = this;
+                this.setPerRow(is);
+                this.buildRows();
+                this.rows.forEach(function(row) {
+                    var maxHeight = 0;
+                    row.forEach(function(item) {
+                        item.style.height = "";
+                        maxHeight = Math.max(item.offsetHeight, maxHeight);
+                    });
+                    row.forEach(function(item) {
+                        item.style.height = maxHeight + "px";
+                    });
+                });
+            }
+        } ]);
+        return TargetGrid;
     }(target.UI);
 })(window.target = window.target || {});
 

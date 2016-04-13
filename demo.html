@@ -8,101 +8,8 @@
     <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
     <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
     <link rel="stylesheet" type="text/css" href="stylesheets/github-light.css" media="screen">
-
-    <style>
-      /* utils */
-      .rel {
-        position: relative;
-      }
-
-      .oh {
-        overflow: hidden;
-      }
-  
-      .fill {
-        height: 100%;
-        left: 0;
-        position: absolute;
-        top: 0;
-        width: 100%;
-      }
-
-      .half {
-        position: relative;
-        width: 50%;
-      }
-
-      .third {
-        position: relative;
-        width: 33.333%;
-      }
-
-      .two-thirds {
-        position: relative;
-        width: 66.667%;
-      }
-
-      .right {
-        float: right;
-      }
-
-      .left {
-        float: left;
-      }
-
-      .pad {
-        padding: 30px;
-      }
-
-      .fader {
-        opacity: 0;
-        transition: opacity .3s, visibility .3s;
-        visibility: hidden;
-      }
-
-      .fader.target-active {
-        opacity: 1;
-        visibility: visible;
-      }
-
-      /* modals */
-      .modal-bg {
-        background: rgba(0, 0, 0, .25);
-      }
-
-      .modal {
-        background: #fff;
-        border: 1px solid rgba(0, 0, 0, .25);
-        border-radius: 4px;
-        height: 100%;
-        left: 20%;
-        position: absolute;
-        top: 200px;
-        width: 60%;
-      }
-
-      /* minicart */
-      .minicart-toggle {
-        position: absolute;
-        right: 30px;
-        top: 30px;
-      }
-
-      .minicart {
-        background: #43b2a1;
-        border: 1px solid #fff;
-        border-radius: 3px;
-        color: #fff;
-        position: absolute;
-        right: 30px;
-        width: 400px;
-        top: 90px;
-      }
-
-      .qty-input {
-        width: 55px;
-      }
-    </style>
+    <link rel="stylesheet" type="text/css" href="stylesheets/foundation.min.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/demo.css" media="screen">
   </head>
   <body>
     <section class="page-header">
@@ -147,7 +54,88 @@
 
     <section id="main" class="main-content">
 
-      <p><a href="#" data-target-show="#modal-bg,#modal" class="btn btn--dark">See the Popup!</a></p>      
+      <div data-target-grid="2 3 4" class="row products">
+        
+        <div class="column small-6 medium-4 large-3">
+          <div class="product-thumbnail">
+            <div class="product-image"></div>
+            <div class="product-title">Product title</div>
+          </div>
+        </div>
+        <div class="column small-6 medium-4 large-3">
+          <div class="product-thumbnail">
+            <div class="product-image"></div>
+            <div class="product-title">Extra super freaky long product title</div>
+          </div>
+        </div>
+        <div class="column small-6 medium-4 large-3">
+          <div class="product-thumbnail">
+            <div class="product-image"></div>
+            <div class="product-title">Product title</div>
+          </div>
+        </div>
+        <div class="column small-6 medium-4 large-3">
+          <div class="product-thumbnail">
+            <div class="product-image"></div>
+            <div class="product-title">Product title</div>
+          </div>
+        </div>
+        <div class="column small-6 medium-4 large-3">
+          <div class="product-thumbnail">
+            <div class="product-image"></div>
+            <div class="product-title">Extra super freaky long product title</div>
+          </div>
+        </div>
+        <div class="column small-6 medium-4 large-3">
+          <div class="product-thumbnail">
+            <div class="product-image"></div>
+            <div class="product-title">Product title</div>
+          </div>
+        </div>
+        <div class="column small-6 medium-4 large-3">
+          <div class="product-thumbnail">
+            <div class="product-image"></div>
+            <div class="product-title">Product title</div>
+          </div>
+        </div>
+        <div class="column small-6 medium-4 large-3">
+          <div class="product-thumbnail">
+            <div class="product-image"></div>
+            <div class="product-title">Product title</div>
+          </div>
+        </div>
+        <div class="column small-6 medium-4 large-3">
+          <div class="product-thumbnail">
+            <div class="product-image"></div>
+            <div class="product-title">Extra super freaky long product title</div>
+          </div>
+        </div>
+        <div class="column small-6 medium-4 large-3">
+          <div class="product-thumbnail">
+            <div class="product-image"></div>
+            <div class="product-title">Product title</div>
+          </div>
+        </div>
+        <div class="column small-6 medium-4 large-3">
+          <div class="product-thumbnail">
+            <div class="product-image"></div>
+            <div class="product-title">Product title</div>
+          </div>
+        </div>
+        <div class="column small-6 medium-4 large-3">
+          <div class="product-thumbnail">
+            <div class="product-image"></div>
+            <div class="product-title">Product title</div>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="row">
+        <div class="column small-12">
+          <p><a href="#" data-target-show="#modal-bg,#modal" class="btn btn--dark">See the Popup!</a></p>
+        </div>
+      </div>
 
     </section>
 
@@ -192,7 +180,12 @@
     <script src="js/MutationObserver.js"></script>
     <script src="js/target.js"></script>
     <script>
-      target.init();
+      target.init({
+        breakpoints: {
+          tablet: 640,
+          desktop: 1024
+        }
+      });
     </script>
   </body>
 </html>
