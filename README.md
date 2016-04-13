@@ -105,7 +105,7 @@ You can customize Target.js so that it doesn't conflict with any of your existin
 
 ```html
 <script>
-	target.js({
+	target.init({
 		activeClass: 'target-active',
 		attributes: {
 			Toggle: 'data-target-toggle',
