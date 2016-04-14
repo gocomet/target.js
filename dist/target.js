@@ -875,7 +875,7 @@ function _classCallCheck(instance, Constructor) {
         }, {
             key: "load",
             value: function load(img) {
-                this.addDomEventHandler("load", onLoad, this.el);
+                this.addDomEventHandler("load", this.onLoad, this.el);
                 this.el.src = img;
             }
         }, {
