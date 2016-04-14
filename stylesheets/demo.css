@@ -108,6 +108,10 @@
 	position: relative;
 }
 
+.product-thumbnail > img {
+	width: 100%;
+}
+
 .product-image {
 	background: #999;
 	margin-bottom: 10px;

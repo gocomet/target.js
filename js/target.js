@@ -64,6 +64,7 @@ function _classCallCheck(instance, Constructor) {
             Decrement: "data-target-decrement",
             Scrollbox: "data-target-scrollbox",
             Grid: "data-target-grid",
+            Src: "data-target-src",
             disable: "data-target-disable",
             max: "data-target-max",
             min: "data-target-min"
@@ -267,6 +268,16 @@ function _classCallCheck(instance, Constructor) {
                 if (el.classList.contains(this.config.activeClass)) {
                     el.classList.remove(this.config.activeClass);
                 }
+            }
+        } ], [ {
+            key: "Show",
+            value: function Show(el) {
+                this.show(el);
+            }
+        }, {
+            key: "Hide",
+            value: function Hide(el) {
+                this.hide(el);
             }
         } ]);
         return TargetUI;
@@ -522,6 +533,11 @@ function _classCallCheck(instance, Constructor) {
                 } else {
                     this.hide(el);
                 }
+            }
+        }, {
+            key: "Toggle",
+            value: function Toggle(el) {
+                this.toggle(el);
             }
         } ]);
         return TargetToggle;
@@ -813,6 +829,84 @@ function _classCallCheck(instance, Constructor) {
         } ]);
         return TargetGrid;
     }(target.UI);
+})(window.target = window.target || {});
+
+(function(target, undefined) {
+    "use strict";
+    target.Src = function(_target$UI9) {
+        _inherits(TargetSrc, _target$UI9);
+        function TargetSrc(el, _id, target, name) {
+            _classCallCheck(this, TargetSrc);
+            var _this10 = _possibleConstructorReturn(this, Object.getPrototypeOf(TargetSrc).call(this, el, _id, target, name));
+            _this10.srcs = {
+                mobile: "",
+                tablet: "",
+                desktop: ""
+            };
+            _this10.getSrcs();
+            _this10.addEventHandler("resize.window", _this10.onResize);
+            _this10.events.publish("update.ui");
+            console.log(_this10);
+            return _this10;
+        }
+        _createClass(TargetSrc, [ {
+            key: "getSrcs",
+            value: function getSrcs() {
+                var _this = this;
+                var srcAtt = this.el.getAttribute(this.config.attributes.Src);
+                var srcs = srcAtt.split(" ");
+                var latestSrc = null;
+                Object.keys(this.srcs).forEach(function(layout, i) {
+                    var src = srcs[i];
+                    if (src) {
+                        if (src.indexOf("/") !== -1) {
+                            latestSrc = src;
+                        }
+                    }
+                    _this.srcs[layout] = latestSrc;
+                });
+            }
+        }, {
+            key: "onResize",
+            value: function onResize(is) {
+                var _this = this;
+                Object.keys(this.srcs).forEach(function(layout) {
+                    if (is[layout]()) {
+                        _this.el.src = _this.srcs[layout];
+                    }
+                });
+            }
+        } ]);
+        return TargetSrc;
+    }(target.UI);
+})(window.target = window.target || {});
+
+(function(target, undefined) {
+    "use strict";
+    target.initAPI = function() {
+        var _this = this;
+        this._getEl = function(el) {
+            if (typeof el === "string") {
+                el = _this.utils.qsa(el);
+            }
+            return el;
+        };
+        this.get = function(el) {
+            el = _this._getEl(el);
+        };
+        this.show = function(el) {
+            el = _this._getEl(el);
+            _this.UI.Show.apply(_this, el);
+        };
+        this.hide = function(el) {
+            el = _this._getEl(el);
+            _this.UI.Hide.apply(_this, el);
+        };
+        this.toggle = function(el) {
+            el = _this._getEl(el);
+            _this.Toggle.Toggle.apply(_this, el);
+        };
+    };
 })(window.target = window.target || {});
 
 (function(target, undefined) {
