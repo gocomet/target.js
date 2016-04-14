@@ -24,6 +24,7 @@
 			Decrement: 'data-target-decrement',
 			Scrollbox: 'data-target-scrollbox',
 			Grid: 'data-target-grid',
+			Src: 'data-target-src',
 			disable: 'data-target-disable',
 			max: 'data-target-max',
 			min: 'data-target-min'

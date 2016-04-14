@@ -29,6 +29,10 @@
 			_this.componentFactory.init();
 		
 		}, false);
+
+		// TODO
+		// init programmatic methods
+		//this.initAPI();
 	
 	};
 

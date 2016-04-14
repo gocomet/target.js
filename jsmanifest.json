@@ -13,5 +13,7 @@
 	"app/components/decrement",
 	"app/components/scrollbox",
 	"app/components/grid",
+	"app/components/src",
+	"app/initapi",
 	"app/init"
 ]

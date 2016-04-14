@@ -68,6 +68,16 @@
 	
 		}
 
+		/**
+		 * static methods
+		 * for use in programmatic API
+		 */
+		Toggle(el) {
+
+			this.toggle(el);
+
+		}
+
 	};
 
 })(window.target = window.target || {});

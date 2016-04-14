@@ -36,7 +36,6 @@
 			this.addEventHandler('resize.window', this.setDisabled);
 			this.addEventHandler('attributes.mutation', this.handleAttMutation);
 
-
 			// DOM event handlers
 			this.domEventHandlers = {};
 
@@ -233,6 +232,21 @@
 		
 			}
 		
+		}
+
+		/**
+		 * static methods
+		 */
+		static Show(el) {
+
+			this.show(el);
+
+		}
+
+		static Hide(el) {
+
+			this.hide(el);
+
 		}
 
 	};

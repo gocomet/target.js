@@ -3,7 +3,7 @@
 
 ## Bugfixes
 
-- none currently
+- Src component being initialized twice
 
 ## allow library consumers to create their own UI components
 
