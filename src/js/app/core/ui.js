@@ -114,7 +114,7 @@
 
 					this.domEventHandlers[domHandler].el.removeEventListener(
 						domHandler,
-						this.domEventHandlers[domHandler]
+						this.domEventHandlers[domHandler].cb
 					);
 
 				}

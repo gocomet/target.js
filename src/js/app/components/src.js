@@ -48,7 +48,7 @@
 			this.events.publish('update.ui');
 
 			// TODO: bugfix -- being initialized twice
-			console.log(this);
+			//console.log(this);
 		
 		}
 
@@ -88,6 +88,33 @@
 
 		}
 
+		onLoad() {
+
+			var eventName = 'load';
+
+			this.events.publish('update.ui');
+
+			this.domEventHandlers[eventName].el.removeEventListener(
+			
+				eventName, 
+				this.domEventHandlers[eventName].cb
+			
+			);
+
+		}
+
+		/**
+		 * load
+		 * 
+		 */
+		load(img) {
+
+			this.addDomEventHandler('load', onLoad, this.el);
+
+			this.el.src = img;
+
+		}
+
 		/**
 		 * when the window is resized,
 		 * check which layout we're currently at
@@ -102,7 +129,7 @@
 
 				if (is[layout]()) {
 
-					_this.el.src = _this.srcs[layout];
+					_this.load(_this.srcs[layout]);
 
 				}
 

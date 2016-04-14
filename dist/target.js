@@ -211,7 +211,7 @@ function _classCallCheck(instance, Constructor) {
                 }
                 for (domHandler in this.domEventHandlers) {
                     if (this.domEventHandlers.hasOwnProperty()) {
-                        this.domEventHandlers[domHandler].el.removeEventListener(domHandler, this.domEventHandlers[domHandler]);
+                        this.domEventHandlers[domHandler].el.removeEventListener(domHandler, this.domEventHandlers[domHandler].cb);
                     }
                 }
             }
@@ -846,7 +846,6 @@ function _classCallCheck(instance, Constructor) {
             _this10.getSrcs();
             _this10.addEventHandler("resize.window", _this10.onResize);
             _this10.events.publish("update.ui");
-            console.log(_this10);
             return _this10;
         }
         _createClass(TargetSrc, [ {
@@ -867,12 +866,25 @@ function _classCallCheck(instance, Constructor) {
                 });
             }
         }, {
+            key: "onLoad",
+            value: function onLoad() {
+                var eventName = "load";
+                this.events.publish("update.ui");
+                this.domEventHandlers[eventName].el.removeEventListener(eventName, this.domEventHandlers[eventName].cb);
+            }
+        }, {
+            key: "load",
+            value: function load(img) {
+                this.addDomEventHandler("load", onLoad, this.el);
+                this.el.src = img;
+            }
+        }, {
             key: "onResize",
             value: function onResize(is) {
                 var _this = this;
                 Object.keys(this.srcs).forEach(function(layout) {
                     if (is[layout]()) {
-                        _this.el.src = _this.srcs[layout];
+                        _this.load(_this.srcs[layout]);
                     }
                 });
             }
