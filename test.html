@@ -61,10 +61,7 @@
       display: block;
     }
   </style>
-  <script src="dist/MutationObserver.js"></script>
-  <script src="dist/mediator.min.js"></script>
-  <script src="dist/target.js"></script>
-  <script>target.init();</script>
+  <script src="https://code.jquery.com/jquery-2.2.3.js" integrity="sha256-laXWtGydpwqJ8JA+X9x2miwmaiKhn8tVmOVEigRNtP4=" crossorigin="anonymous"></script>
 </head>
 <body>
 
@@ -167,5 +164,14 @@
 
     <img src="adsf.gif" data-target-src="//placehold.it/300x300 //placehold.it/600x600 //placehold.it/900x900">
   </div>
+
+  <script src="dist/MutationObserver.js"></script>
+  <script src="dist/mediator.min.js"></script>
+  <script src="dist/target.js"></script>
+  <script>
+    jQuery(function($) {
+      target.init();
+    });
+  </script>
 </body>
 </html>

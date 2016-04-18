@@ -8,6 +8,10 @@
  *
  * `<a data-target-toggle="#my-target">Click to toggle #my-target</a>`
  *
+ * TODO: add support for checkbox inputs
+ * if element.type === checkbox
+ *  bind to onchange event instead of onclick
+ *
  */
 ;((target, undefined) => {
 	

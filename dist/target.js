@@ -930,8 +930,6 @@ function _classCallCheck(instance, Constructor) {
         this.window = new this.Window(this);
         this.domObserver = new this.DomObserver(this);
         this.componentFactory = new this.ComponentFactory(this);
-        document.addEventListener("DOMContentLoaded", function() {
-            _this.componentFactory.init();
-        }, false);
+        _this.componentFactory.init();
     };
 })(window.target = window.target || {});})();

@@ -24,11 +24,7 @@
 
 		// init components
 		this.componentFactory = new this.ComponentFactory(this);
-		document.addEventListener('DOMContentLoaded', function() {
-
-			_this.componentFactory.init();
-		
-		}, false);
+		_this.componentFactory.init();
 
 		// TODO
 		// init programmatic methods
