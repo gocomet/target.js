@@ -57,6 +57,7 @@
 		 * if the target is shown, hide it
 		 * if the target is hidden, show it
 		 * all using css
+		 * also toggle state of toggle button itself
 		 */
 		toggle(el) {
 		
