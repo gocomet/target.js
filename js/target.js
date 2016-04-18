@@ -846,6 +846,11 @@ function _classCallCheck(instance, Constructor) {
                 desktop: ""
             };
             _this10.getSrcs();
+            _this10.loaded = {
+                mobile: false,
+                tablet: false,
+                desktop: false
+            };
             _this10.addEventHandler("resize.window", _this10.onResize);
             _this10.events.publish("update.ui");
             return _this10;
@@ -878,15 +883,19 @@ function _classCallCheck(instance, Constructor) {
             key: "load",
             value: function load(img) {
                 this.addDomEventHandler("load", this.onLoad, this.el);
-                this.el.src = img;
             }
         }, {
             key: "onResize",
             value: function onResize(is) {
                 var _this = this;
                 Object.keys(this.srcs).forEach(function(layout) {
+                    var img = _this.srcs[layout];
                     if (is[layout]()) {
-                        _this.load(_this.srcs[layout]);
+                        if (!_this.loaded[layout]) {
+                            _this.loaded[layout] = img;
+                            _this.load(img);
+                        }
+                        _this.el.src = img;
                     }
                 });
             }
