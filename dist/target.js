@@ -530,8 +530,10 @@ function _classCallCheck(instance, Constructor) {
             value: function toggle(el) {
                 if (!el.classList.contains(this.config.activeClass)) {
                     this.show(el);
+                    this.show(this.el);
                 } else {
                     this.hide(el);
+                    this.hide(this.el);
                 }
             }
         }, {

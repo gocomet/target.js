@@ -63,10 +63,14 @@
 			if (!el.classList.contains(this.config.activeClass)) {
 				
 				this.show(el);
+
+				this.show(this.el);
 		
 			} else {
 			
 				this.hide(el);
+
+				this.hide(this.el);
 		
 			}
 	
