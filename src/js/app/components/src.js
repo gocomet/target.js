@@ -40,15 +40,18 @@
 				desktop: ''
 			};
 
-			this.getSrcs();	
+			this.getSrcs();
+
+			this.loaded = {
+				mobile: false,
+				tablet: false,
+				desktop: false
+			};
 		
 			this.addEventHandler('resize.window', this.onResize);
 
 			// request an update from target.Window
 			this.events.publish('update.ui');
-
-			// TODO: bugfix -- being initialized twice
-			//console.log(this);
 		
 		}
 
@@ -111,8 +114,6 @@
 
 			this.addDomEventHandler('load', this.onLoad, this.el);
 
-			this.el.src = img;
-
 		}
 
 		/**
@@ -126,10 +127,19 @@
 
 			Object.keys(this.srcs).forEach(function(layout) {
 
+				var img = _this.srcs[layout];
 
 				if (is[layout]()) {
+					
+					if (!_this.loaded[layout]) {
+						
+						_this.loaded[layout] = img;
 
-					_this.load(_this.srcs[layout]);
+						_this.load(img);
+
+					}
+
+					_this.el.src = img;
 
 				}
 
