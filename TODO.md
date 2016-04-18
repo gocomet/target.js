@@ -3,7 +3,8 @@
 
 ## Bugfixes
 
-- Src component being initialized twice
+- none currently
+- will likely run into issues having to sync the css classes of, say, a toggler, to its target
 
 ## allow library consumers to create their own UI components
 
