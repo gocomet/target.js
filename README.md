@@ -94,8 +94,6 @@ For example:
 </div>
 ```
 
->gFun fact: Target.js declarations don't care what type of element they're applied to.
-
 ## How does Target.js show/hide elements?
 
 Target.js is style-agnostic -- it simply adds or removes a class on the element. You can apply your beautiful styles to that class. You can also configure that class to be whatever you want.
@@ -132,7 +130,61 @@ You can customize Target.js so that it doesn't conflict with any of your existin
 
 ## Components
 
-Specific usage for each Target.js component
+>Fun fact: most Target.js components don't care what type of element they're applied to. However, some declarations do care
+
+Target.js components have a two-way bind, using events, with their targeted element. For example, when an element is shown by a Target.js component, that component element will also receive an active state.
+
+For example:
+
+```html
+<button data-target-toggle="#menu">
+	Menu
+</button>
+
+<div id="#menu">
+	Menu Stuff here
+</div>
+```
+
+In the above example, when the button is clicked, this will be the result:
+
+```html
+<button data-target-toggle="#menu" class="target-active">
+	Menu
+</button>
+
+<div id="#menu" class="target-active">
+	Menu Stuff here
+</div>
+```html
+
+Let's add another element that can close the menu:
+
+```html
+<button data-target-toggle="#menu" class="target-active">
+	Menu
+</button>
+
+<div id="#menu" class="target-active">
+	<button data-target-hide="#menu">x</button>
+	Menu Stuff here
+</div>
+```html
+
+When our new close button is clicked, the original toggle button will also go back to its original state
+
+```html
+<button data-target-toggle="#menu">
+	Menu
+</button>
+
+<div id="#menu">
+	<button data-target-hide="#menu">x</button>
+	Menu Stuff here
+</div>
+```html
+
+Here are specific usages for each Target.js component:
 
 ### Show
 
@@ -176,7 +228,7 @@ An element will hide itself when you click away from it
 
 ### Increment/Decrement
 
-Increments or decrements the value of an input
+Increments or decrements the value of an input. Targeted element must be an `<input>` element.
 
 ```html
 <button data-target-decrement="#qty">-</button>
@@ -250,7 +302,7 @@ An example using Foundation's grid classes:
 
 ### Src
 
-The Src component responsively loads images. It must be used on an <img> element. For example:
+The Src component responsively loads images. It must be used on an `<img>` element. For example:
 
 ```html
 <img data-target-src="/some-mobile-img.jpg /my-tablet-image.jpg /a-desktop-image.gif">
