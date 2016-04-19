@@ -502,6 +502,10 @@ function _classCallCheck(instance, Constructor) {
             value: function getEls(els) {
                 if (typeof els === "string") {
                     els = this.utils.qsa(els);
+                } else if (els.length) {
+                    els = els;
+                } else {
+                    els = [ els ];
                 }
                 return els;
             }

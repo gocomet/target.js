@@ -304,20 +304,218 @@ There are three layouts in total:
 - tablet
 - desktop
 
+## Events
+
+Target.js fires events you can hook into when its elements do things. Following the mediator.js conventions, you "subscribe" to events.
+
+### show
+
+The "show" event is fired when an element is shown or toggled on.
+
+**Example**
+
+```html
+<script>
+target.events.subscribe('show', function(el) {
+	console.log(el, ' was shown');
+});
+</script>
+```
+
+### hide
+
+The "hide" event is fired when an element is hidden or toggled off.
+
+**Example**
+
+```html
+<script>
+target.events.subscribe('hide', function(el) {
+	console.log(el, ' was hidden');
+});
+</script>
+```
+
+### min
+
+The "min" event is fired when an input has reached its minimum value
+
+**Example**
+
+```html
+<script>
+target.events.subscribe('min', function(input) {
+	console.log(input, ' is at its minimum value: ' + input.value);
+});
+</script>
+```
+
+### max
+
+The "max" event is fired when an input has reached its maximum value
+
+**Example**
+
+```html
+<script>
+target.events.subscribe('max', function(input) {
+	console.log(input, ' is at its maximum value: ' + input.value);
+});
+</script>
+```
+
+## Methods
+
+Target.js is declarative by nature, designed so you don't need to use JS at all. But, you may want to! You can use target.js's static methods to hook into Target.js programmatically.
+
+### target.show
+
+- Shows an element using Target.js' active CSS class.
+- fires a "show" event for each element shown, passing the element as the only argument
+- activates an active state on any Target.js element that references the shown element
+
+**Usage**
+
+`target.show(<element:DOMElement> or <selector:string>)`
+
+Accepts 1 argument: either a DOM Element, an array of DOM Elements, or a CSS selector
+
+**Examples**
+
+```html
+<script>
+target.show('#my-modal');
+</script>
+```
+
+or
+
+```html
+<script>
+var myModal = document.getElementById('my-modal');
+target.show(myModal);
+</script>
+```
+
+or 
+
+```html
+<script>
+var modals = document.querySelectorAll('.modals');
+target.show(modals);
+</script>
+```
+
+or
+
+```html
+<script>
+target.show('.modals');
+</script>
+```
+
+etc.
+
+### target.hide
+
+- Hides an element using Target.js' active CSS class.
+- fires a "hide" event for each element hidden, passing the element as the only argument
+- deactivates the active state on any Target.js element that references the hidden element
+
+**Usage**
+
+`target.hide(<element:DOMElement> or <selector:string>)`
+
+Accepts 1 argument: either a DOM Element, an array of DOM Elements, or a CSS selector
+
+**Examples**
+
+```html
+<script>
+target.hide('#my-modal');
+</script>
+```
+
+or
+
+```html
+<script>
+var myModal = document.getElementById('my-modal');
+target.hide(myModal);
+</script>
+```
+
+or 
+
+```html
+<script>
+var modals = document.querySelectorAll('.modals');
+target.hide(modals);
+</script>
+```
+
+or
+
+```html
+<script>
+target.hide('.modals');
+</script>
+```
+
+etc.
+
+### target.toggle
+
+- Togglea an element using Target.js' active CSS class.
+- fires either a "show" or "hide" event for each element toggled, passing the element as the only argument
+- activates an active state on any Target.js element that references the shown element
+
+**Usage**
+
+`target.hide(<element:DOMElement> or <selector:string>)`
+
+Accepts 1 argument: either a DOM Element, an array of DOM Elements, or a CSS selector
+
+**Examples**
+
+```html
+<script>
+target.toggle('#my-modal');
+</script>
+```
+
+or
+
+```html
+<script>
+var myModal = document.getElementById('my-modal');
+target.toggle(myModal);
+</script>
+```
+
+or 
+
+```html
+<script>
+var modals = document.querySelectorAll('.modals');
+target.toggle(modals);
+</script>
+```
+
+or
+
+```html
+<script>
+target.toggle('.modals');
+</script>
+```
+
+etc.
+
 ## Coming Soon
 
 Features on the way:
 
 ### Plugin API
 
-Soon, you'll be able to write plugins for Target.js, to define your own Target UI elements, and hook into Target's toolset.
-
-### Programmatic methods
-
-Target.js is declarative by design, but you should be able to use Target's methods programmatically if you need to. For example:
-
-```javascript
-target.show('#my-element');
-```
-
-These are in the works!
+Soon, you'll be able to write plugins for Target.js, to define your own Target UI elements, and hook into Target's DOM observation and responsive toolset.
