@@ -156,7 +156,7 @@ In the above example, when the button is clicked, this will be the result:
 <div id="#menu" class="target-active">
 	Menu Stuff here
 </div>
-```html
+```
 
 Let's add another element that can close the menu:
 
@@ -169,7 +169,7 @@ Let's add another element that can close the menu:
 	<button data-target-hide="#menu">x</button>
 	Menu Stuff here
 </div>
-```html
+```
 
 When our new close button is clicked, the original toggle button will also go back to its original state
 
@@ -182,7 +182,7 @@ When our new close button is clicked, the original toggle button will also go ba
 	<button data-target-hide="#menu">x</button>
 	Menu Stuff here
 </div>
-```html
+```
 
 Here are specific usages for each Target.js component:
 
