@@ -130,7 +130,7 @@ You can customize Target.js so that it doesn't conflict with any of your existin
 
 ## Components
 
->Fun fact: most Target.js components don't care what type of element they're applied to. However, some declarations do care
+>Fun fact: most Target.js components don't care what type of element they're applied to. However, some declarations do care and are specified below.
 
 Target.js components have a two-way bind, using events, with their targeted element. For example, when an element is shown by a Target.js component, that component element will also receive an active state.
 
