@@ -55,6 +55,28 @@
 		forEach: window.Array.prototype.forEach,
 
 		/**
+		 * convenience method for finding an element in a node list
+		 */
+		contains: function(list, el) {
+
+			var i = window.Array.prototype.indexOf.apply(list, [el]);
+			var doesContain;
+
+			if (i === -1) {
+
+				doesContain = false;
+
+			} else {
+
+				doesContain = true;
+
+			}
+
+			return doesContain;
+
+		},
+
+		/**
 		 * debounce function
 		 * http://davidwalsh.name/javascript-debounce-function
 		 */ 

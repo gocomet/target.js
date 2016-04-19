@@ -47,9 +47,9 @@
 			
 			};
 
-			this.addEventHandler('resize.window', this.calculateGrid);
+			this.addEventHandler('resize', this.calculateGrid);
 
-			this.events.publish('update.ui');
+			this.events.publish('update');
 
 		}
 

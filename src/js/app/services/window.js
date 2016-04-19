@@ -63,7 +63,7 @@
 			// listen for when UI elements initialize or update
 			// they will request layout data
 			// pass to the via resize event
-			this.events.subscribe('update.ui', () => {
+			this.events.subscribe('update', () => {
 
 				_this.onResize();
 		
@@ -100,7 +100,7 @@
 			this.w = document.documentElement.clientWidth;
 			this.h = document.documentElement.clientHeight;
 		
-			this.events.publish('resize.window', this.is);
+			this.events.publish('resize', this.is);
 		
 		}
 	

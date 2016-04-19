@@ -182,6 +182,12 @@
   <script>
     jQuery(function($) {
       target.init();
+
+      target.events.subscribe('min', function(el) {
+
+        window.console && console.log('min on', el);
+
+      });
     });
   </script>
 </body>

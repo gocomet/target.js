@@ -48,10 +48,10 @@
 				desktop: false
 			};
 		
-			this.addEventHandler('resize.window', this.onResize);
+			this.addEventHandler('resize', this.onResize);
 
 			// request an update from target.Window
-			this.events.publish('update.ui');
+			this.events.publish('update');
 		
 		}
 
@@ -91,24 +91,21 @@
 
 		}
 
+		/**
+		 * once image is loaded,
+		 * request a layout update
+		 * and remove event handler
+		 */
 		onLoad() {
 
-			var eventName = 'load';
+			this.events.publish('update');
 
-			this.events.publish('update.ui');
-
-			this.domEventHandlers[eventName].el.removeEventListener(
-			
-				eventName, 
-				this.domEventHandlers[eventName].cb
-			
-			);
+			this.removeDomEventHandler('load');
 
 		}
 
 		/**
-		 * load
-		 * 
+		 * add event handler to load image
 		 */
 		load(img) {
 

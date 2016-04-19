@@ -5,6 +5,7 @@
 	"app/services/window",
 	"app/services/domobserver",
 	"app/services/componentfactory",
+	"app/services/api",
 	"app/components/show",
 	"app/components/hide",
 	"app/components/toggle",
@@ -14,6 +15,5 @@
 	"app/components/scrollbox",
 	"app/components/grid",
 	"app/components/src",
-	"app/initapi",
 	"app/init"
 ]

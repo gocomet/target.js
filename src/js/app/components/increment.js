@@ -66,6 +66,12 @@
 			
 			if (this.max !== null) {
 				
+				if (this.max >= val) {
+
+					this.events.publish('max', target);
+
+				}
+
 				val = Math.min(val, this.max);
 			
 			}

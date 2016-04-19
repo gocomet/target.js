@@ -102,6 +102,16 @@ function _classCallCheck(instance, Constructor) {
             }
         },
         forEach: window.Array.prototype.forEach,
+        contains: function contains(list, el) {
+            var i = window.Array.prototype.indexOf.apply(list, [ el ]);
+            var doesContain;
+            if (i === -1) {
+                doesContain = false;
+            } else {
+                doesContain = true;
+            }
+            return doesContain;
+        },
         debounce: function debounce(func, wait, immediate) {
             var timeout;
             return function() {
@@ -173,8 +183,10 @@ function _classCallCheck(instance, Constructor) {
             this.componentName = name;
             this.el.setAttribute("data-target-" + name + "-id", this._id);
             this.eventHandlers = {};
-            this.addEventHandler("resize.window", this.setDisabled);
+            this.addEventHandler("resize", this.setDisabled);
             this.addEventHandler("attributes.mutation", this.handleAttMutation);
+            this.addEventHandler("show", this.onShow);
+            this.addEventHandler("hide", this.onHide);
             this.domEventHandlers = {};
             this.updateAtts();
         }
@@ -200,18 +212,28 @@ function _classCallCheck(instance, Constructor) {
                 el.addEventListener(eventName, attachedCb, false);
             }
         }, {
+            key: "removeEventHandler",
+            value: function removeEventHandler(handler) {
+                this.events.remove(handler, this.eventHandlers[handler].id);
+            }
+        }, {
+            key: "removeDomEventHandler",
+            value: function removeDomEventHandler(domHandler) {
+                this.domEventHandlers[domHandler] = this.domEventHandlers[domHandler].el.removeEventListener(domHandler, this.domEventHandlers[domHandler].cb);
+            }
+        }, {
             key: "destroy",
             value: function destroy() {
                 var handler;
                 var domHandler;
                 for (handler in this.eventHandlers) {
                     if (this.eventHandlers.hasOwnProperty()) {
-                        this.events.remove(handler, this.eventHandlers[handler].id);
+                        this.removeEventHandler(handler);
                     }
                 }
                 for (domHandler in this.domEventHandlers) {
                     if (this.domEventHandlers.hasOwnProperty()) {
-                        this.domEventHandlers[domHandler].el.removeEventListener(domHandler, this.domEventHandlers[domHandler].cb);
+                        this.removeDomEventHandler(domHandler);
                     }
                 }
             }
@@ -231,7 +253,7 @@ function _classCallCheck(instance, Constructor) {
                 } else {
                     this.disableLayouts = [];
                 }
-                this.events.publish("update.ui");
+                this.events.publish("update");
             }
         }, {
             key: "setDisabled",
@@ -260,6 +282,7 @@ function _classCallCheck(instance, Constructor) {
             value: function show(el) {
                 if (!el.classList.contains(this.config.activeClass)) {
                     el.classList.add(this.config.activeClass);
+                    this.events.publish("show", el);
                 }
             }
         }, {
@@ -267,17 +290,22 @@ function _classCallCheck(instance, Constructor) {
             value: function hide(el) {
                 if (el.classList.contains(this.config.activeClass)) {
                     el.classList.remove(this.config.activeClass);
+                    this.events.publish("hide", el);
                 }
             }
-        } ], [ {
-            key: "Show",
-            value: function Show(el) {
-                this.show(el);
+        }, {
+            key: "onShow",
+            value: function onShow(el) {
+                if (this.targets && this.utils.contains(this.targets, el)) {
+                    this.show(this.el);
+                }
             }
         }, {
-            key: "Hide",
-            value: function Hide(el) {
-                this.hide(el);
+            key: "onHide",
+            value: function onHide(el) {
+                if (this.targets && this.utils.contains(this.targets, el)) {
+                    this.hide(this.el);
+                }
             }
         } ]);
         return TargetUI;
@@ -309,7 +337,7 @@ function _classCallCheck(instance, Constructor) {
             window.addEventListener("resize", this.utils.debounce(function(e) {
                 _this.onResize();
             }, this.config.debounceDelay), false);
-            this.events.subscribe("update.ui", function() {
+            this.events.subscribe("update", function() {
                 _this.onResize();
             });
         }
@@ -328,7 +356,7 @@ function _classCallCheck(instance, Constructor) {
             value: function onResize() {
                 this.w = document.documentElement.clientWidth;
                 this.h = document.documentElement.clientHeight;
-                this.events.publish("resize.window", this.is);
+                this.events.publish("resize", this.is);
             }
         } ]);
         return TargetWindow;
@@ -455,14 +483,81 @@ function _classCallCheck(instance, Constructor) {
 
 (function(target, undefined) {
     "use strict";
-    target.Show = function(_target$UI) {
-        _inherits(TargetShow, _target$UI);
+    target.API = function(_target$UI) {
+        _inherits(TargetAPI, _target$UI);
+        function TargetAPI(el, _id, target, name) {
+            _classCallCheck(this, TargetAPI);
+            el = document.createElement("div");
+            el.style.display = "none";
+            var _this2 = _possibleConstructorReturn(this, Object.getPrototypeOf(TargetAPI).call(this, el, _id, target, name));
+            _this2.target = target;
+            _this2.target.show = _this2.showEls.bind(_this2);
+            _this2.target.hide = _this2.hideEls.bind(_this2);
+            _this2.target.get = _this2.get.bind(_this2);
+            _this2.target.toggle = _this2.toggleEls.bind(_this2);
+            return _this2;
+        }
+        _createClass(TargetAPI, [ {
+            key: "getEls",
+            value: function getEls(els) {
+                if (typeof els === "string") {
+                    els = this.utils.qsa(els);
+                }
+                return els;
+            }
+        }, {
+            key: "get",
+            value: function get(els) {
+                els = this.getEls(els);
+                this.targets = els;
+                return this;
+            }
+        }, {
+            key: "showEls",
+            value: function showEls(els) {
+                var _this = this;
+                els = this.getEls(els);
+                this.utils.forEach.call(els, function(el) {
+                    _this.show(el);
+                });
+            }
+        }, {
+            key: "hideEls",
+            value: function hideEls(els) {
+                var _this = this;
+                els = this.getEls(els);
+                this.utils.forEach.call(els, function(el) {
+                    _this.hide(el);
+                });
+            }
+        }, {
+            key: "toggleEls",
+            value: function toggleEls(els) {
+                var _this = this;
+                els = this.getEls(els);
+                this.utils.forEach.call(els, function(el) {
+                    if (!el.classList.contains(_this.config.activeClass)) {
+                        _this.show(el);
+                    } else {
+                        _this.hide(el);
+                    }
+                });
+            }
+        } ]);
+        return TargetAPI;
+    }(target.UI);
+})(window.target = window.target || {});
+
+(function(target, undefined) {
+    "use strict";
+    target.Show = function(_target$UI2) {
+        _inherits(TargetShow, _target$UI2);
         function TargetShow(el, _id, target, name) {
             _classCallCheck(this, TargetShow);
-            var _this2 = _possibleConstructorReturn(this, Object.getPrototypeOf(TargetShow).call(this, el, _id, target, name));
-            _this2.targets = _this2.utils.qsa(_this2.el.getAttribute(_this2.utils.stripBrackets(_this2.config.attributes.Show)));
-            _this2.addDomEventHandler("click", _this2.onClick);
-            return _this2;
+            var _this3 = _possibleConstructorReturn(this, Object.getPrototypeOf(TargetShow).call(this, el, _id, target, name));
+            _this3.targets = _this3.utils.qsa(_this3.el.getAttribute(_this3.utils.stripBrackets(_this3.config.attributes.Show)));
+            _this3.addDomEventHandler("click", _this3.onClick);
+            return _this3;
         }
         _createClass(TargetShow, [ {
             key: "onClick",
@@ -481,14 +576,14 @@ function _classCallCheck(instance, Constructor) {
 
 (function(target, undefined) {
     "use strict";
-    target.Hide = function(_target$UI2) {
-        _inherits(TargetHide, _target$UI2);
+    target.Hide = function(_target$UI3) {
+        _inherits(TargetHide, _target$UI3);
         function TargetHide(el, _id, target, name) {
             _classCallCheck(this, TargetHide);
-            var _this3 = _possibleConstructorReturn(this, Object.getPrototypeOf(TargetHide).call(this, el, _id, target, name));
-            _this3.targets = _this3.utils.qsa(_this3.el.getAttribute(_this3.utils.stripBrackets(_this3.config.attributes.Hide)));
-            _this3.addDomEventHandler("click", _this3.onClick);
-            return _this3;
+            var _this4 = _possibleConstructorReturn(this, Object.getPrototypeOf(TargetHide).call(this, el, _id, target, name));
+            _this4.targets = _this4.utils.qsa(_this4.el.getAttribute(_this4.utils.stripBrackets(_this4.config.attributes.Hide)));
+            _this4.addDomEventHandler("click", _this4.onClick);
+            return _this4;
         }
         _createClass(TargetHide, [ {
             key: "onClick",
@@ -507,14 +602,14 @@ function _classCallCheck(instance, Constructor) {
 
 (function(target, undefined) {
     "use strict";
-    target.Toggle = function(_target$UI3) {
-        _inherits(TargetToggle, _target$UI3);
+    target.Toggle = function(_target$UI4) {
+        _inherits(TargetToggle, _target$UI4);
         function TargetToggle(el, _id, target, name) {
             _classCallCheck(this, TargetToggle);
-            var _this4 = _possibleConstructorReturn(this, Object.getPrototypeOf(TargetToggle).call(this, el, _id, target, name));
-            _this4.targets = _this4.utils.qsa(_this4.el.getAttribute(_this4.utils.stripBrackets(_this4.config.attributes.Toggle)));
-            _this4.addDomEventHandler("click", _this4.onClick);
-            return _this4;
+            var _this5 = _possibleConstructorReturn(this, Object.getPrototypeOf(TargetToggle).call(this, el, _id, target, name));
+            _this5.targets = _this5.utils.qsa(_this5.el.getAttribute(_this5.utils.stripBrackets(_this5.config.attributes.Toggle)));
+            _this5.addDomEventHandler("click", _this5.onClick);
+            return _this5;
         }
         _createClass(TargetToggle, [ {
             key: "onClick",
@@ -531,16 +626,9 @@ function _classCallCheck(instance, Constructor) {
             value: function toggle(el) {
                 if (!el.classList.contains(this.config.activeClass)) {
                     this.show(el);
-                    this.show(this.el);
                 } else {
                     this.hide(el);
-                    this.hide(this.el);
                 }
-            }
-        }, {
-            key: "Toggle",
-            value: function Toggle(el) {
-                this.toggle(el);
             }
         } ]);
         return TargetToggle;
@@ -549,13 +637,13 @@ function _classCallCheck(instance, Constructor) {
 
 (function(target, undefined) {
     "use strict";
-    target.Clickoff = function(_target$UI4) {
-        _inherits(TargetClickoff, _target$UI4);
+    target.Clickoff = function(_target$UI5) {
+        _inherits(TargetClickoff, _target$UI5);
         function TargetClickoff(el, _id, target, name) {
             _classCallCheck(this, TargetClickoff);
-            var _this5 = _possibleConstructorReturn(this, Object.getPrototypeOf(TargetClickoff).call(this, el, _id, target, name));
-            _this5.addDomEventHandler("click", _this5.onClick, document);
-            return _this5;
+            var _this6 = _possibleConstructorReturn(this, Object.getPrototypeOf(TargetClickoff).call(this, el, _id, target, name));
+            _this6.addDomEventHandler("click", _this6.onClick, document);
+            return _this6;
         }
         _createClass(TargetClickoff, [ {
             key: "onClick",
@@ -583,15 +671,15 @@ function _classCallCheck(instance, Constructor) {
 
 (function(target, undefined) {
     "use strict";
-    target.Increment = function(_target$UI5) {
-        _inherits(TargetIncrement, _target$UI5);
+    target.Increment = function(_target$UI6) {
+        _inherits(TargetIncrement, _target$UI6);
         function TargetIncrement(el, _id, target, name) {
             _classCallCheck(this, TargetIncrement);
-            var _this6 = _possibleConstructorReturn(this, Object.getPrototypeOf(TargetIncrement).call(this, el, _id, target, name));
-            _this6.targets = _this6.utils.qsa(_this6.el.getAttribute(_this6.utils.stripBrackets(_this6.config.attributes.Increment)));
-            _this6.setLimits();
-            _this6.addDomEventHandler("click", _this6.onClick);
-            return _this6;
+            var _this7 = _possibleConstructorReturn(this, Object.getPrototypeOf(TargetIncrement).call(this, el, _id, target, name));
+            _this7.targets = _this7.utils.qsa(_this7.el.getAttribute(_this7.utils.stripBrackets(_this7.config.attributes.Increment)));
+            _this7.setLimits();
+            _this7.addDomEventHandler("click", _this7.onClick);
+            return _this7;
         }
         _createClass(TargetIncrement, [ {
             key: "setLimits",
@@ -611,6 +699,9 @@ function _classCallCheck(instance, Constructor) {
                 var curVal = parseInt(target.value, 10);
                 var val = curVal + 1;
                 if (this.max !== null) {
+                    if (this.max >= val) {
+                        this.events.publish("max", target);
+                    }
                     val = Math.min(val, this.max);
                 }
                 target.value = val;
@@ -632,15 +723,15 @@ function _classCallCheck(instance, Constructor) {
 
 (function(target, undefined) {
     "use strict";
-    target.Decrement = function(_target$UI6) {
-        _inherits(TargetDecrement, _target$UI6);
+    target.Decrement = function(_target$UI7) {
+        _inherits(TargetDecrement, _target$UI7);
         function TargetDecrement(el, _id, target, name) {
             _classCallCheck(this, TargetDecrement);
-            var _this7 = _possibleConstructorReturn(this, Object.getPrototypeOf(TargetDecrement).call(this, el, _id, target, name));
-            _this7.targets = _this7.utils.qsa(_this7.el.getAttribute(_this7.utils.stripBrackets(_this7.config.attributes.Decrement)));
-            _this7.setLimits();
-            _this7.addDomEventHandler("click", _this7.onClick);
-            return _this7;
+            var _this8 = _possibleConstructorReturn(this, Object.getPrototypeOf(TargetDecrement).call(this, el, _id, target, name));
+            _this8.targets = _this8.utils.qsa(_this8.el.getAttribute(_this8.utils.stripBrackets(_this8.config.attributes.Decrement)));
+            _this8.setLimits();
+            _this8.addDomEventHandler("click", _this8.onClick);
+            return _this8;
         }
         _createClass(TargetDecrement, [ {
             key: "setLimits",
@@ -661,6 +752,9 @@ function _classCallCheck(instance, Constructor) {
             value: function decrement(target) {
                 var curVal = parseInt(target.value, 10);
                 var val = curVal - 1;
+                if (val <= this.min) {
+                    this.events.publish("min", target);
+                }
                 val = Math.max(val, this.min);
                 target.value = val;
             }
@@ -681,19 +775,19 @@ function _classCallCheck(instance, Constructor) {
 
 (function(target, undefined) {
     "use strict";
-    target.Scrollbox = function(_target$UI7) {
-        _inherits(TargetScrollbox, _target$UI7);
+    target.Scrollbox = function(_target$UI8) {
+        _inherits(TargetScrollbox, _target$UI8);
         function TargetScrollbox(el, _id, target, name) {
             _classCallCheck(this, TargetScrollbox);
-            var _this8 = _possibleConstructorReturn(this, Object.getPrototypeOf(TargetScrollbox).call(this, el, _id, target, name));
-            _this8.maxHeight = _this8.el.getAttribute(_this8.config.attributes.Scrollbox);
-            _this8.maxHeight = parseInt(_this8.maxHeight, 10);
-            if (_this8.el.hasChildNodes()) {
-                _this8.children = _this8.el.childNodes;
+            var _this9 = _possibleConstructorReturn(this, Object.getPrototypeOf(TargetScrollbox).call(this, el, _id, target, name));
+            _this9.maxHeight = _this9.el.getAttribute(_this9.config.attributes.Scrollbox);
+            _this9.maxHeight = parseInt(_this9.maxHeight, 10);
+            if (_this9.el.hasChildNodes()) {
+                _this9.children = _this9.el.childNodes;
             }
-            _this8.addEventHandler("resize.window", _this8.onResize);
-            _this8.events.publish("update.ui");
-            return _this8;
+            _this9.addEventHandler("resize", _this9.onResize);
+            _this9.events.publish("update");
+            return _this9;
         }
         _createClass(TargetScrollbox, [ {
             key: "getMaxHeight",
@@ -744,24 +838,24 @@ function _classCallCheck(instance, Constructor) {
 
 (function(target, undefined) {
     "use strict";
-    target.Grid = function(_target$UI8) {
-        _inherits(TargetGrid, _target$UI8);
+    target.Grid = function(_target$UI9) {
+        _inherits(TargetGrid, _target$UI9);
         function TargetGrid(el, _id, target, name) {
             _classCallCheck(this, TargetGrid);
-            var _this9 = _possibleConstructorReturn(this, Object.getPrototypeOf(TargetGrid).call(this, el, _id, target, name));
+            var _this10 = _possibleConstructorReturn(this, Object.getPrototypeOf(TargetGrid).call(this, el, _id, target, name));
             var breakpoints;
-            _this9.TEXT_NODE = 3;
-            _this9.COMMENT_NODE = 8;
-            _this9.setChildren();
-            breakpoints = _this9.el.getAttribute(_this9.config.attributes.Grid).split(" ");
-            _this9.breakpoints = {
+            _this10.TEXT_NODE = 3;
+            _this10.COMMENT_NODE = 8;
+            _this10.setChildren();
+            breakpoints = _this10.el.getAttribute(_this10.config.attributes.Grid).split(" ");
+            _this10.breakpoints = {
                 mobile: parseInt(breakpoints[0], 10),
                 tablet: parseInt(breakpoints[1], 10),
                 desktop: parseInt(breakpoints[2], 10)
             };
-            _this9.addEventHandler("resize.window", _this9.calculateGrid);
-            _this9.events.publish("update.ui");
-            return _this9;
+            _this10.addEventHandler("resize", _this10.calculateGrid);
+            _this10.events.publish("update");
+            return _this10;
         }
         _createClass(TargetGrid, [ {
             key: "setChildren",
@@ -837,25 +931,25 @@ function _classCallCheck(instance, Constructor) {
 
 (function(target, undefined) {
     "use strict";
-    target.Src = function(_target$UI9) {
-        _inherits(TargetSrc, _target$UI9);
+    target.Src = function(_target$UI10) {
+        _inherits(TargetSrc, _target$UI10);
         function TargetSrc(el, _id, target, name) {
             _classCallCheck(this, TargetSrc);
-            var _this10 = _possibleConstructorReturn(this, Object.getPrototypeOf(TargetSrc).call(this, el, _id, target, name));
-            _this10.srcs = {
+            var _this11 = _possibleConstructorReturn(this, Object.getPrototypeOf(TargetSrc).call(this, el, _id, target, name));
+            _this11.srcs = {
                 mobile: "",
                 tablet: "",
                 desktop: ""
             };
-            _this10.getSrcs();
-            _this10.loaded = {
+            _this11.getSrcs();
+            _this11.loaded = {
                 mobile: false,
                 tablet: false,
                 desktop: false
             };
-            _this10.addEventHandler("resize.window", _this10.onResize);
-            _this10.events.publish("update.ui");
-            return _this10;
+            _this11.addEventHandler("resize", _this11.onResize);
+            _this11.events.publish("update");
+            return _this11;
         }
         _createClass(TargetSrc, [ {
             key: "getSrcs",
@@ -877,9 +971,8 @@ function _classCallCheck(instance, Constructor) {
         }, {
             key: "onLoad",
             value: function onLoad() {
-                var eventName = "load";
-                this.events.publish("update.ui");
-                this.domEventHandlers[eventName].el.removeEventListener(eventName, this.domEventHandlers[eventName].cb);
+                this.events.publish("update");
+                this.removeDomEventHandler("load");
             }
         }, {
             key: "load",
@@ -908,40 +1001,13 @@ function _classCallCheck(instance, Constructor) {
 
 (function(target, undefined) {
     "use strict";
-    target.initAPI = function() {
-        var _this = this;
-        this._getEl = function(el) {
-            if (typeof el === "string") {
-                el = _this.utils.qsa(el);
-            }
-            return el;
-        };
-        this.get = function(el) {
-            el = _this._getEl(el);
-        };
-        this.show = function(el) {
-            el = _this._getEl(el);
-            _this.UI.Show.apply(_this, el);
-        };
-        this.hide = function(el) {
-            el = _this._getEl(el);
-            _this.UI.Hide.apply(_this, el);
-        };
-        this.toggle = function(el) {
-            el = _this._getEl(el);
-            _this.Toggle.Toggle.apply(_this, el);
-        };
-    };
-})(window.target = window.target || {});
-
-(function(target, undefined) {
-    "use strict";
     target.init = function(options) {
         var _this = this;
         this.utils.mixin(this.config, options);
         this.events = new window.Mediator();
         this.window = new this.Window(this);
         this.domObserver = new this.DomObserver(this);
+        this.api = new this.API(null, "target-api", this, "api");
         this.componentFactory = new this.ComponentFactory(this);
         _this.componentFactory.init();
     };

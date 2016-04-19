@@ -64,14 +64,10 @@
 			if (!el.classList.contains(this.config.activeClass)) {
 				
 				this.show(el);
-
-				this.show(this.el);
 		
 			} else {
 			
 				this.hide(el);
-
-				this.hide(this.el);
 		
 			}
 	
@@ -81,11 +77,11 @@
 		 * static methods
 		 * for use in programmatic API
 		 */
-		Toggle(el) {
+		// Toggle(el) {
 
-			this.toggle(el);
+		// 	this.toggle(el);
 
-		}
+		// }
 
 	};
 

@@ -21,14 +21,11 @@
 		this.events = new window.Mediator();
 		this.window = new this.Window(this);
 		this.domObserver = new this.DomObserver(this);
+		this.api = new this.API(null, 'target-api', this, 'api');
 
 		// init components
 		this.componentFactory = new this.ComponentFactory(this);
 		_this.componentFactory.init();
-
-		// TODO
-		// init programmatic methods
-		//this.initAPI();
 	
 	};
 

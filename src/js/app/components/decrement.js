@@ -68,6 +68,12 @@
 			var curVal 	= parseInt(target.value, 10);
 			var val 	= curVal - 1;
 		
+			if (val <= this.min) {
+
+				this.events.publish('min', target);
+
+			}
+
 			val = Math.max(val, this.min);
 		
 			target.value = val;

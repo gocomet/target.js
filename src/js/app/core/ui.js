@@ -33,8 +33,10 @@
 			
 			// event handlers
 			this.eventHandlers = {};
-			this.addEventHandler('resize.window', this.setDisabled);
+			this.addEventHandler('resize', this.setDisabled);
 			this.addEventHandler('attributes.mutation', this.handleAttMutation);
+			this.addEventHandler('show', this.onShow);
+			this.addEventHandler('hide', this.onHide);
 
 			// DOM event handlers
 			this.domEventHandlers = {};
@@ -89,6 +91,23 @@
 
 		}
 
+		removeEventHandler(handler) {
+
+			this.events.remove(handler, this.eventHandlers[handler].id);
+
+		}
+
+		removeDomEventHandler(domHandler) {
+
+			this.domEventHandlers[domHandler] = this.domEventHandlers[domHandler].el.removeEventListener(
+			
+				domHandler,
+				this.domEventHandlers[domHandler].cb
+			
+			);
+
+		}
+
 		/**
 		 * remove all events used by internal pub/sub
 		 * remove all dom events
@@ -102,7 +121,7 @@
 
 				if (this.eventHandlers.hasOwnProperty()) {
 
-					this.events.remove(handler, this.eventHandlers[handler].id);
+					this.removeEventHandler(handler);
 					
 				}
 
@@ -112,10 +131,7 @@
 
 				if (this.domEventHandlers.hasOwnProperty()) {
 
-					this.domEventHandlers[domHandler].el.removeEventListener(
-						domHandler,
-						this.domEventHandlers[domHandler].cb
-					);
+					this.removeDomEventHandler(domHandler);
 
 				}
 
@@ -160,7 +176,7 @@
 			}
 
 			// request layout from current window object
-			this.events.publish('update.ui');
+			this.events.publish('update');
 
 		}
 
@@ -215,6 +231,8 @@
 			if (!el.classList.contains(this.config.activeClass)) {
 		
 				el.classList.add(this.config.activeClass);
+
+				this.events.publish('show', el);
 		
 			}
 		
@@ -229,23 +247,40 @@
 			if (el.classList.contains(this.config.activeClass)) {
 		
 				el.classList.remove(this.config.activeClass);
+
+				this.events.publish('hide', el);
 		
 			}
 		
 		}
 
 		/**
-		 * static methods
+		 * when a target element is shown,
+		 * update this element's state
 		 */
-		static Show(el) {
+		onShow(el) {
 
-			this.show(el);
+			// some UI elements don't have targets
+			if (this.targets && this.utils.contains(this.targets, el)) {
+
+				this.show(this.el);
+
+			}
 
 		}
 
-		static Hide(el) {
+		/**
+		 * when a target element is shown,
+		 * update this element's state
+		 */
+		onHide(el) {
 
-			this.hide(el);
+			// some UI elements don't have targets
+			if (this.targets && this.utils.contains(this.targets, el)) {
+
+				this.hide(this.el);
+
+			}
 
 		}
 

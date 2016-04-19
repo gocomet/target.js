@@ -38,9 +38,9 @@
 
 			}
 			
-			this.addEventHandler('resize.window', this.onResize);
+			this.addEventHandler('resize', this.onResize);
 			
-			this.events.publish('update.ui');
+			this.events.publish('update');
 
 		}
 		
