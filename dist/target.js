@@ -342,6 +342,7 @@ function _classCallCheck(instance, Constructor) {
             _classCallCheck(this, TargetDomObserver);
             var _this = this;
             this.TEXT_NODE = 3;
+            this.COMMENT_NODE = 8;
             this.events = target.events;
             this.config = target.config;
             this.utils = target.utils;
@@ -359,7 +360,7 @@ function _classCallCheck(instance, Constructor) {
             value: function publishAddedNodes(nodes) {
                 var _this = this;
                 this.utils.forEach.call(nodes, function(node) {
-                    if (node.nodeType === _this.TEXT_NODE) {
+                    if (node.nodeType === _this.TEXT_NODE || node.nodeType === _this.COMMENT_NODE) {
                         return;
                     }
                     _this.utils.forIn(_this.config.attributes, function(prop, obj) {
@@ -750,6 +751,7 @@ function _classCallCheck(instance, Constructor) {
             var _this9 = _possibleConstructorReturn(this, Object.getPrototypeOf(TargetGrid).call(this, el, _id, target, name));
             var breakpoints;
             _this9.TEXT_NODE = 3;
+            _this9.COMMENT_NODE = 8;
             _this9.setChildren();
             breakpoints = _this9.el.getAttribute(_this9.config.attributes.Grid).split(" ");
             _this9.breakpoints = {
@@ -772,7 +774,7 @@ function _classCallCheck(instance, Constructor) {
                 }
                 childNodes = this.el.childNodes;
                 this.utils.forEach.call(childNodes, function(child) {
-                    if (child.nodeType !== _this.TEXT_NODE) {
+                    if (child.nodeType !== _this.TEXT_NODE && child.nodeType !== _this.COMMENT_NODE) {
                         _this.children.push(child);
                     }
                 });

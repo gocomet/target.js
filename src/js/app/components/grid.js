@@ -33,6 +33,7 @@
 			var breakpoints;
 
 			this.TEXT_NODE = 3;
+			this.COMMENT_NODE = 8;
 
 			this.setChildren();
 
@@ -73,7 +74,7 @@
 
 			this.utils.forEach.call(childNodes, function(child) {
 
-				if (child.nodeType !== _this.TEXT_NODE) {
+				if (child.nodeType !== _this.TEXT_NODE && child.nodeType !== _this.COMMENT_NODE) {
 
 					_this.children.push(child);
 

@@ -15,6 +15,7 @@
 			var _this = this;
 
 			this.TEXT_NODE = 3;
+			this.COMMENT_NODE = 8;
 
 			this.events = target.events;
 			this.config = target.config;
@@ -53,7 +54,7 @@
 
 			this.utils.forEach.call(nodes, (node) => {
 
-				if (node.nodeType === _this.TEXT_NODE) {
+				if (node.nodeType === _this.TEXT_NODE || node.nodeType === _this.COMMENT_NODE) {
 
 					return;
 
