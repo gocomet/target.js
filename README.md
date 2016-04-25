@@ -369,7 +369,7 @@ The "show" event is fired when an element is shown or toggled on.
 ```html
 <script>
 target.events.subscribe('show', function(el) {
-	console.log(el, ' was shown');
+	console.log(el, ' has been shown');
 });
 </script>
 ```
@@ -383,7 +383,7 @@ The "hide" event is fired when an element is hidden or toggled off.
 ```html
 <script>
 target.events.subscribe('hide', function(el) {
-	console.log(el, ' was hidden');
+	console.log(el, ' has been hidden');
 });
 </script>
 ```
@@ -518,7 +518,7 @@ etc.
 
 ### target.toggle
 
-- Togglea an element using Target.js' active CSS class.
+- Toggles an element using Target.js' active CSS class.
 - fires either a "show" or "hide" event for each element toggled, passing the element as the only argument
 - activates an active state on any Target.js element that references the shown element
 
