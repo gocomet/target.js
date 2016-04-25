@@ -132,58 +132,6 @@ You can customize Target.js so that it doesn't conflict with any of your existin
 
 >Fun fact: most Target.js components don't care what type of element they're applied to. However, some declarations do care and are specified below.
 
-Target.js components have a two-way bind, using events, with their targeted element. For example, when an element is shown by a Target.js component, that component element will also receive an active state.
-
-For example:
-
-```html
-<button data-target-toggle="#menu">
-	Menu
-</button>
-
-<div id="#menu">
-	Menu Stuff here
-</div>
-```
-
-In the above example, when the button is clicked, this will be the result:
-
-```html
-<button data-target-toggle="#menu" class="target-active">
-	Menu
-</button>
-
-<div id="#menu" class="target-active">
-	Menu Stuff here
-</div>
-```
-
-Let's add another element that can close the menu:
-
-```html
-<button data-target-toggle="#menu" class="target-active">
-	Menu
-</button>
-
-<div id="#menu" class="target-active">
-	<button data-target-hide="#menu">x</button>
-	Menu Stuff here
-</div>
-```
-
-When our new close button is clicked, the original toggle button will also go back to its original state
-
-```html
-<button data-target-toggle="#menu">
-	Menu
-</button>
-
-<div id="#menu">
-	<button data-target-hide="#menu">x</button>
-	Menu Stuff here
-</div>
-```
-
 Here are specific usages for each Target.js component:
 
 ### Show
@@ -332,6 +280,60 @@ The Src element doesn't add it's own placeholder image, so be sure to use your o
 <img src="my_blank.gif" data-target-src="/some-mobile-img.jpg /my-tablet-image.jpg /a-desktop-image.gif">
 ```
 
+## Components: Two-way Bind
+
+Target.js components have a two-way bind, using events, with their targeted element. For example, when an element is shown by a Target.js component, that component element will also receive an active state.
+
+For example:
+
+```html
+<button data-target-toggle="#menu">
+	Menu
+</button>
+
+<div id="#menu">
+	Menu Stuff here
+</div>
+```
+
+In the above example, when the button is clicked, this will be the result:
+
+```html
+<button data-target-toggle="#menu" class="target-active">
+	Menu
+</button>
+
+<div id="#menu" class="target-active">
+	Menu Stuff here
+</div>
+```
+
+Let's add another element that can close the menu:
+
+```html
+<button data-target-toggle="#menu" class="target-active">
+	Menu
+</button>
+
+<div id="#menu" class="target-active">
+	<button data-target-hide="#menu">x</button>
+	Menu Stuff here
+</div>
+```
+
+When our new close button is clicked, the original toggle button will also go back to its original state
+
+```html
+<button data-target-toggle="#menu">
+	Menu
+</button>
+
+<div id="#menu">
+	<button data-target-hide="#menu">x</button>
+	Menu Stuff here
+</div>
+```
+
 ## Disabling elements responsively
 
 To disable any Target.js element, use Target's disable attribute and pass it the layouts you want to disable the element on:
@@ -428,7 +430,7 @@ Target.js is declarative by nature, designed so you don't need to use JS at all.
 
 **Usage**
 
-`target.show(<element:DOMElement> or <selector:string>)`
+`target.show(<element:DOMElement> or <list:NodeList> or <selector:string>)`
 
 Accepts 1 argument: either a DOM Element, an array of DOM Elements, or a CSS selector
 
@@ -476,7 +478,7 @@ etc.
 
 **Usage**
 
-`target.hide(<element:DOMElement> or <selector:string>)`
+`target.hide(<element:DOMElement> or <list:NodeList> or <selector:string>)`
 
 Accepts 1 argument: either a DOM Element, an array of DOM Elements, or a CSS selector
 
@@ -524,7 +526,7 @@ etc.
 
 **Usage**
 
-`target.hide(<element:DOMElement> or <selector:string>)`
+`target.hide(<element:DOMElement> or <list:NodeList> or <selector:string>)`
 
 Accepts 1 argument: either a DOM Element, an array of DOM Elements, or a CSS selector
 
