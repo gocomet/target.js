@@ -25,28 +25,28 @@
     <a class="minicart-toggle btn" href="#" data-target-toggle="#minicart" data-target-disable="mobile">Cart</a>
 
     <div id="minicart" class="minicart fader pad" data-target-clickoff>
-      <div class="rel line-item oh">
+      <div id="line-1" class="rel line-item fader target-active oh">
         <p>My Product</p>
         <div class="left third">
           <img src="http://placehold.it/80x80">
         </div>
         <div class="right two-thirds">
           <button class="btn" data-target-decrement="#qty-1">-</button>
-          <input class="btn qty-input" id="qty-1" value="0">
+          <input class="btn qty-input" id="qty-1" data-lineitem="#line-1" value="1">
           <button class="btn" data-target-increment="#qty-1" data-target-max="10">+</button>
         </div>
       </div>
 
       <hr>
 
-      <div class="rel line-item oh">
+      <div id="line-2" class="rel line-item fader target-active oh">
         <p>My Product</p>
         <div class="left third">
           <img src="http://placehold.it/80x80">
         </div>
         <div class="right two-thirds">
           <button class="btn" data-target-decrement="#qty-2">-</button>
-          <input class="btn qty-input" id="qty-2" value="0">
+          <input class="btn qty-input" id="qty-2" data-lineitem="#line-2" value="1">
           <button class="btn" data-target-increment="#qty-2" data-target-max="10">+</button>
         </div>
       </div>
@@ -181,10 +181,28 @@
     <script src="js/target.js"></script>
     <script>
       target.init({
+        
         breakpoints: {
+        
           tablet: 640,
           desktop: 1024
+        
         }
+      
+      });
+
+      target.events.subscribe('min', function(el) {
+      
+        var lineItem = document.querySelector(el.getAttribute('data-lineitem'));
+      
+        target.hide(lineItem);
+      
+        setTimeout(function() {
+      
+          lineItem.parentNode.removeChild(lineItem);
+      
+        }, 300);
+      
       });
     </script>
   </body>
