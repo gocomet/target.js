@@ -377,9 +377,10 @@ function _classCallCheck(instance, Constructor) {
             this.observer = new window.MutationObserver(function(mutations, observer) {
                 _this.onMutation(mutations, observer);
             });
-            this.observer.observe(document, {
+            this.observer.observe(document.body, {
                 subtree: true,
                 childList: true,
+                attributes: true,
                 attributeFilter: target.utils.values(_this.config.attributes)
             });
         }
@@ -567,6 +568,7 @@ function _classCallCheck(instance, Constructor) {
             key: "onClick",
             value: function onClick(e) {
                 var _this = this;
+                console.log("show clicked");
                 if (!this.isDisabled()) {
                     this.utils.forEach.call(this.targets, function(target) {
                         _this.show(target);

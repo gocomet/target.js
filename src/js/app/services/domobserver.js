@@ -29,10 +29,11 @@
 
 			// define what element should be observed by the observer
 			// and what types of mutations trigger the callback
-			this.observer.observe(document, {
+			this.observer.observe(document.body, {
 		
 				subtree: true,
 				childList: true,
+				attributes: true,
 
 				// return an array of only the attributes we use
 				attributeFilter: target.utils.values(_this.config.attributes)
