@@ -25,6 +25,7 @@
 
 			// element variables
 			this.el = el;
+			this.NODE_NAME = el.nodeName;
 			this.disabled = false;
 
 			// bind id

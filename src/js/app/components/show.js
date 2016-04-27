@@ -40,6 +40,12 @@
 
 			if (!this.isDisabled()) {
 			
+				if (this.NODE_NAME === 'A') {
+
+					e.preventDefault();
+				
+				}
+			
 				this.utils.forEach.call(this.targets, (target) => {
 
 					_this.show(target);

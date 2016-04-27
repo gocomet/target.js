@@ -179,6 +179,7 @@ function _classCallCheck(instance, Constructor) {
             this.events = target.events;
             this.utils = target.utils;
             this.el = el;
+            this.NODE_NAME = el.nodeName;
             this.disabled = false;
             this.componentName = name;
             this.el.setAttribute("data-target-" + name + "-id", this._id);
@@ -568,7 +569,6 @@ function _classCallCheck(instance, Constructor) {
             key: "onClick",
             value: function onClick(e) {
                 var _this = this;
-                console.log("show clicked");
                 if (!this.isDisabled()) {
                     this.utils.forEach.call(this.targets, function(target) {
                         _this.show(target);
@@ -622,6 +622,9 @@ function _classCallCheck(instance, Constructor) {
             value: function onClick(e) {
                 var _this = this;
                 if (!this.isDisabled()) {
+                    if (this.NODE_NAME === "A") {
+                        e.preventDefault();
+                    }
                     this.utils.forEach.call(this.targets, function(target) {
                         _this.toggle(target);
                     });
