@@ -44,7 +44,9 @@
 			if (!this.isDisabled()) {
 			
 				if (this.NODE_NAME === 'A') {
+
 					e.preventDefault();
+				
 				}
 
 				this.utils.forEach.call(this.targets, (target) => {
@@ -76,16 +78,6 @@
 			}
 	
 		}
-
-		/**
-		 * static methods
-		 * for use in programmatic API
-		 */
-		// Toggle(el) {
-
-		// 	this.toggle(el);
-
-		// }
 
 	};
 

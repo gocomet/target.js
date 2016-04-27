@@ -570,6 +570,9 @@ function _classCallCheck(instance, Constructor) {
             value: function onClick(e) {
                 var _this = this;
                 if (!this.isDisabled()) {
+                    if (this.NODE_NAME === "A") {
+                        e.preventDefault();
+                    }
                     this.utils.forEach.call(this.targets, function(target) {
                         _this.show(target);
                     });
@@ -596,6 +599,9 @@ function _classCallCheck(instance, Constructor) {
             value: function onClick(e) {
                 var _this = this;
                 if (!this.isDisabled()) {
+                    if (this.NODE_NAME === "A") {
+                        e.preventDefault();
+                    }
                     this.utils.forEach.call(this.targets, function(target) {
                         _this.hide(target);
                     });
