@@ -76,8 +76,9 @@ body.target-active {
 	border-radius: 4px;
 	height: 100%;
 	left: 20%;
+	margin-top: -300px;
 	position: fixed;
-	top: 200px;
+	top: 50%;
 	width: 60%;
 }
 
@@ -89,7 +90,9 @@ body.target-active {
 }
 
 .minicart {
-	background: #43b2a1;
+	background: #00CDCC;
+	/* background: rgba(0, 205, 204, 0.8);	*/
+	background: rgba(0, 0, 0, 0.5);
 	border: 1px solid #fff;
 	border-radius: 3px;
 	color: #fff;
@@ -97,6 +100,26 @@ body.target-active {
 	right: 30px;
 	width: 400px;
 	top: 90px;
+}
+
+.line-item {
+	border-top: 1px solid #fff;
+	border-top: 1px solid rgba(255, 255, 255, .5);
+	padding-bottom: 12px;
+	padding-top: 20px;
+}
+
+.line-item p {
+	margin-bottom: 5px;
+}
+
+.line-item:first-child {
+	border: 0;
+	padding-top: 0;
+}
+
+.line-item:last-child {
+	padding-bottom: 0;
 }
 
 .qty-input {
@@ -129,4 +152,43 @@ body.target-active {
 	margin-bottom: 10px;
 	padding-top: 100%;
 	width: 100%;
+}
+
+h5.product-title {
+	color: #44444a;
+}
+
+/* footer */
+.footer {
+	background: #6F5DBB;
+	padding: 30px;
+}
+
+.footer .btn {
+	margin-bottom: 0;
+}
+
+/* layout */
+.modal {
+	z-index: 6;
+}
+
+.modal-bg {
+	z-index: 5;
+}
+
+.minicart {
+	z-index: 4;
+}
+
+.page-header {
+	z-index: 3;
+}
+
+.main {
+	z-index: 2;
+}
+
+.footer {
+	z-index: 1;
 }
