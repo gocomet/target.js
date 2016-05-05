@@ -153,28 +153,40 @@
     <script src="js/target.js"></script>
     <script>
       target.init({
-        
         breakpoints: {
-        
           tablet: 640,
           desktop: 1024
-        
         }
-      
       });
 
       target.events.subscribe('min', function(el) {
       
         var lineItem = document.querySelector(el.getAttribute('data-lineitem'));
-      
+
         target.hide(lineItem);
       
+        // remove lineItem after animation fades it out
         setTimeout(function() {
       
+          var lineItems;
+          var minicart;
+
           lineItem.parentNode.removeChild(lineItem);
-      
+
+          // if there are no more line items,
+          // close minicart, and disable minicart toggle
+          lineItems = document.querySelectorAll('.line-item');
+
+          if (!lineItems.length) {
+
+            minicart = document.getElementById('minicart');
+
+            target.hide(minicart);
+
+            // TODO: expose 'disable' method to API
+            //target.get(minicartToggle).disable();
+          }
         }, 300);
-      
       });
     </script>
   </body>
