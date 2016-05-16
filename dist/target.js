@@ -679,6 +679,7 @@
             };
             this.addEventHandler("resize", this.calculateGrid);
             this.events.publish("update");
+            this.addDomEventHandler("load", this.calculateGrid, window);
         },
         setChildren: function() {
             var _this = this;

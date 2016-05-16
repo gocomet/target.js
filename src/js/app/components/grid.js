@@ -51,6 +51,10 @@
 
 			this.events.publish('update');
 
+			// since the grid usually contains images,
+			// let's update the layout on window.load as well
+			this.addDomEventHandler('load', this.calculateGrid, window);
+
 		},
 
 		/**
