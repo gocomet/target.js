@@ -4,7 +4,6 @@
 var pkg				= require('./package.json');
 var jsmanifest 		= require('./jsmanifest.json');
 var gulp 			= require('gulp');
-var babel 			= require('gulp-babel');
 var livereload 		= require('gulp-livereload');
 var gulpif 			= require('gulp-if');
 var srcmaps 		= require('gulp-sourcemaps');
@@ -19,7 +18,6 @@ var isProduction 	= pkg.environment === 'production';
 
 /**
  * scripts task
- * transpile ES6 to 5
  * concatenate
  * environment-sensitive minification
  */
@@ -40,11 +38,6 @@ gulp.task('scripts', function() {
 		
 		// concatenate all our js files into one file named shop.js
 		.pipe(concat(pkg.javascriptName + '.js'))
-
-		// transpile ES6 to ES5
-		.pipe(babel({
-			presets: ['es2015']
-		}))
 
 		// if we are in production mode,
 		// strip out our console.logs and debugger statements

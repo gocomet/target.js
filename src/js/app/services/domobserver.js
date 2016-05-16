@@ -5,12 +5,13 @@
  * triggers events
  * to initialize, update, or destroy components
  */
-;((target, undefined) => {
+;(function(target, undefined) {
+	
 	'use strict';
 	
-	target.DomObserver = class TargetDomObserver {
+	target.DomObserver = window.Proto.extend({
 		
-		constructor(target) {
+		init: function(target) {
 		
 			var _this = this;
 
@@ -21,7 +22,7 @@
 			this.config = target.config;
 			this.utils 	= target.utils;	
 
-			this.observer = new window.MutationObserver((mutations, observer) => {
+			this.observer = new window.MutationObserver(function(mutations, observer) {
 
 				_this.onMutation(mutations, observer);
 
@@ -40,7 +41,7 @@
 		
 			});
 		
-		}
+		},
 
 		/**
 		 * when a node is added
@@ -49,11 +50,11 @@
 		 * for componentfactory service to pickup
 		 * and initialize new components if required
 		 */
-		publishAddedNodes(nodes) {
+		publishAddedNodes: function(nodes) {
 
 			var _this = this;
 
-			this.utils.forEach.call(nodes, (node) => {
+			this.utils.forEach.call(nodes, function(node) {
 
 				if (node.nodeType === _this.TEXT_NODE || node.nodeType === _this.COMMENT_NODE) {
 
@@ -62,7 +63,7 @@
 				}
 
 				// parse attributes for target components
-				_this.utils.forIn(_this.config.attributes, (prop, obj) => {
+				_this.utils.forIn(_this.config.attributes, function(prop, obj) {
 
 					var attName = obj[prop];
 
@@ -76,18 +77,18 @@
 
 			});
 
-		}
+		},
 
 		/**
 		 * when a DOM mutation happens
 		 * determine the type of mutation
 		 * and fire the appropriate event
 		 */
-		onMutation(mutations, observer) {
+		onMutation: function(mutations, observer) {
 
 			var _this = this;
 
-			mutations.forEach((mutation) => {
+			mutations.forEach(function(mutation) {
 				
 				switch (mutation.type) {
 				
@@ -109,6 +110,6 @@
 
 		}
 	
-	};
+	});
 
 })(window.target = window.target || {});

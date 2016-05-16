@@ -11,9 +11,9 @@
 	
 	'use strict';
 
-	target.UI = class TargetUI {
+	target.UI = window.Proto.extend({
 		
-		constructor(el, _id, target, name) {
+		init: function(el, _id, target, name) {
 		
 			this._id = _id;
 
@@ -30,7 +30,7 @@
 
 			// bind id
 			this.componentName = name;
-			this.el.setAttribute(`data-target-${name}-id`, this._id);
+			this.el.setAttribute('data-target-' + name + '-id', this._id);
 			
 			// event handlers
 			this.eventHandlers = {};
@@ -45,18 +45,18 @@
 			// initialize
 			this.updateAtts();
 		
-		}
+		},
 
 		/**
 		 * add an event handler to a UI element
 		 * using Target's internal event buss
 		 * store a reference to it for later removal
 		 */
-		addEventHandler(eventName, cb) {
+		addEventHandler: function(eventName, cb) {
 
 			this.eventHandlers[eventName] = this.events.subscribe(eventName, cb, {}, this);
 
-		}
+		},
 
 		/**
 		 * 
@@ -65,10 +65,10 @@
 		 * store for removal on destroy
 		 *
 		 */
-		addDomEventHandler(eventName, cb, el) {
+		addDomEventHandler: function(eventName, cb, el) {
 
 			var _this = this;
-			var attachedCb = (e) => {
+			var attachedCb = function(e) {
 
 				cb.apply(_this, [e]);
 
@@ -90,15 +90,15 @@
 
 			el.addEventListener(eventName, attachedCb, false);
 
-		}
+		},
 
-		removeEventHandler(handler) {
+		removeEventHandler: function(handler) {
 
 			this.events.remove(handler, this.eventHandlers[handler].id);
 
-		}
+		},
 
-		removeDomEventHandler(domHandler) {
+		removeDomEventHandler: function(domHandler) {
 
 			this.domEventHandlers[domHandler] = this.domEventHandlers[domHandler].el.removeEventListener(
 			
@@ -107,13 +107,13 @@
 			
 			);
 
-		}
+		},
 
 		/**
 		 * remove all events used by internal pub/sub
 		 * remove all dom events
 		 */
-		destroy() {
+		destroy: function() {
 
 			var handler;
 			var domHandler;
@@ -138,7 +138,7 @@
 
 			}
 
-		}
+		},
 
 		/**
 		 * when attributes are changed in the DOM
@@ -147,7 +147,7 @@
 		 * if so, update the component's properties
 		 * based on the new attribute values
 		 */
-		handleAttMutation(target) {
+		handleAttMutation: function(target) {
 
 			if (target === this.el) {
 
@@ -155,14 +155,14 @@
 
 			}
 
-		}
+		},
 
 		/**
 		 * get attributes on element
 		 * set internal properties based on attributes
 		 * these properties are used by other methods
 		 */
-		updateAtts() {
+		updateAtts: function() {
 
 			this.disableLayouts = this.el.getAttribute(this.config.attributes.disable);
 
@@ -179,7 +179,7 @@
 			// request layout from current window object
 			this.events.publish('update');
 
-		}
+		},
 
 		/**
 		 * on window.resize
@@ -187,7 +187,7 @@
 		 * if so, disable it
 		 * if not, enable it
 		 */
-		setDisabled(is) {
+		setDisabled: function(is) {
 
 			var disable = false;
 			var i, len, layout;
@@ -212,22 +212,22 @@
 			
 			}
 		
-		}
+		},
 
 		/**
 		 * get "disabled" property
 		 */
-		isDisabled() {
+		isDisabled: function() {
 		
 			return this.disabled;
 		
-		}
+		},
 
 		/**
 		 * show an element using css
 		 * could be this UI element, could be another target
 		 */
-		show(el) {
+		show: function(el) {
 		
 			if (!el.classList.contains(this.config.activeClass)) {
 		
@@ -237,13 +237,13 @@
 		
 			}
 		
-		}
+		},
 
 		/**
 		 * hide an element using css
 		 * could be this UI element, could be another target
 		 */
-		hide(el) {
+		hide: function(el) {
 		
 			if (el.classList.contains(this.config.activeClass)) {
 		
@@ -253,13 +253,13 @@
 		
 			}
 		
-		}
+		},
 
 		/**
 		 * when a target element is shown,
 		 * update this element's state
 		 */
-		onShow(el) {
+		onShow: function(el) {
 
 			// some UI elements don't have targets
 			if (this.targets && this.utils.contains(this.targets, el)) {
@@ -268,13 +268,13 @@
 
 			}
 
-		}
+		},
 
 		/**
 		 * when a target element is shown,
 		 * update this element's state
 		 */
-		onHide(el) {
+		onHide: function(el) {
 
 			// some UI elements don't have targets
 			if (this.targets && this.utils.contains(this.targets, el)) {
@@ -285,6 +285,6 @@
 
 		}
 
-	};
+	});
 
 })(window.target = window.target || {});

@@ -13,15 +13,15 @@
  *  bind to onchange event instead of onclick
  *
  */
-;((target, undefined) => {
+;(function(target, undefined) {
 	
 	'use strict';
 
-	target.Toggle = class TargetToggle extends target.UI {
+	target.Toggle = target.UI.extend({
 	
-		constructor(el, _id, target, name) {
+		init: function(el, _id, target, name) {
 	
-			super(el, _id, target, name);
+			this._super.apply(this, arguments);
 			
 			this.targets = this.utils.qsa(
 	
@@ -31,13 +31,13 @@
 
 			this.addDomEventHandler('click', this.onClick);
 
-		}
+		},
 
 		/**
 		 * when the element is clicked
 		 * toggle the target element's visibility
 		 */
-		onClick(e) {
+		onClick: function(e) {
 
 			var _this = this;
 
@@ -49,7 +49,7 @@
 				
 				}
 
-				this.utils.forEach.call(this.targets, (target) => {
+				this.utils.forEach.call(this.targets, function(target) {
 
 					_this.toggle(target);
 
@@ -57,7 +57,7 @@
 
 			}
 		
-		}
+		},
 
 		/**
 		 * if the target is shown, hide it
@@ -65,7 +65,7 @@
 		 * all using css
 		 * also toggle state of toggle button itself
 		 */
-		toggle(el) {
+		toggle: function(el) {
 		
 			if (!el.classList.contains(this.config.activeClass)) {
 				
@@ -79,6 +79,6 @@
 	
 		}
 
-	};
+	});
 
 })(window.target = window.target || {});

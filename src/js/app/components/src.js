@@ -24,15 +24,15 @@
  *
  * `<img src="my_blang_img.gif" data-target-src="/mobile-and-tablet-img.jpg null /desktop-img.jpg">`
  */
-;((target, undefined) => {
+;(function(target, undefined) {
 	
 	'use strict';
 
-	target.Src = class TargetSrc extends target.UI {
+	target.Src = target.UI.extend({
 	
-		constructor(el, _id, target, name) {
+		init: function(el, _id, target, name) {
 	
-			super(el, _id, target, name);
+			this._super.apply(this, arguments);
 
 			this.srcs = {
 				mobile: '',
@@ -53,7 +53,7 @@
 			// request an update from target.Window
 			this.events.publish('update');
 		
-		}
+		},
 
 		/**
 		 * get list of image urls from element attribute
@@ -64,7 +64,7 @@
 		 *
 		 * ex. if only two images defined, desktop layout can inherit image from tablet layout
 		 */
-		getSrcs() {
+		getSrcs: function() {
 
 			var _this = this;
 			var srcAtt = this.el.getAttribute(this.config.attributes.Src);
@@ -89,36 +89,36 @@
 
 			});
 
-		}
+		},
 
 		/**
 		 * once image is loaded,
 		 * request a layout update
 		 * and remove event handler
 		 */
-		onLoad() {
+		onLoad: function() {
 
 			this.events.publish('update');
 
 			this.removeDomEventHandler('load');
 
-		}
+		},
 
 		/**
 		 * add event handler to load image
 		 */
-		load(img) {
+		load: function(img) {
 
 			this.addDomEventHandler('load', this.onLoad, this.el);
 
-		}
+		},
 
 		/**
 		 * when the window is resized,
 		 * check which layout we're currently at
 		 * and load the appropriate image
 		 */
-		onResize(is) {
+		onResize: function(is) {
 
 			var _this = this;
 
@@ -144,6 +144,6 @@
 
 		}
 
-	};
+	});
 
 })(window.target = window.target || {});

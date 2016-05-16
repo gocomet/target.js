@@ -9,26 +9,26 @@
  * `<a data-target-clickoff>Click away from this to close</a>`
  *
  */
-;((target, undefined) => {
+;(function(target, undefined) {
 	
 	'use strict';
 
-	target.Clickoff = class TargetClickoff extends target.UI {
+	target.Clickoff = target.UI.extend({
 	
-		constructor(el, _id, target, name) {
+		init: function(el, _id, target, name) {
 	
-			super(el, _id, target, name);
+			this._super.apply(this, arguments);
 
 			this.addDomEventHandler('click', this.onClick, document);
 
-		}
+		},
 
 		/**
 		 * when the user clicks anywhere in the document
 		 * determine if the click came from outside this element
 		 * if so, close this element
 		 */
-		onClick(e) {
+		onClick: function(e) {
 
 			var _this = this;
 			var hide = true;
@@ -69,6 +69,6 @@
 		
 		}
 
-	};
+	});
 
 })(window.target = window.target || {});

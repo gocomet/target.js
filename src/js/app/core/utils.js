@@ -3,7 +3,7 @@
  *
  * utility methods for use throughout library
  */ 
-;((target, undefined) => {
+;(function(target, undefined) {
 	'use strict';
 	
 	var config = target.config;
@@ -13,7 +13,7 @@
 		/**
 		 * _shallow_ mixins on objects
 		 */
-		mixin: (origObj, newObj) => {
+		mixin: function(origObj, newObj) {
 		
 			var k;
 			var origV;
@@ -80,7 +80,7 @@
 		 * debounce function
 		 * http://davidwalsh.name/javascript-debounce-function
 		 */ 
-		debounce: (func, wait, immediate) => {
+		debounce: function(func, wait, immediate) {
 		
 			var timeout;
 		
@@ -115,7 +115,7 @@
 		/**
 		 * map values of object to array
 		 */
-		values: (obj) => {
+		values: function(obj) {
 		
 			var array = [];
 		
@@ -143,7 +143,7 @@
 		 * for getting the actual attribute
 		 * using element.getAttribute()
 		 */
-		stripBrackets: (att) => {
+		stripBrackets: function(att) {
 		
 			return att.replace('[', '').replace(']', '');
 		
@@ -152,7 +152,7 @@
 		/**
 		 * capitalize first letter of string
 		 */
-		capitalize: (str) => {
+		capitalize: function(str) {
 		
 			return str.charAt(0).toUpperCase() + str.slice(1);
 		
@@ -162,7 +162,7 @@
 		 * check if child is descendent of parent
 		 * http://stackoverflow.com/questions/2234979/how-to-check-in-javascript-if-one-element-is-contained-within-another
 		 */
-		isDescendant: (parent, child) => {
+		isDescendant: function(parent, child) {
 		
 			var node = child.parentNode;
 		
@@ -186,13 +186,13 @@
 		 * for those special times
 		 * when you just really wanna do nothing
 		 */
-		noop: () => {},
+		noop: function() {},
 
 		/**
 		 * for in loop
 		 * check if object has prop
 		 */
-		forIn: (obj, cb) => {
+		forIn: function(obj, cb) {
 			
 			var prop;
 

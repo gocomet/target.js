@@ -9,15 +9,15 @@
  * `<a data-target-increment="#qty" data-target-max="99">+1 to #qty</a>`
  *
  */
-;((target, undefined) => {
+;(function(target, undefined) {
 	
 	'use strict';
 
-	target.Increment = class TargetIncrement extends target.UI {
+	target.Increment = target.UI.extend({
 	
-		constructor(el, _id, target, name) {
+		init: function(el, _id, target, name) {
 	
-			super(el, _id, target, name);
+			this._super.apply(this, arguments);
 
 			this.targets = this.utils.qsa(
 	
@@ -29,14 +29,14 @@
 
 			this.addDomEventHandler('click', this.onClick);
 
-		}
+		},
 
 		/**
 		 * get min and max values
 		 * declared on the element itself
 		 * use defaults if not declared
 		 */
-		setLimits() {
+		setLimits: function() {
 
 			this.max = this.el.getAttribute(this.config.attributes.max);
 			this.min = this.el.getAttribute(this.config.attributes.min);
@@ -53,13 +53,13 @@
 			
 			}
 
-		}
+		},
 
 		/**
 		 * increment the value of the target input
 		 * only if lower than the specified maximum value
 		 */
-		increment(target) {
+		increment: function(target) {
 
 			var curVal = parseInt(target.value, 10);
 			var val = curVal + 1;
@@ -78,19 +78,19 @@
 			
 			target.value = val;
 		
-		}
+		},
 
 		/**
 		 * when the incrementer is clicked,
 		 * increment the target input element
 		 */
-		onClick(e) {
+		onClick: function(e) {
 
 			var _this = this;
 
 			if (!this.isDisabled()) {
 			
-				this.utils.forEach.call(this.targets, (target) => {
+				this.utils.forEach.call(this.targets, function(target) {
 
 					_this.increment(target);
 
@@ -100,6 +100,6 @@
 		
 		}
 
-	};
+	});
 
 })(window.target = window.target || {});

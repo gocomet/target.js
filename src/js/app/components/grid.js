@@ -20,15 +20,15 @@
  * </div>`
  *
  */
-;((target, undefined) => {
+;(function(target, undefined) {
 	
 	'use strict';
 
-	target.Grid = class TargetGrid extends target.UI {
+	target.Grid = target.UI.extend({
 	
-		constructor(el, _id, target, name) {
+		init: function(el, _id, target, name) {
 	
-			super(el, _id, target, name);
+			this._super.apply(this, arguments);
 			
 			var breakpoints;
 
@@ -51,13 +51,13 @@
 
 			this.events.publish('update');
 
-		}
+		},
 
 		/**
 		 * find child nodes of element
 		 * filter out any text nodes
 		 */
-		setChildren() {
+		setChildren: function() {
 
 			var _this = this;
 			var childNodes;
@@ -82,7 +82,7 @@
 
 			});
 
-		}
+		},
 
 		/**
 		 * determine how many thumbnails per row
@@ -90,7 +90,7 @@
 		 * "is" object passed from our "window" service
 		 * via events
 		 */
-		setPerRow(is) {
+		setPerRow: function(is) {
 
 			var _this = this;
 
@@ -110,14 +110,14 @@
 
 			return _this.perRow;
 
-		}
+		},
 
 		/**
 		 * set which thumbnails are in a row together
 		 * based on the number of thumbs per row
 		 * which is based on the current responsive layout
 		 */
-		buildRows() {
+		buildRows: function() {
 
 			var _this = this;
 			var lastChild = this.children[this.children.length - 1];
@@ -156,7 +156,7 @@
 
 			return this.rows;
 
-		}
+		},
 
 		/**
 		 * on window.resize
@@ -166,7 +166,7 @@
 		 * get, calculate, and set the correct height
 		 * so thumbs in the same row have the same height
 		 */
-		calculateGrid(is) {
+		calculateGrid: function(is) {
 
 			var _this = this;
 			
@@ -188,7 +188,7 @@
 
 				row.forEach(function(item) {
 
-					item.style.height = `${maxHeight}px`;
+					item.style.height = maxHeight + 'px';
 
 				});
 
@@ -196,6 +196,6 @@
 		
 		}
 
-	};
+	});
 
 })(window.target = window.target || {});

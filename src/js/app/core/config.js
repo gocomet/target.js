@@ -6,7 +6,7 @@
  * can be overridden on initialization
  * `target.init(mySettingsObjectHere);`
  */ 
-;((target, undefined) => {
+;(function(target, undefined) {
 	
 	'use strict';
 	

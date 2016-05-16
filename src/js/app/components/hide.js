@@ -9,15 +9,15 @@
  * `<a data-target-hide="#my-target">Click to hide #my-target</a>`
  *
  */
-;((target, undefined) => {
+;(function(target, undefined) {
 	
 	'use strict';
 
-	target.Hide = class TargetHide extends target.UI {
+	target.Hide = target.UI.extend({
 	
-		constructor(el, _id, target, name) {
+		init: function(el, _id, target, name) {
 	
-			super(el, _id, target, name);
+			this._super.apply(this, arguments);
 			
 			this.targets = this.utils.qsa(
 	
@@ -28,14 +28,14 @@
 
 			this.addDomEventHandler('click', this.onClick);
 			
-		}
+		},
 
 		/**
 		 * when the element is clicked,
 		 * hide the target element
 		 * (using css)
 		 */
-		onClick(e) {
+		onClick: function(e) {
 
 			var _this = this;
 
@@ -47,7 +47,7 @@
 				
 				}
 			
-				this.utils.forEach.call(this.targets, (target) => {
+				this.utils.forEach.call(this.targets, function(target) {
 
 					_this.hide(target);
 
@@ -57,6 +57,6 @@
 		
 		}
 
-	};
+	});
 
 })(window.target = window.target || {});

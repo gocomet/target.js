@@ -7,12 +7,13 @@
  * allowing UI to update and enable/disable themselves
  * according to breakpoints
  */
-;((target, undefined) => {
+;(function(target, undefined) {
+	
 	'use strict';
 	
-	target.Window = class TargetWindow {
+	target.Window = window.Proto.extend({
 		
-		constructor(target) {
+		init: function(target) {
 		
 			var _this = this;
 
@@ -53,7 +54,7 @@
 		
 			};
 
-			window.addEventListener('resize', this.utils.debounce((e) => {
+			window.addEventListener('resize', this.utils.debounce(function(e) {
 		
 				_this.onResize();
 		
@@ -63,31 +64,31 @@
 			// listen for when UI elements initialize or update
 			// they will request layout data
 			// pass to the via resize event
-			this.events.subscribe('update', () => {
+			this.events.subscribe('update', function() {
 
 				_this.onResize();
 		
 			});
 		
-		}
+		},
 		
 		/**
 		 * get width
 		 */
-		width() {
+		width: function() {
 		
 			return this.w;
 		
-		}
+		},
 		
 		/**
 		 * get height
 		 */
-		height() {
+		height: function() {
 		
 			return this.h;
 		
-		}
+		},
 		
 		/**
 		 * on window.resize
@@ -95,7 +96,7 @@
 		 * fire event for UI components to update themselves
 		 * pass "is" layout object for responsive changes
 		 */
-		onResize() {
+		onResize: function() {
 		
 			this.w = document.documentElement.clientWidth;
 			this.h = document.documentElement.clientHeight;
@@ -104,6 +105,6 @@
 		
 		}
 	
-	};
+	});
 
 })(window.target = window.target || {});

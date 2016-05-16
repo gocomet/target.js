@@ -4,12 +4,13 @@
  * generates and manages components
  *
  */
-;((target, undefined) => {
+;(function(target, undefined) {
+	
 	'use strict';
 	
-	target.ComponentFactory = class TargetComponentFactory {
+	target.ComponentFactory = window.Proto.extend({
 		
-		constructor(target) {
+		init: function(target) {
 		
 			var _this = this;
 			var attsArray;
@@ -29,15 +30,15 @@
 				return this.ignoreAtts.indexOf(val) === -1;
 			}, this);
 
-			this.events.subscribe('nodeadded.mutation', this.create, {}, this);
+			this.events.subscribe('nodeadded.mutation', this.build, {}, this);
 		
-		}
+		},
 
 		/**
 		 * create an element after a DOM mutation
 		 * need to check if this element is already created
 		 */
-		create(name, el) {
+		build: function(name, el) {
 
 			var Component;
 
@@ -52,7 +53,7 @@
 			// if the component is already initialised
 			// on the element,
 			// exit
-			if (el.getAttribute(`data-target-${name}-id`) !== null) {
+			if (el.getAttribute('data-target-' + name + '-id') !== null) {
 
 				return;
 
@@ -62,32 +63,32 @@
 
 			this.topId++;
 
-			this.components[this.topId] = new Component(el, this.topId, this.target, name);
+			this.components[this.topId] = Component.create(el, this.topId, this.target, name);
 			
-		}
+		},
 
-		initComponent(name) {
+		initComponent: function(name) {
 
 			var _this = this;
 			var Component = this.target[name];
 
 			this.utils.forEach.call(
 				
-				_this.utils.qsa(`[${_this.config.attributes[name]}]`),
+				_this.utils.qsa('[' + _this.config.attributes[name] + ']'),
 				
-				(el, i) => {
+				function(el, i) {
 				
 					_this.topId++;
 
-					_this.components[_this.topId] = new Component(el, _this.topId, _this.target, name);
+					_this.components[_this.topId] = Component.create(el, _this.topId, _this.target, name);
 				
 				}
 			
 			);
 
-		}
+		},
 
-		init() {
+		start: function() {
 
 			var _this = this;
 
@@ -99,6 +100,6 @@
 
 		}
 	
-	};
+	});
 
 })(window.target = window.target || {});

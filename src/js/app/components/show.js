@@ -9,15 +9,15 @@
  * `<a data-target-show="#show-this">Click to show #show-this</a>`
  *
  */
-;((target, undefined) => {
+;(function(target, undefined) {
 	
 	'use strict';
 
-	target.Show = class TargetShow extends target.UI {
+	target.Show = target.UI.extend({
 	
-		constructor(el, _id, target, name) {
+		init: function(el, _id, target, name) {
 	
-			super(el, _id, target, name);
+			this._super.apply(this, arguments);
 
 			this.targets = this.utils.qsa(
 	
@@ -27,14 +27,14 @@
 
 			this.addDomEventHandler('click', this.onClick);
 
-		}
+		},
 
 		/**
 		 * when the element is clicked,
 		 * show the target element
 		 * (using css)
 		 */
-		onClick(e) {
+		onClick: function(e) {
 
 			var _this = this;
 
@@ -46,7 +46,7 @@
 				
 				}
 			
-				this.utils.forEach.call(this.targets, (target) => {
+				this.utils.forEach.call(this.targets, function(target) {
 
 					_this.show(target);
 
@@ -56,6 +56,6 @@
 		
 		}
 
-	};
+	});
 
 })(window.target = window.target || {});

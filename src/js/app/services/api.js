@@ -10,18 +10,18 @@
  * instead of being tightly coupled to UI class
  * which does a lot of unrelated stuff we don't need here
  */
-;((target, undefined) => {
+;(function(target, undefined) {
 	
 	'use strict';
 
-	target.API = class TargetAPI extends target.UI {
+	target.API = target.UI.extend({
 
-		constructor(el, _id, target, name) {
+		init: function(el, _id, target, name) {
 
 			el = document.createElement('div');
 			el.style.display = 'none';
 
-			super(el, _id, target, name);
+			this._super.apply(this, [el, _id, target, name]);
 		
 			// apply convenience methods to global "target" object
 			this.target = target;
@@ -30,9 +30,9 @@
 			this.target.get = this.get.bind(this);
 			this.target.toggle = this.toggleEls.bind(this);
 
-		}
+		},
 
-		getEls(els) {
+		getEls: function(els) {
 
 			if (typeof els === 'string') {
 
@@ -50,9 +50,9 @@
 
 			return els;
 
-		}
+		},
 
-		get(els) {
+		get: function(els) {
 
 			els = this.getEls(els);
 
@@ -60,9 +60,9 @@
 
 			return this;
 
-		}
+		},
 
-		showEls(els) {
+		showEls: function(els) {
 
 			var _this = this;
 
@@ -74,10 +74,9 @@
 			
 			});
 
+		},
 
-		}
-
-		hideEls(els) {
+		hideEls: function(els) {
 
 			var _this = this;
 
@@ -89,7 +88,7 @@
 			
 			});
 
-		}
+		},
 
 		/**
 		 * if the target is shown, hide it
@@ -97,7 +96,7 @@
 		 * all using css
 		 * also toggle state of toggle button itself
 		 */
-		toggleEls(els) {
+		toggleEls: function(els) {
 		
 			var _this = this;
 
@@ -119,6 +118,6 @@
 
 		}
 
-	};
+	});
 
 })(window.target = window.target || {});

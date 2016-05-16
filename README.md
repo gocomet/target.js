@@ -60,16 +60,20 @@ Target.js watches the DOM for changes: if a new element is introduced with one o
 
 ## Usage
 
-### 1. Include the files under `dist/` into your markup:
+### 1. Include the files under `dist/` from your markup:
 
-- mediator.min.js (target.js' only dependency -- used as the event buss)
-- MutationObserver.js (a polyfill -- only include for IE9 support)
-- target.js
+- `proto.es5.js` (a target.js dependency -- used for object inheritance)
+- `mediator.min.js` (a target.js dependency -- used as the event buss)
+- `weakmap.js` (a polyfill -- only include for IE9 support)
+- `MutationObserver.js` (a polyfill -- only include for IE9 support)
+- `target.js`
 
 For example:
 
 ```html
+<script src="my-js-folder/proto.es5.js"></script>
 <script src="my-js-folder/mediator.min.js"></script>
+<script src="my-js-folder/weakmap.js"></script>
 <script src="my-js-folder/MutationObserver.js"></script>
 <script src="my-js-folder/target.js"></script>
 ```
@@ -130,7 +134,7 @@ You can customize Target.js so that it doesn't conflict with any of your existin
 
 ## Components
 
->Fun fact: most Target.js components don't care what type of element they're applied to. However, some declarations do care and are specified below.
+>Fun fact: most Target.js components don't care what type of element they're applied to. However, some declarations do care. They're specified below.
 
 Here are specific usages for each Target.js component:
 
