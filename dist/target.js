@@ -671,7 +671,7 @@
             this.COMMENT_NODE = 8;
             this.setChildren();
             this.setBreakpoints();
-            this.addEventHandler("resize", this.gridOnResize);
+            this.addEventHandler("resize", this.onResize);
             this.events.publish("update");
             this.addDomEventHandler("load", this.onLoad, window);
         },
@@ -764,7 +764,7 @@
                 child.style.height = "";
             });
         },
-        gridOnResize: function(is) {
+        onResize: function(is) {
             if (!this.isDisabled()) {
                 this.calculateGrid(is);
             } else {

@@ -37,7 +37,7 @@
 
 			this.setBreakpoints();
 
-			this.addEventHandler('resize', this.gridOnResize);
+			this.addEventHandler('resize', this.onResize);
 
 			this.events.publish('update');
 
@@ -269,7 +269,7 @@
 		 * or reset
 		 * depending on if enabled or disabled
 		 */
-		gridOnResize: function(is) {
+		onResize: function(is) {
 			
 			if (!this.isDisabled()) {
 
