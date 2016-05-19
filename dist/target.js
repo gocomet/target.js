@@ -667,19 +667,38 @@
     target.Grid = target.UI.extend({
         init: function(el, _id, target, name) {
             this._super.apply(this, arguments);
-            var breakpoints;
             this.TEXT_NODE = 3;
             this.COMMENT_NODE = 8;
             this.setChildren();
-            breakpoints = this.el.getAttribute(this.config.attributes.Grid).split(" ");
-            this.breakpoints = {
-                mobile: parseInt(breakpoints[0], 10),
-                tablet: parseInt(breakpoints[1], 10),
-                desktop: parseInt(breakpoints[2], 10)
-            };
-            this.addEventHandler("resize", this.calculateGrid);
+            this.setBreakpoints();
+            this.addEventHandler("resize", this.gridOnResize);
             this.events.publish("update");
-            this.addDomEventHandler("load", this.calculateGrid, window);
+            this.addDomEventHandler("load", this.onLoad, window);
+        },
+        setBreakpoints: function() {
+            var breakpoints = this.el.getAttribute(this.config.attributes.Grid).split(" ");
+            var disableLayouts = [];
+            var layouts = [ "mobile", "tablet", "desktop" ];
+            breakpoints.forEach(function(breakpoint, i) {
+                if (breakpoint === "disable") {
+                    disableLayouts.push(layouts[i]);
+                    breakpoint = 0;
+                } else {
+                    breakpoint = parseInt(breakpoint, 10);
+                }
+            });
+            this.breakpoints = {
+                mobile: breakpoints[0],
+                tablet: breakpoints[1],
+                desktop: breakpoints[2]
+            };
+            if (disableLayouts.length) {
+                this.el.setAttribute(this.config.attributes.disable, disableLayouts.join(" "));
+            }
+        },
+        onLoad: function(e) {
+            this.removeDomEventHandler("load");
+            this.events.publish("update");
         },
         setChildren: function() {
             var _this = this;
@@ -739,6 +758,18 @@
                     item.style.height = maxHeight + "px";
                 });
             });
+        },
+        resetGrid: function() {
+            this.utils.forEach.call(this.children, function(child) {
+                child.style.height = "";
+            });
+        },
+        gridOnResize: function(is) {
+            if (!this.isDisabled()) {
+                this.calculateGrid(is);
+            } else {
+                this.resetGrid();
+            }
         }
     });
 })(window.target = window.target || {});

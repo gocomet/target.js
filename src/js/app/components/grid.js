@@ -29,31 +29,78 @@
 		init: function(el, _id, target, name) {
 	
 			this._super.apply(this, arguments);
-			
-			var breakpoints;
 
 			this.TEXT_NODE = 3;
 			this.COMMENT_NODE = 8;
 
 			this.setChildren();
 
-			breakpoints = this.el.getAttribute(this.config.attributes.Grid).split(' ');
+			this.setBreakpoints();
 
-			this.breakpoints = {
-				
-				mobile: parseInt(breakpoints[0], 10),
-				tablet: parseInt(breakpoints[1], 10),
-				desktop: parseInt(breakpoints[2], 10)
-			
-			};
-
-			this.addEventHandler('resize', this.calculateGrid);
+			this.addEventHandler('resize', this.gridOnResize);
 
 			this.events.publish('update');
 
 			// since the grid usually contains images,
 			// let's update the layout on window.load as well
-			this.addDomEventHandler('load', this.calculateGrid, window);
+			this.addDomEventHandler('load', this.onLoad, window);
+
+		},
+
+		/**
+		 * set breakpoints
+		 * this will determine how many items are in a row
+		 * at various breakpoints (mobile, tablet, desktop)
+		 * also, if the breakpoint is "disable", instead of an int,
+		 * disable at that breakpoint
+		 */
+		setBreakpoints: function() {
+
+			var breakpoints = this.el.getAttribute(this.config.attributes.Grid).split(' ');
+
+			var disableLayouts = [];
+
+			var layouts = [
+				'mobile',
+				'tablet',
+				'desktop'
+			];
+
+			breakpoints.forEach(function(breakpoint, i) {
+
+				if (breakpoint === 'disable') {
+
+					disableLayouts.push(layouts[i]);
+
+					breakpoint = 0;
+
+				} else {
+
+					breakpoint = parseInt(breakpoint, 10);
+				}
+
+			});
+
+			this.breakpoints = {
+				
+				mobile: breakpoints[0],
+				tablet: breakpoints[1],
+				desktop: breakpoints[2]
+			
+			};
+
+			if (disableLayouts.length) {
+
+				this.el.setAttribute(this.config.attributes.disable, disableLayouts.join(' '));
+
+			}
+
+		},
+
+		onLoad: function(e) {
+
+			this.removeDomEventHandler('load');
+			this.events.publish('update');
 
 		},
 
@@ -164,6 +211,7 @@
 
 		/**
 		 * on window.resize
+		 * if enabled
 		 * determine how many thumbs per row
 		 * group those thumbs together in rows
 		 * reset the height of thumbs to their default
@@ -173,7 +221,7 @@
 		calculateGrid: function(is) {
 
 			var _this = this;
-			
+
 			this.setPerRow(is);
 
 			this.buildRows();
@@ -197,7 +245,42 @@
 				});
 
 			});
-		
+
+		},
+
+		/**
+		 * on window.resize
+		 * if disabled
+		 * reset heights of all children
+		 */
+		resetGrid: function() {
+
+			this.utils.forEach.call(this.children, function(child) {
+
+				child.style.height = '';
+
+			});
+
+		},
+
+		/**
+		 * on window.resize
+		 * either build grid
+		 * or reset
+		 * depending on if enabled or disabled
+		 */
+		gridOnResize: function(is) {
+			
+			if (!this.isDisabled()) {
+
+				this.calculateGrid(is);
+			
+			} else {
+
+				this.resetGrid();
+
+			}
+
 		}
 
 	});

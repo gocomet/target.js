@@ -252,6 +252,20 @@ An example using Foundation's grid classes:
 </div>
 ```
 
+**Disabling the Grid**
+
+You can disable the Grid responsively, like you could any other Target.js element:
+
+```html
+<div data-target-grid="1 2 3" data-target-disable="mobile">...</div>
+```
+
+Alternatively, you can disable using a shortcut:
+
+```html
+<div data-target-grid="disable 2 3">...</div>
+```
+
 ### Src
 
 The Src component responsively loads images. It must be used on an `<img>` element. For example:
