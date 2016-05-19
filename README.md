@@ -142,6 +142,9 @@ Here are specific usages for each Target.js component:
 
 Shows an element
 
+- Applicable Elements: any
+- Applicable Targets: any
+
 ```html
 <button data-target-show="#my-target">
 	Show #my-target!
@@ -151,6 +154,9 @@ Shows an element
 ### Hide
 
 Hides an element
+
+- Applicable Elements: any
+- Applicable Targets: any
 
 ```html
 <button data-target-hide="#my-target">
@@ -162,6 +168,9 @@ Hides an element
 
 Toggles an element
 
+- Applicable Elements: any
+- Applicable Targets: any
+
 ```html
 <button data-target-toggle="#my-target">
 	Toggle #my-target!
@@ -172,6 +181,9 @@ Toggles an element
 
 An element will hide itself when you click away from it
 
+- Applicable Elements: any
+- Applicable Targets: any
+
 ```html
 <div data-target-clickoff>
 	Click away from me to close!
@@ -181,6 +193,9 @@ An element will hide itself when you click away from it
 ### Increment/Decrement
 
 Increments or decrements the value of an input. Targeted element must be an `<input>` element.
+
+- Applicable Elements: any
+- Applicable Targets: `<input>`
 
 ```html
 <button data-target-decrement="#qty">-</button>
@@ -202,6 +217,9 @@ The default minimum value for decrementers is 0
 
 Creates a responsive scrollbox. When the content is taller than the threshold, the element gets a scrollbar. When the content isn't, the scrollbar disappears.
 
+- Applicable Elements: block-display elements
+- Applicable Targets: none
+
 ```html
 <div data-target-scrollbox="600">
 	<p>If this content goes over 600 pixels tall, the div will get a scrollbar</p>
@@ -219,6 +237,9 @@ The threshold can be set relative to the window size instead by using a negative
 As with all Target.js elements, Scrollbox updates itself on window.resize.
 
 ### Grid
+
+- Applicable Elements: any
+- Applicable Targets: none
 
 Makes elements in a row all the same height. This doesn't replace your CSS grid; rather, it works in conjunction with it.
 
@@ -268,7 +289,12 @@ Alternatively, you can disable using a shortcut:
 
 ### Src
 
-The Src component responsively loads images. It must be used on an `<img>` element. For example:
+The Src component responsively loads images. It must be used on an `<img>` element.
+
+- Applicable Elements: `<img>`
+- Applicable Targets: none
+
+For example:
 
 ```html
 <img data-target-src="/some-mobile-img.jpg /my-tablet-image.jpg /a-desktop-image.gif">
