@@ -14,6 +14,7 @@ var uglify 			= require('gulp-uglify');
 var isProduction 	= pkg.environment === 'production';
 var jspaths = [
 	pkg.pathToSrc + 'js/app/core/*.js',
+	pkg.pathToSrc + 'js/app/base/*.js',
 	pkg.pathToSrc + 'js/app/services/*.js',
 	pkg.pathToSrc + 'js/app/components/*.js',
 	pkg.pathToSrc + 'js/app/*.js'
