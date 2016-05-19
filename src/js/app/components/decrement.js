@@ -1,5 +1,4 @@
 /**
- *
  * target.Decrement
  *
  * decrements the value of a target input
@@ -7,9 +6,8 @@
  * usage:
  *
  * `<a data-target-decrement="#qty" data-target-min="0">-1 to #qty</a>`
- *
  */
-;(function(target, undefined) {
+(function(target, undefined) {
 	
 	'use strict';
 

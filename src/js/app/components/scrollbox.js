@@ -1,5 +1,4 @@
 /**
- *
  * target.Scrollbox
  *
  * creates a box that automatically gets scrollbars
@@ -13,9 +12,8 @@
  * or
  *
  * `<div data-target-scrollbox="-500">This will scroll when it's taller than window.height - 500px</div>` 
- * 
  */
-;(function(target, undefined) {
+(function(target, undefined) {
 	
 	'use strict';
 	

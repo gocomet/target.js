@@ -1,5 +1,4 @@
 /**
- *
  * target.Grid
  *
  * gives element the same height as the other items on its row
@@ -18,9 +17,8 @@
  *   <div>Product thumbnail here (these will all have equal height)</div>
  *   <div>Product thumbnail here</div>
  * </div>`
- *
  */
-;(function(target, undefined) {
+(function(target, undefined) {
 	
 	'use strict';
 

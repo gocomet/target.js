@@ -1,5 +1,4 @@
 /**
- *
  * target.Src
  *
  * Responsively loads images
@@ -24,7 +23,7 @@
  *
  * `<img src="my_blang_img.gif" data-target-src="/mobile-and-tablet-img.jpg null /desktop-img.jpg">`
  */
-;(function(target, undefined) {
+(function(target, undefined) {
 	
 	'use strict';
 
@@ -98,9 +97,9 @@
 		 */
 		onLoad: function() {
 
-			this.events.publish('update');
-
 			this.removeDomEventHandler('load');
+			
+			this.events.publish('update');
 
 		},
 

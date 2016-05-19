@@ -1,5 +1,4 @@
 /**
- *
  * target.API
  *
  * make programmatic methods accessible
@@ -10,7 +9,7 @@
  * instead of being tightly coupled to UI class
  * which does a lot of unrelated stuff we don't need here
  */
-;(function(target, undefined) {
+(function(target, undefined) {
 	
 	'use strict';
 

@@ -1,5 +1,4 @@
 /**
- *
  * target.Hide
  *
  * UI element that hides another element onclick
@@ -7,9 +6,8 @@
  * usage:
  *
  * `<a data-target-hide="#my-target">Click to hide #my-target</a>`
- *
  */
-;(function(target, undefined) {
+(function(target, undefined) {
 	
 	'use strict';
 

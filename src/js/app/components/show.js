@@ -1,5 +1,4 @@
 /**
- *
  * target.Show
  *
  * UI element that shows another element onclick
@@ -7,9 +6,8 @@
  * usage:
  *
  * `<a data-target-show="#show-this">Click to show #show-this</a>`
- *
  */
-;(function(target, undefined) {
+(function(target, undefined) {
 	
 	'use strict';
 

@@ -1,5 +1,4 @@
 /**
- *
  * target.Clickoff
  *
  * close an element by clicking away from it
@@ -7,9 +6,8 @@
  * usage:
  *
  * `<a data-target-clickoff>Click away from this to close</a>`
- *
  */
-;(function(target, undefined) {
+(function(target, undefined) {
 	
 	'use strict';
 

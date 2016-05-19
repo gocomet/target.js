@@ -7,7 +7,7 @@
  * allowing UI to update and enable/disable themselves
  * according to breakpoints
  */
-;(function(target, undefined) {
+(function(target, undefined) {
 	
 	'use strict';
 	

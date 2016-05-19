@@ -5,7 +5,7 @@
  * triggers events
  * to initialize, update, or destroy components
  */
-;(function(target, undefined) {
+(function(target, undefined) {
 	
 	'use strict';
 	

@@ -3,7 +3,7 @@
  *
  * utility methods for use throughout library
  */ 
-;(function(target, undefined) {
+(function(target, undefined) {
 	'use strict';
 	
 	var config = target.config;

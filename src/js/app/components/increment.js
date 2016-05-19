@@ -1,5 +1,4 @@
 /**
- *
  * target.Increment
  *
  * UI element that increments the value of an input
@@ -7,9 +6,8 @@
  * usage:
  *
  * `<a data-target-increment="#qty" data-target-max="99">+1 to #qty</a>`
- *
  */
-;(function(target, undefined) {
+(function(target, undefined) {
 	
 	'use strict';
 

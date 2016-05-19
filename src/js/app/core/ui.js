@@ -1,13 +1,11 @@
 /**
- *
  * target.UI
  *
  * Base class component object
  *
  * define default functionality that all UI elements will share
- *
  */ 
-;(function(target, undefined) {
+(function(target, undefined) {
 	
 	'use strict';
 
@@ -15,7 +13,8 @@
 		
 		init: function(el, _id, target, name) {
 		
-			this._id = _id;
+			this.id = _id;
+			this.componentType = name;
 
 			// mixin shared target.js resources
 			// now all inherited classes have easy access to these
@@ -29,8 +28,7 @@
 			this.disabled = false;
 
 			// bind id
-			this.componentName = name;
-			this.el.setAttribute('data-target-' + name + '-id', this._id);
+			this.el.setAttribute('data-target-' + name + '-id', this.id);
 			
 			// event handlers
 			this.eventHandlers = {};

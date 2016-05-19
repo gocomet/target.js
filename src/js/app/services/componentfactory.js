@@ -2,9 +2,8 @@
  * target.ComponentFactory
  *
  * generates and manages components
- *
  */
-;(function(target, undefined) {
+(function(target, undefined) {
 	
 	'use strict';
 	

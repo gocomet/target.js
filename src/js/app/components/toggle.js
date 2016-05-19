@@ -13,7 +13,7 @@
  *  bind to onchange event instead of onclick
  *
  */
-;(function(target, undefined) {
+(function(target, undefined) {
 	
 	'use strict';
 

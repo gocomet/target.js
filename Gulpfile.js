@@ -2,8 +2,8 @@
  * dependencies
  */
 var pkg				= require('./package.json');
-var jsmanifest 		= require('./jsmanifest.json');
 var gulp 			= require('gulp');
+var order 			= require('gulp-order');
 var livereload 		= require('gulp-livereload');
 var gulpif 			= require('gulp-if');
 var srcmaps 		= require('gulp-sourcemaps');
@@ -11,10 +11,13 @@ var jshint 			= require('gulp-jshint');
 var concat 			= require('gulp-concat');
 var stripDebug 		= require('gulp-strip-debug');
 var uglify 			= require('gulp-uglify');
-var exec 			= require('child_process').exec;
-var argv 			= require('yargs').argv;
-var headerFooter 	= require('gulp-headerfooter');
 var isProduction 	= pkg.environment === 'production';
+var jspaths = [
+	pkg.pathToSrc + 'js/app/core/*.js',
+	pkg.pathToSrc + 'js/app/services/*.js',
+	pkg.pathToSrc + 'js/app/components/*.js',
+	pkg.pathToSrc + 'js/app/*.js'
+];
 
 /**
  * scripts task
@@ -23,12 +26,12 @@ var isProduction 	= pkg.environment === 'production';
  */
 gulp.task('scripts', function() {
 	// prepend our pathToJs to each js file in the manifest (to make our lives easy -- less writing)
-	var jspaths = [];
-	jsmanifest.forEach(function(val) { 
-		jspaths.push(pkg.pathToSrc + 'js/' + val + '.js');
-	});
-	
 	return gulp.src(jspaths)
+		// order files
+		.pipe(order(jspaths, {
+			base: './'
+		}))
+
 		// js hinting for code standards
 		.pipe(jshint())
 		.pipe(jshint.reporter('default'))
@@ -52,13 +55,11 @@ gulp.task('scripts', function() {
 			mangle: isProduction,
 			compress: isProduction,
 			output: {
-				beautify: !isProduction
+				beautify: !isProduction,
+				comments: !isProduction
 			},
 			preserveComments: !isProduction
 		}))
-
-		// wrap in IIFE
-		.pipe(headerFooter('(function() {', '})();'))
 
 		// output our js to our specified destination
 		.pipe(gulp.dest(pkg.pathToDest))
