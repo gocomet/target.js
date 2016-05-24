@@ -463,7 +463,7 @@ target.events.subscribe('max', function(input) {
 
 Target.js is declarative by nature, designed so you don't need to use JS at all. But, you may want to! You can use target.js's static methods to hook into Target.js programmatically.
 
-### target.show
+### target.api.show
 
 - Shows an element using Target.js' active CSS class.
 - fires a "show" event for each element shown, passing the element as the only argument
@@ -471,7 +471,7 @@ Target.js is declarative by nature, designed so you don't need to use JS at all.
 
 **Usage**
 
-`target.show(<element:DOMElement> or <list:NodeList> or <selector:string>)`
+`target.api.show(<element:DOMElement> or <list:NodeList> or <selector:string>)`
 
 Accepts 1 argument: either a DOM Element, an array of DOM Elements, or a CSS selector
 
@@ -479,7 +479,7 @@ Accepts 1 argument: either a DOM Element, an array of DOM Elements, or a CSS sel
 
 ```html
 <script>
-target.show('#my-modal');
+target.api.show('#my-modal');
 </script>
 ```
 
@@ -488,7 +488,7 @@ or
 ```html
 <script>
 var myModal = document.getElementById('my-modal');
-target.show(myModal);
+target.api.show(myModal);
 </script>
 ```
 
@@ -497,7 +497,7 @@ or
 ```html
 <script>
 var modals = document.querySelectorAll('.modals');
-target.show(modals);
+target.api.show(modals);
 </script>
 ```
 
@@ -505,7 +505,7 @@ or
 
 ```html
 <script>
-target.show('.modals');
+target.api.show('.modals');
 </script>
 ```
 
@@ -519,7 +519,7 @@ etc.
 
 **Usage**
 
-`target.hide(<element:DOMElement> or <list:NodeList> or <selector:string>)`
+`target.api.hide(<element:DOMElement> or <list:NodeList> or <selector:string>)`
 
 Accepts 1 argument: either a DOM Element, an array of DOM Elements, or a CSS selector
 
@@ -527,7 +527,7 @@ Accepts 1 argument: either a DOM Element, an array of DOM Elements, or a CSS sel
 
 ```html
 <script>
-target.hide('#my-modal');
+target.api.hide('#my-modal');
 </script>
 ```
 
@@ -536,7 +536,7 @@ or
 ```html
 <script>
 var myModal = document.getElementById('my-modal');
-target.hide(myModal);
+target.api.hide(myModal);
 </script>
 ```
 
@@ -545,7 +545,7 @@ or
 ```html
 <script>
 var modals = document.querySelectorAll('.modals');
-target.hide(modals);
+target.api.hide(modals);
 </script>
 ```
 
@@ -553,7 +553,7 @@ or
 
 ```html
 <script>
-target.hide('.modals');
+target.api.hide('.modals');
 </script>
 ```
 
@@ -567,7 +567,7 @@ etc.
 
 **Usage**
 
-`target.hide(<element:DOMElement> or <list:NodeList> or <selector:string>)`
+`target.api.toggle(<element:DOMElement> or <list:NodeList> or <selector:string>)`
 
 Accepts 1 argument: either a DOM Element, an array of DOM Elements, or a CSS selector
 
@@ -575,7 +575,7 @@ Accepts 1 argument: either a DOM Element, an array of DOM Elements, or a CSS sel
 
 ```html
 <script>
-target.toggle('#my-modal');
+target.api.toggle('#my-modal');
 </script>
 ```
 
@@ -584,7 +584,7 @@ or
 ```html
 <script>
 var myModal = document.getElementById('my-modal');
-target.toggle(myModal);
+target.api.toggle(myModal);
 </script>
 ```
 
@@ -593,7 +593,7 @@ or
 ```html
 <script>
 var modals = document.querySelectorAll('.modals');
-target.toggle(modals);
+target.api.toggle(modals);
 </script>
 ```
 
@@ -601,7 +601,7 @@ or
 
 ```html
 <script>
-target.toggle('.modals');
+target.api.toggle('.modals');
 </script>
 ```
 

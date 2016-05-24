@@ -5,13 +5,11 @@
  */ 
 (function(target, undefined) {
 	'use strict';
-	
-	var config = target.config;
 
 	target.utils = {
 		
 		/**
-		 * _shallow_ mixins on objects
+		 * shallow-ish mixins on objects
 		 */
 		mixin: function(origObj, newObj) {
 		
@@ -132,6 +130,11 @@
 			return array;
 		
 		},
+
+		/**
+		 * create shorter alias for QS
+		 */
+		qs: document.querySelector.bind(document),
 
 		/**
 		 * create shorter alias for QSA

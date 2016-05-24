@@ -1,10 +1,9 @@
 /**
- *
  * target.init
  *
  * override default settings (if specified)
- * initialize all components on doc.ready
- *
+ * initialize all services
+ * initialize all components that exist on page
  */
 (function(target, undefined) {
 	
@@ -19,10 +18,10 @@
 		target.events = new window.Mediator();
 		target.window = target.Window.create(target);
 		target.domObserver = target.DomObserver.create(target);
-		target.api = target.API.create(null, 'target-api', target, 'api');
+		target.componentFactory = target.ComponentFactory.create(target);
+		target.api = target.API.create(target);
 
 		// init components
-		target.componentFactory = target.ComponentFactory.create(target);
 		target.componentFactory.start();
 	
 	};

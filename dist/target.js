@@ -39,10 +39,9 @@
  */
 (function(target, undefined) {
     "use strict";
-    var config = target.config;
     target.utils = {
         /**
-		 * _shallow_ mixins on objects
+		 * shallow-ish mixins on objects
 		 */
         mixin: function(origObj, newObj) {
             var k;
@@ -116,6 +115,10 @@
             }
             return array;
         },
+        /**
+		 * create shorter alias for QS
+		 */
+        qs: document.querySelector.bind(document),
         /**
 		 * create shorter alias for QSA
 		 */
@@ -243,18 +246,13 @@
 		 * remove all dom events
 		 */
         destroy: function() {
-            var handler;
-            var domHandler;
-            for (handler in this.eventHandlers) {
-                if (this.eventHandlers.hasOwnProperty()) {
-                    this.removeEventHandler(handler);
-                }
-            }
-            for (domHandler in this.domEventHandlers) {
-                if (this.domEventHandlers.hasOwnProperty()) {
-                    this.removeDomEventHandler(domHandler);
-                }
-            }
+            var _this = this;
+            this.utils.forIn(this.eventHandlers, function(handler) {
+                _this.removeEventHandler(handler);
+            });
+            this.utils.forIn(this.domEventHandlers, function(domHandler) {
+                _this.removeEventHandler(domHandler);
+            });
         },
         /**
 		 * when attributes are changed in the DOM
@@ -294,14 +292,14 @@
             var i, len, layout;
             for (i = 0, len = this.disableLayouts.length; i < len; i++) {
                 layout = this.disableLayouts[i];
-                if (is[layout]()) {
+                if (is[layout]() && !this.overrideLayouts) {
                     disable = true;
-                    this.disabled = true;
+                    this.disable(true);
                     break;
                 }
             }
-            if (!disable) {
-                this.disabled = false;
+            if (!disable && !this.overrideLayouts) {
+                this.enable();
             }
         },
         /**
@@ -309,6 +307,32 @@
 		 */
         isDisabled: function() {
             return this.disabled;
+        },
+        /**
+		 * set "disabled" property to true
+		 * deactivates element
+		 * when called via api, no arg passed
+		 * therefore override
+		 * so that windoe resizing doesn't
+		 * override enabled/disabled state
+		 * when set via api
+		 */
+        disable: function(doNotOverride) {
+            this.overrideLayouts = !doNotOverride;
+            this.disabled = true;
+        },
+        /**
+		 * set "disabled" property to false
+		 * activates element
+		 * when called via api, no arg passed
+		 * therefore override
+		 * so that windoe resizing doesn't
+		 * override enabled/disabled state
+		 * when set via api
+		 */
+        enable: function(doNotOverride) {
+            this.overrideLayouts = !doNotOverride;
+            this.disabled = false;
         },
         /**
 		 * show an element using css
@@ -357,28 +381,33 @@
  * target.API
  *
  * make programmatic methods accessible
- * to global object
  * in simplified api
- *
- * TODO: this needs to be refactored
- * instead of being tightly coupled to UI class
- * which does a lot of unrelated stuff we don't need here
  */
 (function(target, undefined) {
     "use strict";
-    target.API = target.UI.extend({
-        init: function(el, _id, target, name) {
-            el = document.createElement("div");
-            el.style.display = "none";
-            this._super.apply(this, [ el, _id, target, name ]);
-            // apply convenience methods to global "target" object
-            this.target = target;
-            this.target.show = this.showEls.bind(this);
-            this.target.hide = this.hideEls.bind(this);
-            this.target.get = this.get.bind(this);
-            this.target.toggle = this.toggleEls.bind(this);
+    target.API = window.Proto.extend({
+        init: function(target) {
+            this.utils = target.utils;
+            this.componentFactory = target.componentFactory;
         },
-        getEls: function(els) {
+        /**
+		 * normalize
+		 * return one element
+		 * to search for component
+		 */
+        normalize: function(el) {
+            if (typeof el === "string") {
+                el = this.utils.qs(el);
+            }
+            return el;
+        },
+        /**
+		 * normalize els
+		 * return Array or NodeList
+		 * of elements
+		 * (to be used as targets)
+		 */
+        normalizeEls: function(els) {
             if (typeof els === "string") {
                 els = this.utils.qsa(els);
             } else if (els.length) {
@@ -388,41 +417,49 @@
             }
             return els;
         },
-        get: function(els) {
-            els = this.getEls(els);
-            this.targets = els;
-            return this;
-        },
-        showEls: function(els) {
-            var _this = this;
-            els = this.getEls(els);
-            this.utils.forEach.call(els, function(el) {
-                _this.show(el);
-            });
-        },
-        hideEls: function(els) {
-            var _this = this;
-            els = this.getEls(els);
-            this.utils.forEach.call(els, function(el) {
-                _this.hide(el);
-            });
+        /**
+		 * get component by element
+		 * accepts only one DOM element
+		 * or css selector to return only one DOM element
+		 */
+        get: function(el) {
+            var component;
+            el = this.normalize(el);
+            component = this.componentFactory.find(el);
+            if (!component) {
+                throw "Error at Target.API.get(): " + el.toString() + " is not a Target.js element.";
+            }
+            return component;
         },
         /**
-		 * if the target is shown, hide it
-		 * if the target is hidden, show it
-		 * all using css
-		 * also toggle state of toggle button itself
+		 * show a target (or targets) programmatically
 		 */
-        toggleEls: function(els) {
-            var _this = this;
-            els = this.getEls(els);
-            this.utils.forEach.call(els, function(el) {
-                if (!el.classList.contains(_this.config.activeClass)) {
-                    _this.show(el);
-                } else {
-                    _this.hide(el);
-                }
+        show: function(els) {
+            var component = this.componentFactory.use("Show", this.normalizeEls(els));
+            this.utils.forEach.call(component.targets, function(target) {
+                component.show(target);
             });
+            return this;
+        },
+        /**
+		 * hide a target (or targets) programmatically
+		 */
+        hide: function(els) {
+            var component = this.componentFactory.use("Hide", this.normalizeEls(els));
+            this.utils.forEach.call(component.targets, function(target) {
+                component.hide(target);
+            });
+            return this;
+        },
+        /**
+		 * toggle a target (or targets) programmatically
+		 */
+        toggle: function(els) {
+            var component = this.componentFactory.use("Toggle", this.normalizeEls(els));
+            this.utils.forEach.call(component.targets, function(target) {
+                component.toggle(target);
+            });
+            return this;
         }
     });
 })(window.target = window.target || {});
@@ -472,6 +509,12 @@
             this.topId++;
             this.components[this.topId] = Component.create(el, this.topId, this.target, name);
         },
+        /**
+		 * initComponent
+		 * by name
+		 * for each Target element that currently exists
+		 * in DOM
+		 */
         initComponent: function(name) {
             var _this = this;
             var Component = this.target[name];
@@ -480,6 +523,42 @@
                 _this.components[_this.topId] = Component.create(el, _this.topId, _this.target, name);
             });
         },
+        /**
+		 * find component by DOM element
+		 * used by Target.API
+		 */
+        find: function(el) {
+            var _this = this;
+            var component = false;
+            this.utils.forIn(this.components, function(id, components) {
+                if (components[id].el === el) {
+                    component = components[id];
+                }
+            });
+            return component;
+        },
+        /**
+		 * get component by ID
+		 * used by target.API
+		 */
+        get: function(id) {
+            return this.components[id];
+        },
+        /**
+		 * component for one-time use
+		 * used by API
+		 */
+        use: function(name, targets) {
+            var el = document.createElement("div");
+            var Component = this.target[name];
+            var component = Component.create(el, "tmp", this.target, name);
+            component.targets = targets;
+            return component;
+        },
+        /**
+		 * start function run manually
+		 * after object instantiation
+		 */
         start: function() {
             var _this = this;
             this.componentClasses.forEach(function(name) {
@@ -1315,12 +1394,11 @@
 })(window.target = window.target || {});
 
 /**
- *
  * target.init
  *
  * override default settings (if specified)
- * initialize all components on doc.ready
- *
+ * initialize all services
+ * initialize all components that exist on page
  */
 (function(target, undefined) {
     "use strict";
@@ -1331,9 +1409,9 @@
         target.events = new window.Mediator();
         target.window = target.Window.create(target);
         target.domObserver = target.DomObserver.create(target);
-        target.api = target.API.create(null, "target-api", target, "api");
-        // init components
         target.componentFactory = target.ComponentFactory.create(target);
+        target.api = target.API.create(target);
+        // init components
         target.componentFactory.start();
     };
 })(window.target = window.target || {});

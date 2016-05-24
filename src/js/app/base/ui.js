@@ -113,28 +113,19 @@
 		 */
 		destroy: function() {
 
-			var handler;
-			var domHandler;
+			var _this = this;
+			
+			this.utils.forIn(this.eventHandlers, function(handler) {
 
-			for (handler in this.eventHandlers) {
+				_this.removeEventHandler(handler);
 
-				if (this.eventHandlers.hasOwnProperty()) {
+			});
 
-					this.removeEventHandler(handler);
-					
-				}
+			this.utils.forIn(this.domEventHandlers, function(domHandler) {
 
-			}
+				_this.removeEventHandler(domHandler);
 
-			for (domHandler in this.domEventHandlers) {
-
-				if (this.domEventHandlers.hasOwnProperty()) {
-
-					this.removeDomEventHandler(domHandler);
-
-				}
-
-			}
+			});
 
 		},
 
@@ -193,20 +184,20 @@
 			for (i = 0, len = this.disableLayouts.length; i < len; i++) {
 			
 				layout = this.disableLayouts[i];
-			
-				if (is[layout]()) {
-			
+
+				if (is[layout]() && !this.overrideLayouts) {
+
 					disable = true;
-					this.disabled = true;
+					this.disable(true);
 					break;
 			
 				}
 			
 			}
 
-			if (!disable) {
+			if (!disable && !this.overrideLayouts) {
 			
-				this.disabled = false;
+				this.enable();
 			
 			}
 		
@@ -219,6 +210,40 @@
 		
 			return this.disabled;
 		
+		},
+
+		/**
+		 * set "disabled" property to true
+		 * deactivates element
+		 * when called via api, no arg passed
+		 * therefore override
+		 * so that windoe resizing doesn't
+		 * override enabled/disabled state
+		 * when set via api
+		 */
+		disable: function(doNotOverride) {
+
+			this.overrideLayouts = !doNotOverride;
+
+			this.disabled = true;
+
+		},
+
+		/**
+		 * set "disabled" property to false
+		 * activates element
+		 * when called via api, no arg passed
+		 * therefore override
+		 * so that windoe resizing doesn't
+		 * override enabled/disabled state
+		 * when set via api
+		 */
+		enable: function(doNotOverride) {
+
+			this.overrideLayouts = !doNotOverride;
+
+			this.disabled = false;
+
 		},
 
 		/**

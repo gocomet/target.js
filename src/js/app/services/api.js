@@ -2,36 +2,45 @@
  * target.API
  *
  * make programmatic methods accessible
- * to global object
  * in simplified api
- *
- * TODO: this needs to be refactored
- * instead of being tightly coupled to UI class
- * which does a lot of unrelated stuff we don't need here
  */
 (function(target, undefined) {
 	
 	'use strict';
 
-	target.API = target.UI.extend({
+	target.API = window.Proto.extend({
 
-		init: function(el, _id, target, name) {
+		init: function(target) {
 
-			el = document.createElement('div');
-			el.style.display = 'none';
-
-			this._super.apply(this, [el, _id, target, name]);
-		
-			// apply convenience methods to global "target" object
-			this.target = target;
-			this.target.show = this.showEls.bind(this);
-			this.target.hide = this.hideEls.bind(this);
-			this.target.get = this.get.bind(this);
-			this.target.toggle = this.toggleEls.bind(this);
+			this.utils = target.utils;
+			this.componentFactory = target.componentFactory;
 
 		},
 
-		getEls: function(els) {
+		/**
+		 * normalize
+		 * return one element
+		 * to search for component
+		 */
+		normalize: function(el) {
+
+			if (typeof el === 'string') {
+
+				el = this.utils.qs(el);
+
+			}
+
+			return el;
+
+		},
+
+		/**
+		 * normalize els
+		 * return Array or NodeList
+		 * of elements
+		 * (to be used as targets)
+		 */
+		normalizeEls: function(els) {
 
 			if (typeof els === 'string') {
 
@@ -51,69 +60,77 @@
 
 		},
 
-		get: function(els) {
+		/**
+		 * get component by element
+		 * accepts only one DOM element
+		 * or css selector to return only one DOM element
+		 */
+		get: function(el) {
 
-			els = this.getEls(els);
+			var component;
 
-			this.targets = els;
+			el = this.normalize(el);
+
+			component = this.componentFactory.find(el);
+
+			if (!component) {
+				
+				throw 'Error at Target.API.get(): ' + el.toString() + ' is not a Target.js element.';
+			
+			}
+
+			return component;
+
+		},
+
+		/**
+		 * show a target (or targets) programmatically
+		 */
+		show: function(els) {
+
+			var component = this.componentFactory.use('Show', this.normalizeEls(els));
+
+			this.utils.forEach.call(component.targets, function(target) {
+
+				component.show(target);
+
+			});
 
 			return this;
 
 		},
 
-		showEls: function(els) {
+		/**
+		 * hide a target (or targets) programmatically
+		 */
+		hide: function(els) {
 
-			var _this = this;
+			var component = this.componentFactory.use('Hide', this.normalizeEls(els));
 
-			els = this.getEls(els);
+			this.utils.forEach.call(component.targets, function(target) {
 
-			this.utils.forEach.call(els, function(el) {
+				component.hide(target);
 
-				_this.show(el);
-			
 			});
 
-		},
-
-		hideEls: function(els) {
-
-			var _this = this;
-
-			els = this.getEls(els);
-
-			this.utils.forEach.call(els, function(el) {
-
-				_this.hide(el);
-			
-			});
+			return this;
 
 		},
 
 		/**
-		 * if the target is shown, hide it
-		 * if the target is hidden, show it
-		 * all using css
-		 * also toggle state of toggle button itself
+		 * toggle a target (or targets) programmatically
 		 */
-		toggleEls: function(els) {
-		
-			var _this = this;
+		toggle: function(els) {
 
-			els = this.getEls(els);
+			var component = this.componentFactory.use('Toggle', this.normalizeEls(els));
 
-			this.utils.forEach.call(els, function(el) {
+			this.utils.forEach.call(component.targets, function(target) {
 
-				if (!el.classList.contains(_this.config.activeClass)) {
-					
-					_this.show(el);
-			
-				} else {
-				
-					_this.hide(el);
-			
-				}
+				component.toggle(target);
 
 			});
+
+			return this;
 
 		}
 
