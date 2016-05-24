@@ -16,7 +16,6 @@
       <h1 class="project-name">Target.js Demo</h1>
       <h2 class="project-tagline">Target.js doesn&#39;t do much; but what it does, it does well. It adds functionality to your DOM elements using data-attributes.</h2>
       <a href="demo.html" class="btn">View Demo</a>
-      <a href="examples.html" class="btn">View Examples</a>
       <a href="https://github.com/gocomet/target.js" class="btn">View on GitHub</a>
       <a href="https://github.com/gocomet/target.js/zipball/master" class="btn">Download .zip</a>
       <a href="https://github.com/gocomet/target.js/tarball/master" class="btn">Download .tar.gz</a>
@@ -63,7 +62,7 @@
         <div class="column small-6 medium-4 large-3">
           <div class="product-thumbnail text-center">
             <img src="img/blank.gif" data-target-src="//placehold.it/240x240/6F5DBB/fff //placehold.it/220x220/00CDCC/fff //placehold.it/240x240/6F5DBB/fff">
-            <h5 class="product-title">Extra super freaky long product title</h5>
+            <h5 class="product-title">Super Extra-Long Product Title</h5>
           </div>
         </div>
         <div class="column small-6 medium-4 large-3">
@@ -81,7 +80,7 @@
         <div class="column small-6 medium-4 large-3">
           <div class="product-thumbnail text-center">
             <img src="img/blank.gif" data-target-src="//placehold.it/240x240/6F5DBB/fff //placehold.it/220x220/00CDCC/fff //placehold.it/240x240/6F5DBB/fff">
-            <h5 class="product-title">Extra super freaky long product title</h5>
+            <h5 class="product-title">Super Extra-Long Product Title</h5>
           </div>
         </div>
         <div class="column small-6 medium-4 large-3">
@@ -105,7 +104,7 @@
         <div class="column small-6 medium-4 large-3">
           <div class="product-thumbnail text-center">
             <img src="img/blank.gif" data-target-src="//placehold.it/240x240/6F5DBB/fff //placehold.it/220x220/00CDCC/fff //placehold.it/240x240/6F5DBB/fff">
-            <h5 class="product-title">Extra super freaky long product title</h5>
+            <h5 class="product-title">Super Extra-Long Product Title</h5>
           </div>
         </div>
         <div class="column small-6 medium-4 large-3">
@@ -159,15 +158,13 @@
         }
       });
 
-      target.events.subscribe('min', function(el) {
-      
+      target.events.subscribe('min', function(el) { 
         var lineItem = document.querySelector(el.getAttribute('data-lineitem'));
 
         target.hide(lineItem);
       
         // remove lineItem after animation fades it out
         setTimeout(function() {
-      
           var lineItems;
           var minicart;
 
@@ -178,16 +175,18 @@
           lineItems = document.querySelectorAll('.line-item');
 
           if (!lineItems.length) {
-
             minicart = document.getElementById('minicart');
-
             target.hide(minicart);
-
             // TODO: expose 'disable' method to API
             //target.get(minicartToggle).disable();
           }
         }, 300);
       });
+
+      // evil popup
+      setTimeout(function() {
+        target.show('#modal,#modal-bg,body');
+      }, 5000);
     </script>
   </body>
 </html>
