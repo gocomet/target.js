@@ -197,7 +197,7 @@
 
 			if (!disable && !this.overrideLayouts) {
 			
-				this.enable();
+				this.enable(true);
 			
 			}
 		
