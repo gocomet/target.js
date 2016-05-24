@@ -1,15 +1,12 @@
 
 # Target.js!
 
-(This project is still in development and has no stable release as of yet. Expect bugs.)
-
 Target.js doesn't do much. But what it does, it does well. It adds functionality to your DOM elements using data-attributes. It lets you:
 
-- Show elements
-- Hide elements
-- Toggle elements
+- show/hide/toggle elements
 - Click away from elements to close them
 - Create responsive scrollboxes
+- Responsively load images
 - Increment/decrement quantity boxes
 - Give your thumbnails equal heights
 
@@ -25,7 +22,7 @@ _It does_ this in a declarative way:
 </div>
 ```
 
-_It doesn't_ interfere with native browser events or functionality. It doesn't depend on jQuery - it works vanilla DOM methods, running faster.
+_It doesn't_ interfere with native browser events or functionality. It doesn't depend on jQuery - it uses vanilla DOM methods, running faster.
 
 Target.js is designed to give you JS functionality without having to write any JavaScript - just include declarations in your HTML markup, and off you go!
 
