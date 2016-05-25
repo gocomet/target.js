@@ -28,7 +28,6 @@
 		 */
 		onClick: function(e) {
 
-			var _this = this;
 			var hide = true;
 			var showAtt;
 			var toggleAtt;
