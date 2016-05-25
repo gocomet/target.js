@@ -1,20 +1,22 @@
 
 # Target.js!
 
+>(Target.js is in active development -- expect a lot of bugs, a lot of changes, and a lot of features to come!)
+
 Target.js doesn't do much. But what it does, it does well. It adds functionality to your DOM elements using data-attributes. It lets you:
 
 - show/hide/toggle elements
-- Click away from elements to close them
-- Create responsive scrollboxes
-- Responsively load images
-- Increment/decrement quantity boxes
-- Give your thumbnails equal heights
+- click away from elements to close them
+- create responsive scrollboxes
+- responsively load images
+- increment/decrement quantity boxes
+- give your thumbnails equal heights
 
 _It does_ this in a declarative way:
 
 ```html
 <button data-target-toggle="#a-div">
-  Toggle A Div!
+  Toggle a div!
 </button>
 
 <div id="a-div">
@@ -49,6 +51,10 @@ Target.js handles screen resizes in realtime. So, as you adjust your screen size
 Adding some attributes on elements is all well and good, but things are never that simple. What if you need to load in elements via AJAX? What if you're creating elements via a JS templating system like Handlebars?
 
 Target.js watches the DOM for changes: if a new element is introduced with one of Target.js' data-attributes, it will automatically initialize it. That means you can swap target elements in and out of your page anyway you want, and they will _just work_.
+
+### 3. Event-driven communication
+
+Target.js elements and their targets communicate with each other via events; this results in a two-way state bind, so that if a target is shown, the element that shows it also gets an active state.
 
 ## Browser Support
 
@@ -340,7 +346,7 @@ target.api.show('.modals');
 
 etc.
 
-### target.hide
+### target.api.hide
 
 - Hides an element using Target.js' active CSS class.
 - fires a "hide" event for each element hidden, passing the element as the only argument
@@ -388,7 +394,7 @@ target.api.hide('.modals');
 
 etc.
 
-### target.toggle
+### target.api.toggle
 
 - Toggles an element using Target.js' active CSS class.
 - fires either a "show" or "hide" event for each element toggled, passing the element as the only argument
@@ -433,6 +439,23 @@ or
 target.api.toggle('.modals');
 </script>
 ```
+
+### target.api.get
+
+Return an instance of a Target.js component
+
+Accepts 1 argument: a CSS selector targeting one element, or a DOM element
+
+>NOTE: the element _must_ already be a target.js component (it must have a target.js data-attribute on it)
+
+**Usage**
+
+`var minicartToggle = target.api.get('#minicart-toggle');`
+
+Using the `get` method will give you access to all of a Component's public methods:
+
+`minicartToggle.disable();`
+`minicartToggle.enable();`
 
 etc.
 
