@@ -75,6 +75,12 @@ For example:
 <script src="my-js-folder/target.js"></script>
 ```
 
+or:
+
+```html
+<script src="my-js-folder/target.bundled.js"></script>
+```
+
 ### 2. Initialize Target.js
 
 ```html
@@ -131,197 +137,20 @@ You can customize Target.js so that it doesn't conflict with any of your existin
 
 ## Components
 
->Fun fact: most Target.js components don't care what type of element they're applied to. However, some declarations do care. They're specified below.
+>Fun fact: most Target.js components don't care what type of element they're applied to. However, some declarations do care.
 
-Here are specific usages for each Target.js component:
+Components:
 
-### Show
+- [Show](show.md)
+- [Hide](hide.md)
+- [Toggle](toggle.md)
+- [Clickoff](clickoff.md)
+- [Increment/Decrement](increment-decrement.md)
+- [Scrollbox](scrollbox.md)
+- [Grid](grid.md)
+- [Src](src.md)
 
-Shows an element
-
-- Applicable Elements: any
-- Applicable Targets: any
-
-```html
-<button data-target-show="#my-target">
-	Show #my-target!
-</button>
-```
-
-### Hide
-
-Hides an element
-
-- Applicable Elements: any
-- Applicable Targets: any
-
-```html
-<button data-target-hide="#my-target">
-	Hide #my-target!
-</button>
-```
-
-### Toggle
-
-Toggles an element
-
-- Applicable Elements: any
-- Applicable Targets: any
-
-```html
-<button data-target-toggle="#my-target">
-	Toggle #my-target!
-</button>
-```
-
-### Clickoff
-
-An element will hide itself when you click away from it
-
-- Applicable Elements: any
-- Applicable Targets: any
-
-```html
-<div data-target-clickoff>
-	Click away from me to close!
-</div>
-```
-
-### Increment/Decrement
-
-Increments or decrements the value of an input. Targeted element must be an `<input>` element.
-
-- Applicable Elements: any
-- Applicable Targets: `<input>`
-
-```html
-<button data-target-decrement="#qty">-</button>
-<input id="qty">1</input>
-<button data-target-increment="#qty">+</button>
-```
-
-Increments and decrements can have optional min and max values
-
-```html
-<button data-target-decrement="#qty" data-target-min="-10">-</button>
-<input id="qty">1</input>
-<button data-target-increment="#qty" data-target-max="10">+</button>
-```
-
-The default minimum value for decrementers is 0
-
-### Scrollbox
-
-Creates a responsive scrollbox. When the content is taller than the threshold, the element gets a scrollbar. When the content isn't, the scrollbar disappears.
-
-- Applicable Elements: block-display elements
-- Applicable Targets: none
-
-```html
-<div data-target-scrollbox="600">
-	<p>If this content goes over 600 pixels tall, the div will get a scrollbar</p>
-</div>
-```
-
-The threshold can be set relative to the window size instead by using a negative integer:
-
-```html
-<div data-target-scrollbox="-300">
-	<p>If this content is within 299 pixels of the window height, a scrollbar will appear.</p>
-</div>
-```
-
-As with all Target.js elements, Scrollbox updates itself on window.resize.
-
-### Grid
-
-- Applicable Elements: any
-- Applicable Targets: none
-
-Makes elements in a row all the same height. This doesn't replace your CSS grid; rather, it works in conjunction with it.
-
-```html
-<div data-target-grid="2 3 4">
-	<div>Product thumbnail here</div>
-	<div>Product thumbnail here</div>
-	<div>Product thumbnail here (these will all have equal height)</div>
-	<div>Product thumbnail here</div>
-	<div>Product thumbnail here</div>
-	<div>Product thumbnail here</div>
-	<div>Product thumbnail here (these will all have equal height)</div>
-	<div>Product thumbnail here</div>
-</div>
-```
-
-Provide a space-separated list of columns per row. In the above example, there are 2 columns per row on mobile, 3 columns per row on tablet, and 4 columns per row on desktop.
-
-An example using Foundation's grid classes:
-
-```html
-<div class="row" data-target-grid="2 3 4">
-	<div class="column small-6 medium-4 large-3">Product thumbnail here</div>
-	<div class="column small-6 medium-4 large-3">Product thumbnail here</div>
-	<div class="column small-6 medium-4 large-3">Product thumbnail here (these will all have equal height)</div>
-	<div class="column small-6 medium-4 large-3">Product thumbnail here</div>
-	<div class="column small-6 medium-4 large-3">Product thumbnail here</div>
-	<div class="column small-6 medium-4 large-3">Product thumbnail here</div>
-	<div class="column small-6 medium-4 large-3">Product thumbnail here (these will all have equal height)</div>
-	<div class="column small-6 medium-4 large-3">Product thumbnail here</div>
-</div>
-```
-
-**Disabling the Grid**
-
-You can disable the Grid responsively, like you could any other Target.js element:
-
-```html
-<div data-target-grid="1 2 3" data-target-disable="mobile">...</div>
-```
-
-Alternatively, you can disable using a shortcut:
-
-```html
-<div data-target-grid="disable 2 3">...</div>
-```
-
-### Src
-
-The Src component responsively loads images. It must be used on an `<img>` element.
-
-- Applicable Elements: `<img>`
-- Applicable Targets: none
-
-For example:
-
-```html
-<img data-target-src="/some-mobile-img.jpg /my-tablet-image.jpg /a-desktop-image.gif">
-```
-
-The `data-target-src` accepts a space-separated list of 3 URLs. First, mobile; second, tablet; third, desktop. Because Src is mobile-first, you can omit URLs if you want:
-
-```html
-<img data-target-src="/some-mobile-img.jpg /my-tablet-and-desktop-image.jpg">
-```
-
-Or, pass a null argument to inherit the smaller image:
-
-```html
-<img data-target-src="/some-mobile-and-tablet-img.jpg null /my-desktop-image.jpg">
-```
-
-Or:
-
-```html
-<img data-target-src="/used-for-mobile-tablet-and-desktop.jpg">
-```
-
-The Src element doesn't add it's own placeholder image, so be sure to use your own:
-
-```html
-<img src="my_blank.gif" data-target-src="/some-mobile-img.jpg /my-tablet-image.jpg /a-desktop-image.gif">
-```
-
-## Components: Two-way Bind
+## Two-way Event Bind
 
 Target.js components have a two-way bind, using events, with their targeted element. For example, when an element is shown by a Target.js component, that component element will also receive an active state.
 

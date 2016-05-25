@@ -4,17 +4,14 @@
 ## Bugfixes
 
 - none currently
-- will likely run into issues having to sync the css classes of, say, a toggler, to its target
-- use events to transmit, say, 'toggled' events from the toggled element to the toggler
 
 ## Events
 
-- document them
+- documentation
 
 ## API
 
-- document
-- clean up
+- documentation
 
 ## usage error messaging
 
