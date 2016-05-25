@@ -5,6 +5,21 @@
 
 - none currently
 
+## Restructure documenation
+
+Move from README into own page/site
+
+Sections:
+
+- Installation
+- Configuration
+- Components
+- Layouts
+- Events
+- Methods
+	- Component instances
+- Plugins (eventually)
+
 ## Events
 
 - documentation

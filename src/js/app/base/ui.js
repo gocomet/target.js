@@ -3,7 +3,7 @@
  *
  * Base class component object
  *
- * define default functionality that all UI elements will share
+ * define default functionality that all UI components will share
  */ 
 (function(target, undefined) {
 	
@@ -48,7 +48,8 @@
 		/**
 		 * add an event handler to a UI element
 		 * using Target's internal event buss
-		 * store a reference to it for later removal
+		 * scope callback to this object
+		 * store for removal by this.destroy
 		 */
 		addEventHandler: function(eventName, cb) {
 
@@ -57,11 +58,9 @@
 		},
 
 		/**
-		 * 
 		 * attach a callback to a DOM event handler
 		 * scope the callback to this object
-		 * store for removal on destroy
-		 *
+		 * store for removal by this.destroy
 		 */
 		addDomEventHandler: function(eventName, cb, el) {
 

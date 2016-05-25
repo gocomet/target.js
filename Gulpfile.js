@@ -12,12 +12,21 @@ var concat 			= require('gulp-concat');
 var stripDebug 		= require('gulp-strip-debug');
 var uglify 			= require('gulp-uglify');
 var isProduction 	= pkg.environment === 'production';
+
 var jspaths = [
 	pkg.pathToSrc + 'js/app/core/*.js',
 	pkg.pathToSrc + 'js/app/base/*.js',
 	pkg.pathToSrc + 'js/app/services/*.js',
 	pkg.pathToSrc + 'js/app/components/*.js',
 	pkg.pathToSrc + 'js/app/*.js'
+];
+
+var bundlepaths = [
+	pkg.pathToSrc + 'js/vendor/weakmap.js',
+	pkg.pathToSrc + 'js/vendor/MutationObserver.js',
+	pkg.pathToSrc + 'js/vendor/proto.es5.js',
+	pkg.pathToSrc + 'js/vendor/mediator.min.js',
+	pkg.pathToDest + 'target.js'
 ];
 
 /**
@@ -67,6 +76,45 @@ gulp.task('scripts', function() {
 
 		// refresh browser
 		.pipe(livereload());
+});
+
+/**
+ * bundle up script together with vendor dependencies
+ */
+gulp.task('bundle', ['scripts'], function() {
+	return gulp.src(bundlepaths)
+		// order files
+		.pipe(order(bundlepaths, {
+			base: './'
+		}))
+
+		// if we're not in production mode, prepare to output sass sourcemaps
+		.pipe(gulpif(!isProduction, srcmaps.init()))
+		
+		// concatenate all our js files into one file named shop.js
+		.pipe(concat('target.bundled.js'))
+
+		// if we are in production mode,
+		// strip out our console.logs and debugger statements
+		.pipe(gulpif(isProduction, stripDebug()))
+		
+		// again, if we're not in production mode, output sourcemap
+		.pipe(gulpif(!isProduction, srcmaps.write()))
+
+		// uglify or beatify our js,
+		// depending on environment (production or develop)
+		.pipe(uglify({
+			mangle: isProduction,
+			compress: isProduction,
+			output: {
+				beautify: !isProduction,
+				comments: !isProduction
+			},
+			preserveComments: !isProduction
+		}))
+
+		// output our js to our specified destination
+		.pipe(gulp.dest(pkg.pathToDest))
 });
 
 /**

@@ -210,7 +210,12 @@
 			}
 	
 		}
-	
+
+		/**
+		 * TODO: add polyfilled `matches` support
+		 * https://developer.mozilla.org/en/docs/Web/API/Element/matches
+		 */
+		// matches: function() {}
 	};
 
 })(window.target = window.target || {});
