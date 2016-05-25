@@ -21,7 +21,7 @@
       <a href="https://github.com/gocomet/target.js/tarball/master" class="btn">Download .tar.gz</a>
     </section>
 
-    <a class="minicart-toggle btn" href="#" data-target-toggle="#minicart" data-target-disable="mobile">Cart</a>
+    <a id="minicart-toggle" class="minicart-toggle btn" href="#" data-target-toggle="#minicart" data-target-disable="mobile">Cart</a>
 
     <div id="minicart" class="minicart fader pad" data-target-clickoff>
       <div id="line-1" class="rel line-item fader target-active oh">
@@ -148,7 +148,9 @@
     </div>
 
     <script src="js/mediator.min.js"></script>
+    <script src="js/weakmap.js"></script>
     <script src="js/MutationObserver.js"></script>
+    <script src="js/proto.es5.js"></script>
     <script src="js/target.js"></script>
     <script>
       target.init({
@@ -161,12 +163,11 @@
       target.events.subscribe('min', function(el) { 
         var lineItem = document.querySelector(el.getAttribute('data-lineitem'));
 
-        target.hide(lineItem);
+        target.api.hide(lineItem);
       
         // remove lineItem after animation fades it out
         setTimeout(function() {
           var lineItems;
-          var minicart;
 
           lineItem.parentNode.removeChild(lineItem);
 
@@ -175,17 +176,15 @@
           lineItems = document.querySelectorAll('.line-item');
 
           if (!lineItems.length) {
-            minicart = document.getElementById('minicart');
-            target.hide(minicart);
-            // TODO: expose 'disable' method to API
-            //target.get(minicartToggle).disable();
+            target.api.hide('#minicart');
+            target.api.get('#minicart-toggle').disable();
           }
         }, 300);
       });
 
       // evil popup
       setTimeout(function() {
-        target.show('#modal,#modal-bg,body');
+        target.api.show('#modal,#modal-bg,body');
       }, 5000);
     </script>
   </body>
