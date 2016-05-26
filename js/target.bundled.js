@@ -1,3 +1,702 @@
+/*
+ * Copyright 2012 The Polymer Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style
+ * license that can be found in the LICENSE file.
+ */
+if (typeof WeakMap === "undefined") {
+    (function() {
+        var defineProperty = Object.defineProperty;
+        var counter = Date.now() % 1e9;
+        var WeakMap = function() {
+            this.name = "__st" + (Math.random() * 1e9 >>> 0) + (counter++ + "__");
+        };
+        WeakMap.prototype = {
+            set: function(key, value) {
+                var entry = key[this.name];
+                if (entry && entry[0] === key) entry[1] = value; else defineProperty(key, this.name, {
+                    value: [ key, value ],
+                    writable: true
+                });
+                return this;
+            },
+            get: function(key) {
+                var entry;
+                return (entry = key[this.name]) && entry[0] === key ? entry[1] : undefined;
+            },
+            "delete": function(key) {
+                var entry = key[this.name];
+                if (!entry) return false;
+                var hasValue = entry[0] === key;
+                entry[0] = entry[1] = undefined;
+                return hasValue;
+            },
+            has: function(key) {
+                var entry = key[this.name];
+                if (!entry) return false;
+                return entry[0] === key;
+            }
+        };
+        window.WeakMap = WeakMap;
+    })();
+}
+
+/*
+ * Copyright 2012 The Polymer Authors. All rights reserved.
+ * Use of this source code is goverened by a BSD-style
+ * license that can be found in the LICENSE file.
+ */
+(function(global) {
+    var registrationsTable = new WeakMap();
+    // We use setImmediate or postMessage for our future callback.
+    var setImmediate = window.msSetImmediate;
+    // Use post message to emulate setImmediate.
+    if (!setImmediate) {
+        var setImmediateQueue = [];
+        var sentinel = String(Math.random());
+        window.addEventListener("message", function(e) {
+            if (e.data === sentinel) {
+                var queue = setImmediateQueue;
+                setImmediateQueue = [];
+                queue.forEach(function(func) {
+                    func();
+                });
+            }
+        });
+        setImmediate = function(func) {
+            setImmediateQueue.push(func);
+            window.postMessage(sentinel, "*");
+        };
+    }
+    // This is used to ensure that we never schedule 2 callas to setImmediate
+    var isScheduled = false;
+    // Keep track of observers that needs to be notified next time.
+    var scheduledObservers = [];
+    /**
+   * Schedules |dispatchCallback| to be called in the future.
+   * @param {MutationObserver} observer
+   */
+    function scheduleCallback(observer) {
+        scheduledObservers.push(observer);
+        if (!isScheduled) {
+            isScheduled = true;
+            setImmediate(dispatchCallbacks);
+        }
+    }
+    function wrapIfNeeded(node) {
+        return window.ShadowDOMPolyfill && window.ShadowDOMPolyfill.wrapIfNeeded(node) || node;
+    }
+    function dispatchCallbacks() {
+        // http://dom.spec.whatwg.org/#mutation-observers
+        isScheduled = false;
+        // Used to allow a new setImmediate call above.
+        var observers = scheduledObservers;
+        scheduledObservers = [];
+        // Sort observers based on their creation UID (incremental).
+        observers.sort(function(o1, o2) {
+            return o1.uid_ - o2.uid_;
+        });
+        var anyNonEmpty = false;
+        observers.forEach(function(observer) {
+            // 2.1, 2.2
+            var queue = observer.takeRecords();
+            // 2.3. Remove all transient registered observers whose observer is mo.
+            removeTransientObserversFor(observer);
+            // 2.4
+            if (queue.length) {
+                observer.callback_(queue, observer);
+                anyNonEmpty = true;
+            }
+        });
+        // 3.
+        if (anyNonEmpty) dispatchCallbacks();
+    }
+    function removeTransientObserversFor(observer) {
+        observer.nodes_.forEach(function(node) {
+            var registrations = registrationsTable.get(node);
+            if (!registrations) return;
+            registrations.forEach(function(registration) {
+                if (registration.observer === observer) registration.removeTransientObservers();
+            });
+        });
+    }
+    /**
+   * This function is used for the "For each registered observer observer (with
+   * observer's options as options) in target's list of registered observers,
+   * run these substeps:" and the "For each ancestor ancestor of target, and for
+   * each registered observer observer (with options options) in ancestor's list
+   * of registered observers, run these substeps:" part of the algorithms. The
+   * |options.subtree| is checked to ensure that the callback is called
+   * correctly.
+   *
+   * @param {Node} target
+   * @param {function(MutationObserverInit):MutationRecord} callback
+   */
+    function forEachAncestorAndObserverEnqueueRecord(target, callback) {
+        for (var node = target; node; node = node.parentNode) {
+            var registrations = registrationsTable.get(node);
+            if (registrations) {
+                for (var j = 0; j < registrations.length; j++) {
+                    var registration = registrations[j];
+                    var options = registration.options;
+                    // Only target ignores subtree.
+                    if (node !== target && !options.subtree) continue;
+                    var record = callback(options);
+                    if (record) registration.enqueue(record);
+                }
+            }
+        }
+    }
+    var uidCounter = 0;
+    /**
+   * The class that maps to the DOM MutationObserver interface.
+   * @param {Function} callback.
+   * @constructor
+   */
+    function JsMutationObserver(callback) {
+        this.callback_ = callback;
+        this.nodes_ = [];
+        this.records_ = [];
+        this.uid_ = ++uidCounter;
+    }
+    JsMutationObserver.prototype = {
+        observe: function(target, options) {
+            target = wrapIfNeeded(target);
+            // 1.1
+            if (!options.childList && !options.attributes && !options.characterData || // 1.2
+            options.attributeOldValue && !options.attributes || // 1.3
+            options.attributeFilter && options.attributeFilter.length && !options.attributes || // 1.4
+            options.characterDataOldValue && !options.characterData) {
+                throw new SyntaxError();
+            }
+            var registrations = registrationsTable.get(target);
+            if (!registrations) registrationsTable.set(target, registrations = []);
+            // 2
+            // If target's list of registered observers already includes a registered
+            // observer associated with the context object, replace that registered
+            // observer's options with options.
+            var registration;
+            for (var i = 0; i < registrations.length; i++) {
+                if (registrations[i].observer === this) {
+                    registration = registrations[i];
+                    registration.removeListeners();
+                    registration.options = options;
+                    break;
+                }
+            }
+            // 3.
+            // Otherwise, add a new registered observer to target's list of registered
+            // observers with the context object as the observer and options as the
+            // options, and add target to context object's list of nodes on which it
+            // is registered.
+            if (!registration) {
+                registration = new Registration(this, target, options);
+                registrations.push(registration);
+                this.nodes_.push(target);
+            }
+            registration.addListeners();
+        },
+        disconnect: function() {
+            this.nodes_.forEach(function(node) {
+                var registrations = registrationsTable.get(node);
+                for (var i = 0; i < registrations.length; i++) {
+                    var registration = registrations[i];
+                    if (registration.observer === this) {
+                        registration.removeListeners();
+                        registrations.splice(i, 1);
+                        // Each node can only have one registered observer associated with
+                        // this observer.
+                        break;
+                    }
+                }
+            }, this);
+            this.records_ = [];
+        },
+        takeRecords: function() {
+            var copyOfRecords = this.records_;
+            this.records_ = [];
+            return copyOfRecords;
+        }
+    };
+    /**
+   * @param {string} type
+   * @param {Node} target
+   * @constructor
+   */
+    function MutationRecord(type, target) {
+        this.type = type;
+        this.target = target;
+        this.addedNodes = [];
+        this.removedNodes = [];
+        this.previousSibling = null;
+        this.nextSibling = null;
+        this.attributeName = null;
+        this.attributeNamespace = null;
+        this.oldValue = null;
+    }
+    function copyMutationRecord(original) {
+        var record = new MutationRecord(original.type, original.target);
+        record.addedNodes = original.addedNodes.slice();
+        record.removedNodes = original.removedNodes.slice();
+        record.previousSibling = original.previousSibling;
+        record.nextSibling = original.nextSibling;
+        record.attributeName = original.attributeName;
+        record.attributeNamespace = original.attributeNamespace;
+        record.oldValue = original.oldValue;
+        return record;
+    }
+    // We keep track of the two (possibly one) records used in a single mutation.
+    var currentRecord, recordWithOldValue;
+    /**
+   * Creates a record without |oldValue| and caches it as |currentRecord| for
+   * later use.
+   * @param {string} oldValue
+   * @return {MutationRecord}
+   */
+    function getRecord(type, target) {
+        return currentRecord = new MutationRecord(type, target);
+    }
+    /**
+   * Gets or creates a record with |oldValue| based in the |currentRecord|
+   * @param {string} oldValue
+   * @return {MutationRecord}
+   */
+    function getRecordWithOldValue(oldValue) {
+        if (recordWithOldValue) return recordWithOldValue;
+        recordWithOldValue = copyMutationRecord(currentRecord);
+        recordWithOldValue.oldValue = oldValue;
+        return recordWithOldValue;
+    }
+    function clearRecords() {
+        currentRecord = recordWithOldValue = undefined;
+    }
+    /**
+   * @param {MutationRecord} record
+   * @return {boolean} Whether the record represents a record from the current
+   * mutation event.
+   */
+    function recordRepresentsCurrentMutation(record) {
+        return record === recordWithOldValue || record === currentRecord;
+    }
+    /**
+   * Selects which record, if any, to replace the last record in the queue.
+   * This returns |null| if no record should be replaced.
+   *
+   * @param {MutationRecord} lastRecord
+   * @param {MutationRecord} newRecord
+   * @param {MutationRecord}
+   */
+    function selectRecord(lastRecord, newRecord) {
+        if (lastRecord === newRecord) return lastRecord;
+        // Check if the the record we are adding represents the same record. If
+        // so, we keep the one with the oldValue in it.
+        if (recordWithOldValue && recordRepresentsCurrentMutation(lastRecord)) return recordWithOldValue;
+        return null;
+    }
+    /**
+   * Class used to represent a registered observer.
+   * @param {MutationObserver} observer
+   * @param {Node} target
+   * @param {MutationObserverInit} options
+   * @constructor
+   */
+    function Registration(observer, target, options) {
+        this.observer = observer;
+        this.target = target;
+        this.options = options;
+        this.transientObservedNodes = [];
+    }
+    Registration.prototype = {
+        enqueue: function(record) {
+            var records = this.observer.records_;
+            var length = records.length;
+            // There are cases where we replace the last record with the new record.
+            // For example if the record represents the same mutation we need to use
+            // the one with the oldValue. If we get same record (this can happen as we
+            // walk up the tree) we ignore the new record.
+            if (records.length > 0) {
+                var lastRecord = records[length - 1];
+                var recordToReplaceLast = selectRecord(lastRecord, record);
+                if (recordToReplaceLast) {
+                    records[length - 1] = recordToReplaceLast;
+                    return;
+                }
+            } else {
+                scheduleCallback(this.observer);
+            }
+            records[length] = record;
+        },
+        addListeners: function() {
+            this.addListeners_(this.target);
+        },
+        addListeners_: function(node) {
+            var options = this.options;
+            if (options.attributes) node.addEventListener("DOMAttrModified", this, true);
+            if (options.characterData) node.addEventListener("DOMCharacterDataModified", this, true);
+            if (options.childList) node.addEventListener("DOMNodeInserted", this, true);
+            if (options.childList || options.subtree) node.addEventListener("DOMNodeRemoved", this, true);
+        },
+        removeListeners: function() {
+            this.removeListeners_(this.target);
+        },
+        removeListeners_: function(node) {
+            var options = this.options;
+            if (options.attributes) node.removeEventListener("DOMAttrModified", this, true);
+            if (options.characterData) node.removeEventListener("DOMCharacterDataModified", this, true);
+            if (options.childList) node.removeEventListener("DOMNodeInserted", this, true);
+            if (options.childList || options.subtree) node.removeEventListener("DOMNodeRemoved", this, true);
+        },
+        /**
+     * Adds a transient observer on node. The transient observer gets removed
+     * next time we deliver the change records.
+     * @param {Node} node
+     */
+        addTransientObserver: function(node) {
+            // Don't add transient observers on the target itself. We already have all
+            // the required listeners set up on the target.
+            if (node === this.target) return;
+            this.addListeners_(node);
+            this.transientObservedNodes.push(node);
+            var registrations = registrationsTable.get(node);
+            if (!registrations) registrationsTable.set(node, registrations = []);
+            // We know that registrations does not contain this because we already
+            // checked if node === this.target.
+            registrations.push(this);
+        },
+        removeTransientObservers: function() {
+            var transientObservedNodes = this.transientObservedNodes;
+            this.transientObservedNodes = [];
+            transientObservedNodes.forEach(function(node) {
+                // Transient observers are never added to the target.
+                this.removeListeners_(node);
+                var registrations = registrationsTable.get(node);
+                for (var i = 0; i < registrations.length; i++) {
+                    if (registrations[i] === this) {
+                        registrations.splice(i, 1);
+                        // Each node can only have one registered observer associated with
+                        // this observer.
+                        break;
+                    }
+                }
+            }, this);
+        },
+        handleEvent: function(e) {
+            // Stop propagation since we are managing the propagation manually.
+            // This means that other mutation events on the page will not work
+            // correctly but that is by design.
+            e.stopImmediatePropagation();
+            switch (e.type) {
+              case "DOMAttrModified":
+                // http://dom.spec.whatwg.org/#concept-mo-queue-attributes
+                var name = e.attrName;
+                var namespace = e.relatedNode.namespaceURI;
+                var target = e.target;
+                // 1.
+                var record = new getRecord("attributes", target);
+                record.attributeName = name;
+                record.attributeNamespace = namespace;
+                // 2.
+                var oldValue = e.attrChange === MutationEvent.ADDITION ? null : e.prevValue;
+                forEachAncestorAndObserverEnqueueRecord(target, function(options) {
+                    // 3.1, 4.2
+                    if (!options.attributes) return;
+                    // 3.2, 4.3
+                    if (options.attributeFilter && options.attributeFilter.length && options.attributeFilter.indexOf(name) === -1 && options.attributeFilter.indexOf(namespace) === -1) {
+                        return;
+                    }
+                    // 3.3, 4.4
+                    if (options.attributeOldValue) return getRecordWithOldValue(oldValue);
+                    // 3.4, 4.5
+                    return record;
+                });
+                break;
+
+              case "DOMCharacterDataModified":
+                // http://dom.spec.whatwg.org/#concept-mo-queue-characterdata
+                var target = e.target;
+                // 1.
+                var record = getRecord("characterData", target);
+                // 2.
+                var oldValue = e.prevValue;
+                forEachAncestorAndObserverEnqueueRecord(target, function(options) {
+                    // 3.1, 4.2
+                    if (!options.characterData) return;
+                    // 3.2, 4.3
+                    if (options.characterDataOldValue) return getRecordWithOldValue(oldValue);
+                    // 3.3, 4.4
+                    return record;
+                });
+                break;
+
+              case "DOMNodeRemoved":
+                this.addTransientObserver(e.target);
+
+              // Fall through.
+                case "DOMNodeInserted":
+                // http://dom.spec.whatwg.org/#concept-mo-queue-childlist
+                var target = e.relatedNode;
+                var changedNode = e.target;
+                var addedNodes, removedNodes;
+                if (e.type === "DOMNodeInserted") {
+                    addedNodes = [ changedNode ];
+                    removedNodes = [];
+                } else {
+                    addedNodes = [];
+                    removedNodes = [ changedNode ];
+                }
+                var previousSibling = changedNode.previousSibling;
+                var nextSibling = changedNode.nextSibling;
+                // 1.
+                var record = getRecord("childList", target);
+                record.addedNodes = addedNodes;
+                record.removedNodes = removedNodes;
+                record.previousSibling = previousSibling;
+                record.nextSibling = nextSibling;
+                forEachAncestorAndObserverEnqueueRecord(target, function(options) {
+                    // 2.1, 3.2
+                    if (!options.childList) return;
+                    // 2.2, 3.3
+                    return record;
+                });
+            }
+            clearRecords();
+        }
+    };
+    global.JsMutationObserver = JsMutationObserver;
+    if (!global.MutationObserver) global.MutationObserver = JsMutationObserver;
+})(this);
+
+/*! uberproto - v1.2.0 - 2015-11-29
+* http://daffl.github.com/uberproto
+* Copyright (c) 2015 ; Licensed MIT */
+/**
+ * A base object for ECMAScript 5 style prototypal inheritance.
+ *
+ * @see https://github.com/rauschma/proto-js/
+ * @see http://ejohn.org/blog/simple-javascript-inheritance/
+ * @see http://uxebu.com/blog/2011/02/23/object-based-inheritance-for-ecmascript-5/
+ */
+(function(root, factory) {
+    if (typeof define === "function" && define.amd) {
+        define([], factory);
+    } else if (typeof exports === "object") {
+        module.exports = factory();
+    } else {
+        root.Proto = factory();
+    }
+})(this, function() {
+    function makeSuper(_super, old, name, fn) {
+        return function() {
+            var tmp = this._super;
+            // Add a new ._super() method that is the same method
+            // but either pointing to the prototype method
+            // or to the overwritten method
+            this._super = typeof old === "function" ? old : _super[name];
+            // The method only need to be bound temporarily, so we
+            // remove it when we're done executing
+            var ret = fn.apply(this, arguments);
+            this._super = tmp;
+            return ret;
+        };
+    }
+    function legacyMixin(prop, obj) {
+        var self = obj || this;
+        var fnTest = /\b_super\b/;
+        var _super = Object.getPrototypeOf(self) || self.prototype;
+        var _old;
+        // Copy the properties over
+        for (var name in prop) {
+            // store the old function which would be overwritten
+            _old = self[name];
+            // Check if we're overwriting an existing function
+            if ((typeof prop[name] === "function" && typeof _super[name] === "function" || typeof _old === "function" && typeof prop[name] === "function") && fnTest.test(prop[name])) {
+                self[name] = makeSuper(_super, _old, name, prop[name]);
+            } else {
+                self[name] = prop[name];
+            }
+        }
+        return self;
+    }
+    function es5Mixin(prop, obj) {
+        var self = obj || this;
+        var fnTest = /\b_super\b/;
+        var _super = Object.getPrototypeOf(self) || self.prototype;
+        var descriptors = {};
+        var proto = prop;
+        var processProperty = function(name) {
+            if (!descriptors[name]) {
+                descriptors[name] = Object.getOwnPropertyDescriptor(proto, name);
+            }
+        };
+        // Collect all property descriptors
+        do {
+            Object.getOwnPropertyNames(proto).forEach(processProperty);
+        } while ((proto = Object.getPrototypeOf(proto)) && Object.getPrototypeOf(proto));
+        Object.keys(descriptors).forEach(function(name) {
+            var descriptor = descriptors[name];
+            if (typeof descriptor.value === "function" && fnTest.test(descriptor.value)) {
+                descriptor.value = makeSuper(_super, self[name], name, descriptor.value);
+            }
+            Object.defineProperty(self, name, descriptor);
+        });
+        return self;
+    }
+    return {
+        /**
+		 * Create a new object using Object.create. The arguments will be
+		 * passed to the new instances init method or to a method name set in
+		 * __init.
+		 */
+        create: function() {
+            var instance = Object.create(this);
+            var init = typeof instance.__init === "string" ? instance.__init : "init";
+            if (typeof instance[init] === "function") {
+                instance[init].apply(instance, arguments);
+            }
+            return instance;
+        },
+        /**
+		 * Mixin a given set of properties
+		 * @param prop The properties to mix in
+		 * @param obj [optional] The object to add the mixin
+		 */
+        mixin: typeof Object.defineProperty === "function" ? es5Mixin : legacyMixin,
+        /**
+		 * Extend the current or a given object with the given property
+		 * and return the extended object.
+		 * @param prop The properties to extend with
+		 * @param obj [optional] The object to extend from
+		 * @returns The extended object
+		 */
+        extend: function(prop, obj) {
+            return this.mixin(prop, Object.create(obj || this));
+        },
+        /**
+		 * Return a callback function with this set to the current or a given context object.
+		 * @param name Name of the method to proxy
+		 * @param args... [optional] Arguments to use for partial application
+		 */
+        proxy: function(name) {
+            var fn = this[name];
+            var args = Array.prototype.slice.call(arguments, 1);
+            args.unshift(this);
+            return fn.bind.apply(fn, args);
+        }
+    };
+});
+
+!function(a, b) {
+    "use strict";
+    "function" == typeof define && define.amd ? define("mediator-js", [], function() {
+        return a.Mediator = b(), a.Mediator;
+    }) : "undefined" != typeof exports ? exports.Mediator = b() : a.Mediator = b();
+}(this, function() {
+    "use strict";
+    function a() {
+        var a = function() {
+            return (0 | 65536 * (1 + Math.random())).toString(16).substring(1);
+        };
+        return a() + a() + "-" + a() + "-" + a() + "-" + a() + "-" + a() + a() + a();
+    }
+    function b(c, d, e) {
+        return this instanceof b ? (this.id = a(), this.fn = c, this.options = d, this.context = e, 
+        this.channel = null, void 0) : new b(c, d, e);
+    }
+    function c(a, b) {
+        return this instanceof c ? (this.namespace = a || "", this._subscribers = [], this._channels = {}, 
+        this._parent = b, this.stopped = !1, void 0) : new c(a);
+    }
+    function d() {
+        return this instanceof d ? (this._channels = new c(""), void 0) : new d();
+    }
+    return b.prototype = {
+        update: function(a) {
+            a && (this.fn = a.fn || this.fn, this.context = a.context || this.context, this.options = a.options || this.options, 
+            this.channel && this.options && void 0 !== this.options.priority && this.channel.setPriority(this.id, this.options.priority));
+        }
+    }, c.prototype = {
+        addSubscriber: function(a, c, d) {
+            var e = new b(a, c, d);
+            return c && void 0 !== c.priority ? (c.priority = c.priority >> 0, c.priority < 0 && (c.priority = 0), 
+            c.priority >= this._subscribers.length && (c.priority = this._subscribers.length - 1), 
+            this._subscribers.splice(c.priority, 0, e)) : this._subscribers.push(e), e.channel = this, 
+            e;
+        },
+        stopPropagation: function() {
+            this.stopped = !0;
+        },
+        getSubscriber: function(a) {
+            var b = 0, c = this._subscribers.length;
+            for (c; c > b; b++) if (this._subscribers[b].id === a || this._subscribers[b].fn === a) return this._subscribers[b];
+        },
+        setPriority: function(a, b) {
+            var e, f, g, h, c = 0, d = 0;
+            for (d = 0, h = this._subscribers.length; h > d && this._subscribers[d].id !== a && this._subscribers[d].fn !== a; d++) c++;
+            e = this._subscribers[c], f = this._subscribers.slice(0, c), g = this._subscribers.slice(c + 1), 
+            this._subscribers = f.concat(g), this._subscribers.splice(b, 0, e);
+        },
+        addChannel: function(a) {
+            this._channels[a] = new c((this.namespace ? this.namespace + ":" : "") + a, this);
+        },
+        hasChannel: function(a) {
+            return this._channels.hasOwnProperty(a);
+        },
+        returnChannel: function(a) {
+            return this._channels[a];
+        },
+        removeSubscriber: function(a) {
+            var b = this._subscribers.length - 1;
+            if (!a) return this._subscribers = [], void 0;
+            for (b; b >= 0; b--) (this._subscribers[b].fn === a || this._subscribers[b].id === a) && (this._subscribers[b].channel = null, 
+            this._subscribers.splice(b, 1));
+        },
+        publish: function(a) {
+            var e, g, h, b = 0, c = this._subscribers.length, d = !1;
+            for (c; c > b; b++) d = !1, e = this._subscribers[b], this.stopped || (g = this._subscribers.length, 
+            void 0 !== e.options && "function" == typeof e.options.predicate ? e.options.predicate.apply(e.context, a) && (d = !0) : d = !0), 
+            d && (e.options && void 0 !== e.options.calls && (e.options.calls--, e.options.calls < 1 && this.removeSubscriber(e.id)), 
+            e.fn.apply(e.context, a), h = this._subscribers.length, c = h, h === g - 1 && b--);
+            this._parent && this._parent.publish(a), this.stopped = !1;
+        }
+    }, d.prototype = {
+        getChannel: function(a, b) {
+            var c = this._channels, d = a.split(":"), e = 0, f = d.length;
+            if ("" === a) return c;
+            if (d.length > 0) for (f; f > e; e++) {
+                if (!c.hasChannel(d[e])) {
+                    if (b) break;
+                    c.addChannel(d[e]);
+                }
+                c = c.returnChannel(d[e]);
+            }
+            return c;
+        },
+        subscribe: function(a, b, c, d) {
+            var e = this.getChannel(a || "", !1);
+            return c = c || {}, d = d || {}, e.addSubscriber(b, c, d);
+        },
+        once: function(a, b, c, d) {
+            return c = c || {}, c.calls = 1, this.subscribe(a, b, c, d);
+        },
+        getSubscriber: function(a, b) {
+            var c = this.getChannel(b || "", !0);
+            return c.namespace !== b ? null : c.getSubscriber(a);
+        },
+        remove: function(a, b) {
+            var c = this.getChannel(a || "", !0);
+            return c.namespace !== a ? !1 : (c.removeSubscriber(b), void 0);
+        },
+        publish: function(a) {
+            var b = this.getChannel(a || "", !0);
+            if (b.namespace !== a) return null;
+            var c = Array.prototype.slice.call(arguments, 1);
+            c.push(b), b.publish(c);
+        }
+    }, d.prototype.on = d.prototype.subscribe, d.prototype.bind = d.prototype.subscribe, 
+    d.prototype.emit = d.prototype.publish, d.prototype.trigger = d.prototype.publish, 
+    d.prototype.off = d.prototype.remove, d.Channel = c, d.Subscriber = b, d.version = "0.9.8", 
+    d;
+});
+
 /**
  * target.config
  *
