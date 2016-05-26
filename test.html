@@ -176,30 +176,26 @@
     </div>
   </div>
 
-  <div id="api-test" class="blue target-active">
-    This is an API test
-  </div>
-
   <script src="dist/proto.es5.js"></script>
   <script src="dist/MutationObserver.js"></script>
   <script src="dist/mediator.min.js"></script>
   <script src="dist/target.js"></script>
+  <!--
+  <script src="dist/target.bundled.js"></script>
+  -->
   <script>
     jQuery(function() {
       target.init();
 
       target.events.subscribe('min', function(el) {
+        var blueToggler = target.api.get('#toggle-blue');
 
         window.console && console.log('min on', el);
 
-        var blueToggler = target.api.get('#toggle-blue');
-
         blueToggler.disable();
-      
       });
 
       target.api.show('#green-div');
-
     })
   </script>
 </body>
