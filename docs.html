@@ -41,8 +41,212 @@
           
           <hr>
           <h3 id="configuration">Configuration</h3>
+          
+          <p>Target.js' <code>init</code> method accepts a configuration object. Pass your options into target when you initialize it:</p>
+
+          <p><code>target.init(options);</code></p>
+
+          <h4>Options</h4>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th align="center">Option</th>
+                        <th align="center">Data Type</th>
+                        <th align="center">Default Value</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td align="center"><code>activeClass</code></td>
+                        <td align="center"><code>String</code></td>
+                        <td align="center"><code>"target-active"</code></td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td colspan="2">The class name you want Target.js to apply to any "shown" element. Target.js will remove this class when "hiding" an element. (This is how Target.js "shows" and "hides" elements.)</td>
+                    </tr>
+
+                    <tr>
+                        <td align="center"><code>attributes</code></td>
+                        <td align="center"><code>Object</code></td>
+                        <td align="center">See options below</td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td colspan="2">An object containing key-value pairs of the data-attributes you wish to use to assign Target.js components and declarations.</td>
+                    </tr>
+                    <tr>
+                        <td align="center"><code>attributes.Toggle</code></td>
+                        <td align="center"><code>String</code><br>(valid data-attribute)</td>
+                        <td align="center"><code>"data-target-toggle"</code></td>
+                    <tr>
+                        <td></td>
+                        <td colspan="2">The data-attribute you want to use to instantiate Toggle components</td>
+                    </tr>
+                    <tr>
+                        <td align="center"><code>attributes.Show</code></td>
+                        <td align="center"><code>String</code><br>(valid data-attribute)</td>
+                        <td align="center"><code>"data-target-show"</code></td>
+                    <tr>
+                        <td></td>
+                        <td colspan="2">The data-attribute you want to use to instantiate Show components</td>
+                    </tr>
+                    <tr>
+                        <td align="center"><code>attributes.Hide</code></td>
+                        <td align="center"><code>String</code><br>(valid data-attribute)</td>
+                        <td align="center"><code>"data-target-hide"</code></td>
+                    <tr>
+                        <td></td>
+                        <td colspan="2">The data-attribute you want to use to instantiate Hide components</td>
+                    </tr>
+                    <tr>
+                        <td align="center"><code>attributes.Clickoff</code></td>
+                        <td align="center"><code>String</code><br>(valid data-attribute)</td>
+                        <td align="center"><code>"data-target-clickoff"</code></td>
+                    <tr>
+                        <td></td>
+                        <td colspan="2">The data-attribute you want to use to instantiate Clickoff components</td>
+                    </tr>
+                    <tr>
+                        <td align="center"><code>attributes.Increment</code></td>
+                        <td align="center"><code>String</code><br>(valid data-attribute)</td>
+                        <td align="center"><code>"data-target-increment"</code></td>
+                    <tr>
+                        <td></td>
+                        <td colspan="2">The data-attribute you want to use to instantiate Increment components</td>
+                    </tr>
+                    <tr>
+                        <td align="center"><code>attributes.Decrement</code></td>
+                        <td align="center"><code>String</code><br>(valid data-attribute)</td>
+                        <td align="center"><code>"data-target-decrement"</code></td>
+                    <tr>
+                        <td></td>
+                        <td colspan="2">The data-attribute you want to use to instantiate Decrement components</td>
+                    </tr>
+                    <tr>
+                        <td align="center"><code>attributes.Scrollbox</code></td>
+                        <td align="center"><code>String</code><br>(valid data-attribute)</td>
+                        <td align="center"><code>"data-target-scrollbox"</code></td>
+                    <tr>
+                        <td></td>
+                        <td colspan="2">The data-attribute you want to use to instantiate Scrollbox components</td>
+                    </tr>
+                    <tr>
+                        <td align="center"><code>attributes.Grid</code></td>
+                        <td align="center"><code>String</code><br>(valid data-attribute)</td>
+                        <td align="center"><code>"data-target-grid"</code></td>
+                    <tr>
+                        <td></td>
+                        <td colspan="2">The data-attribute you want to use to instantiate Grid components</td>
+                    </tr>
+                    <tr>
+                        <td align="center"><code>attributes.Src</code></td>
+                        <td align="center"><code>String</code><br>(valid data-attribute)</td>
+                        <td align="center"><code>"data-target-src"</code></td>
+                    <tr>
+                        <td></td>
+                        <td colspan="2">The data-attribute you want to use to instantiate Src components</td>
+                    </tr>
+                    <tr>
+                        <td align="center"><code>attributes.disable</code></td>
+                        <td align="center"><code>String</code><br>(valid data-attribute)</td>
+                        <td align="center"><code>"data-target-disable"</code></td>
+                    <tr>
+                        <td></td>
+                        <td colspan="2">The data-attribute you want to use to disable a component</td>
+                    </tr>
+                    <tr>
+                        <td align="center"><code>attributes.max</code></td>
+                        <td align="center"><code>String</code><br>(valid data-attribute)</td>
+                        <td align="center"><code>"data-target-max"</code></td>
+                    <tr>
+                        <td></td>
+                        <td colspan="2">The data-attribute you want to use to declar the max value of an incrementer.</td>
+                    </tr>
+                    <tr>
+                        <td align="center"><code>attributes.min</code></td>
+                        <td align="center"><code>String</code><br>(valid data-attribute)</td>
+                        <td align="center"><code>"data-target-min"</code></td>
+                    <tr>
+                        <td></td>
+                        <td colspan="2">The data-attribute you want to use to declar the min value of an decrementer.</td>
+                    </tr>
+                    <tr>
+                        <td align="center"><code>breakpoints</code></td>
+                        <td align="center"><code>Object</code></td>
+                        <td align="center">See below</td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td colspan="2">An object containing key-value pairs defining layouts and their breakpoints. Layouts are designed mobile-first; the mobile layout is not defined &mdash; it begins at <code>0</code></td>
+                    </tr>
+                    <tr>
+                        <td align="center"><code>breakpoints.tablet</code></td>
+                        <td align="center"><code>Integer</code><br>(in pixels)</td>
+                        <td align="center"><code>768</code></td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td colspan="2">The minimum screen size (in pixels) at which tablet layout begins.</td>
+                    </tr>
+                    <tr>
+                        <td align="center"><code>breakpoints.desktop</code></td>
+                        <td align="center"><code>Integer</code><br>(in pixels)</td>
+                        <td align="center"><code>1025</code></td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td colspan="2">The minimum screen size (in pixels) at which the desktop layout begins.</td>
+                    </tr>
+                </tbody>
+            </table>
+
+          <h4>Example (with defaults)</h4>
+
+          <div class="highlight highlight-text-html-basic"><pre><span class="pl-s1">&lt;<span class="pl-ent">script</span>&gt;</span>
+<span class="pl-s1">    <span class="pl-smi">target</span>.<span class="pl-en">init</span>({</span>
+<span class="pl-s1">        activeClass<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">'</span>target-active<span class="pl-pds">'</span></span>,</span>
+<span class="pl-s1">        attributes<span class="pl-k">:</span> {</span>
+<span class="pl-s1">            Toggle<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">'</span>data-target-toggle<span class="pl-pds">'</span></span>,</span>
+<span class="pl-s1">            Show<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">'</span>data-target-show<span class="pl-pds">'</span></span>,</span>
+<span class="pl-s1">            Hide<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">'</span>data-target-hide<span class="pl-pds">'</span></span>,</span>
+<span class="pl-s1">            Clickoff<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">'</span>data-target-clickoff<span class="pl-pds">'</span></span>,</span>
+<span class="pl-s1">            Increment<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">'</span>data-target-increment<span class="pl-pds">'</span></span>,</span>
+<span class="pl-s1">            Decrement<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">'</span>data-target-decrement<span class="pl-pds">'</span></span>,</span>
+<span class="pl-s1">            Scrollbox<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">'</span>data-target-scrollbox<span class="pl-pds">'</span></span>,</span>
+<span class="pl-s1">            Grid<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">'</span>data-target-grid<span class="pl-pds">'</span></span>,</span>
+<span class="pl-s1">            Src<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">'</span>data-target-src<span class="pl-pds">'</span></span>,</span>
+<span class="pl-s1">            disable<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">'</span>data-target-disable<span class="pl-pds">'</span></span>,</span>
+<span class="pl-s1">            max<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">'</span>data-target-max<span class="pl-pds">'</span></span>,</span>
+<span class="pl-s1">            min<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">'</span>data-target-min<span class="pl-pds">'</span></span>,</span>
+<span class="pl-s1">        },</span>
+<span class="pl-s1">        breakpoints<span class="pl-k">:</span> {</span>
+<span class="pl-s1">            tablet<span class="pl-k">:</span> <span class="pl-c1">768</span>,</span>
+<span class="pl-s1">            desktop<span class="pl-k">:</span> <span class="pl-c1">1025</span></span>
+<span class="pl-s1">        },</span>
+<span class="pl-s1">        debounceDelay<span class="pl-k">:</span> <span class="pl-c1">100</span></span>
+<span class="pl-s1">    });</span>
+<span class="pl-s1">&lt;/<span class="pl-ent">script</span>&gt;</span></pre></div>
             
+            <p>modify just what you want:</p>
+
+            <div class="highlight highlight-text-html-basic"><pre><span class="pl-s1">&lt;<span class="pl-ent">script</span>&gt;</span>
+<span class="pl-s1">    <span class="pl-smi">target</span>.<span class="pl-en">init</span>({</span>
+<span class="pl-s1">        breakpoints<span class="pl-k">:</span> {</span>
+<span class="pl-s1">            tablet<span class="pl-k">:</span> <span class="pl-c1">640</span></span>
+<span class="pl-s1">        }</span>
+<span class="pl-s1">    });</span>
+<span class="pl-s1">&lt;/<span class="pl-ent">script</span>&gt;</span></pre></div>
+
+            <p>or use default configuration:</p>
+
+            <div class="highlight highlight-text-html-basic"><pre><span class="pl-s1">&lt;<span class="pl-ent">script</span>&gt;</span>
+<span class="pl-s1">    <span class="pl-smi">target</span>.<span class="pl-en">init</span>();</span>
+<span class="pl-s1">&lt;/<span class="pl-ent">script</span>&gt;</span></pre></div>
+
           <hr>
+
           <h3 id="components">Components</h3>
           
           <div>
@@ -408,15 +612,17 @@
           <hr>
           
           <h3 id="layouts">Layouts</h3>
-          
 
           <hr>
+
           <h3 id="events">Events</h3>
           
           <hr>
+          
           <h3 id="methods">Methods</h3>
           
           <hr>
+        
         </div>
       </div>
     </section>
