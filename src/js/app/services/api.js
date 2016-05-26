@@ -3,6 +3,7 @@
  *
  * make programmatic methods accessible
  * in simplified api
+ * mix public methods back into global "target" object
  */
 (function(target, undefined) {
 	
@@ -12,9 +13,19 @@
 
 		init: function(target) {
 
+			var _this = this;
+
 			this.utils = target.utils;
+			this.events = target.events;
 			this.componentFactory = target.componentFactory;
 
+			this.eventHandlers = [];
+
+			// mixin public methods into global target object
+			['get', 'on', 'off', 'show', 'hide', 'toggle'].forEach(function(method) {
+				target[method] = _this[method].bind(_this);
+			});
+		
 		},
 
 		/**
@@ -131,6 +142,67 @@
 			});
 
 			return this;
+
+		},
+
+		/**
+		 * add event handler for Target events
+		 */
+		on: function(eventName, els, cb) {
+
+			var _this = this;
+
+			els = this.normalizeEls(els);
+
+			this.utils.forEach.call(els, function(el) {
+
+				// will return object containing id for removal
+				_this.eventHandlers.push({
+					
+					eventName: eventName,
+					el: el,
+					event: _this.events.subscribe(eventName, (function(el) {
+
+						return function(evEl) {
+
+							if (evEl === el) {
+
+								cb(el);
+
+							}
+
+						};
+
+					})(el))
+				
+				});
+
+			});
+
+		},
+
+		/**
+		 * remove event handler for Target events
+		 */
+		off: function(eventName, els, cb) {
+
+			var _this = this;
+
+			els = this.normalizeEls(els);
+
+			this.utils.forEach.call(els, function(el) {
+
+				_this.utils.forEach.call(_this.eventHandlers, function(handler) {
+
+					if (handler.eventName === eventName && handler.el === el) {
+
+						_this.events.remove(handler.eventName, handler.event.id);
+
+					}
+
+				});
+				
+			});
 
 		}
 

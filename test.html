@@ -187,15 +187,15 @@
     jQuery(function() {
       target.init();
 
-      target.events.subscribe('min', function(el) {
-        var blueToggler = target.api.get('#toggle-blue');
+      target.on('min', 'input', function(el) {
+        var blueToggler = target.get('#toggle-blue');
 
         window.console && console.log('min on', el);
 
         blueToggler.disable();
       });
 
-      target.api.show('#green-div');
+      target.show('#green-div');
     })
   </script>
 </body>
