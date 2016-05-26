@@ -26,16 +26,402 @@
       <div class="row">
         <div class="column small-12 medium-3 sidebar">
           <h4><a href="#getting-started">Getting Started</a></h4>
-          <h4><a href="#adsfasdf">Installation</a></h4>
-          <h4><a href="#adsfasdf">Configuration</a></h4>
-          <!-- <h4><a href="#adsfasdf">  Options</a></h4> -->
-          <h4><a href="#adsfasdf">Components</a></h4>
-          <h4><a href="#adsfasdf">Layouts</a></h4>
-          <h4><a href="#adsfasdf">Events</a></h4>
-          <h4><a href="#adsfasdf">Methods</a></h4>
+          <h4><a href="#installation">Installation</a></h4>
+          <h4><a href="#configuration">Configuration</a></h4>
+          <h4><a href="#components">Components</a></h4>
+          <h4><a href="#layouts">Layouts</a></h4>
+          <h4><a href="#events">Events</a></h4>
+          <h4><a href="#methods">Methods</a></h4>
         </div>
         <div class="column small-12 medium-9 main">
-           
+          <h3 id="getting-started">Getting Started</h3>
+          
+          <hr>
+          <h3 id="installation">Installation</h3>
+          
+          <hr>
+          <h3 id="configuration">Configuration</h3>
+            
+          <hr>
+          <h3 id="components">Components</h3>
+          
+          <div>
+            <h4>Show</h4>
+
+            <p>When clicked, shows the targeted element/elements</p>
+
+            <table><thead>
+            <tr>
+            <th align="center">Property</th>
+            <th align="center">Value</th>
+            </tr>
+            </thead><tbody>
+            <tr>
+            <td align="center">Applicable Elements:</td>
+            <td align="center">any</td>
+            </tr>
+            <tr>
+            <td align="center">Applicable Targets:</td>
+            <td align="center">any</td>
+            </tr>
+            <tr>
+            <td align="center">Attribute Value:</td>
+            <td align="center">any valid CSS selector</td>
+            </tr>
+            </tbody></table>
+            <br>
+            <p><strong>Usage</strong></p>
+
+<div class="highlight highlight-text-html-basic"><pre>&lt;<span class="pl-ent">button</span> <span class="pl-e">data-target-show</span>=<span class="pl-s"><span class="pl-pds">"</span>#my-target<span class="pl-pds">"</span></span>&gt;
+    Show #my-target!
+&lt;/<span class="pl-ent">button</span>&gt;</pre></div>
+
+<p>You can target more than one element:</p>
+
+<div class="highlight highlight-text-html-basic"><pre>&lt;<span class="pl-ent">div</span> <span class="pl-e">data-target-show</span>=<span class="pl-s"><span class="pl-pds">"</span>#my-target,.some-more-targets,body<span class="pl-pds">"</span></span>&gt;
+    Show a bunch of stuff
+&lt;/<span class="pl-ent">div</span>&gt;</pre></div>
+          </div>
+
+          <hr>
+
+          <div>
+            <h4>Hide component</h4>
+
+            <p>When clicked, hides the targeted element/elements</p>
+
+            <table><thead>
+            <tr>
+            <th align="center">Property</th>
+            <th align="center">Value</th>
+            </tr>
+            </thead><tbody>
+            <tr>
+            <td align="center">Applicable Elements:</td>
+            <td align="center">any</td>
+            </tr>
+            <tr>
+            <td align="center">Applicable Targets:</td>
+            <td align="center">any</td>
+            </tr>
+            <tr>
+            <td align="center">Attribute Value:</td>
+            <td align="center">any valid CSS selector</td>
+            </tr>
+            </tbody></table>
+
+            <br>
+            <p><strong>Usage</strong></p>
+
+<div class="highlight highlight-text-html-basic"><pre>&lt;<span class="pl-ent">button</span> <span class="pl-e">data-target-hide</span>=<span class="pl-s"><span class="pl-pds">"</span>#my-target<span class="pl-pds">"</span></span>&gt;
+    Hide #my-target!
+&lt;/<span class="pl-ent">button</span>&gt;</pre></div>
+
+<p>You can target more than one element:</p>
+
+<div class="highlight highlight-text-html-basic"><pre>&lt;<span class="pl-ent">div</span> <span class="pl-e">data-target-show</span>=<span class="pl-s"><span class="pl-pds">"</span>#my-target,.some-more-targets,body<span class="pl-pds">"</span></span>&gt;
+    Hide a bunch of stuff
+&lt;/<span class="pl-ent">div</span>&gt;</pre></div>
+          </div>
+    
+          <hr>
+
+          <div>
+            <h4>Toggle component</h4>
+
+            <p>Toggles an element</p>
+
+            <table><thead>
+            <tr>
+            <th align="center">Property</th>
+            <th align="center">Value</th>
+            </tr>
+            </thead><tbody>
+            <tr>
+            <td align="center">Applicable Elements:</td>
+            <td align="center">any</td>
+            </tr>
+            <tr>
+            <td align="center">Applicable Targets:</td>
+            <td align="center">any</td>
+            </tr>
+            <tr>
+            <td align="center">Attribute Value:</td>
+            <td align="center">any valid CSS selector</td>
+            </tr>
+            </tbody></table>
+
+            <br>
+            <p><strong>Usage</strong></p>
+
+<div class="highlight highlight-text-html-basic"><pre>&lt;<span class="pl-ent">button</span> <span class="pl-e">data-target-toggle</span>=<span class="pl-s"><span class="pl-pds">"</span>#my-target<span class="pl-pds">"</span></span>&gt;
+    Toggle #my-target!
+&lt;/<span class="pl-ent">button</span>&gt;</pre></div>
+
+<p>You can target more than one element:</p>
+
+<div class="highlight highlight-text-html-basic"><pre>&lt;<span class="pl-ent">div</span> <span class="pl-e">data-target-show</span>=<span class="pl-s"><span class="pl-pds">"</span>#my-target,.some-more-targets,body<span class="pl-pds">"</span></span>&gt;
+    Toggle a bunch of stuff
+&lt;/<span class="pl-ent">div</span>&gt;</pre></div>
+          </div>
+
+          <hr>
+
+          <div>
+            <h4>Clickoff component</h4>
+
+            <p>When clicked away from, an element will hide itself</p>
+
+            <table><thead>
+            <tr>
+            <th align="center">Property</th>
+            <th align="center">Value</th>
+            </tr>
+            </thead><tbody>
+            <tr>
+            <td align="center">Applicable Elements:</td>
+            <td align="center">any</td>
+            </tr>
+            <tr>
+            <td align="center">Applicable Targets:</td>
+            <td align="center">none</td>
+            </tr>
+            <tr>
+            <td align="center">Attribute Value:</td>
+            <td align="center">none</td>
+            </tr>
+            </tbody></table>
+
+            <br>
+            <p><strong>Usage</strong></p>
+
+<div class="highlight highlight-text-html-basic"><pre>&lt;<span class="pl-ent">div</span> <span class="pl-e">data-target-clickoff</span>&gt;
+    Click away from this to close!
+&lt;/<span class="pl-ent">div</span>&gt;</pre></div>
+          </div>
+
+          <hr>
+
+          <div>
+            <h4>Increment/Decrement components</h4>
+
+            <p>Increments or decrements the value of an input. Targeted element must be an <code>&lt;input&gt;</code> element.</p>
+
+            <table><thead>
+            <tr>
+            <th align="center">Property</th>
+            <th align="center">Value</th>
+            </tr>
+            </thead><tbody>
+            <tr>
+            <td align="center">Applicable Elements:</td>
+            <td align="center">any</td>
+            </tr>
+            <tr>
+            <td align="center">Applicable Targets:</td>
+            <td align="center"><code>&lt;input&gt;</code></td>
+            </tr>
+            <tr>
+            <td align="center">Attribute Values:</td>
+            <td align="center">CSS selector targeting one <code>&lt;input&gt;</code> element</td>
+            </tr>
+            </tbody></table>
+
+            <br>
+            <p><strong>Usage</strong></p>
+
+<div class="highlight highlight-text-html-basic"><pre>&lt;<span class="pl-ent">button</span> <span class="pl-e">data-target-decrement</span>=<span class="pl-s"><span class="pl-pds">"</span>#qty<span class="pl-pds">"</span></span>&gt;-&lt;/<span class="pl-ent">button</span>&gt;
+&lt;<span class="pl-ent">input</span> <span class="pl-e">id</span>=<span class="pl-s"><span class="pl-pds">"</span>qty<span class="pl-pds">"</span></span>&gt;1&lt;/<span class="pl-ent">input</span>&gt;
+&lt;<span class="pl-ent">button</span> <span class="pl-e">data-target-increment</span>=<span class="pl-s"><span class="pl-pds">"</span>#qty<span class="pl-pds">"</span></span>&gt;+&lt;/<span class="pl-ent">button</span>&gt;</pre></div>
+
+<p>Increments and decrements can have optional min and max values</p>
+
+<div class="highlight highlight-text-html-basic"><pre>&lt;<span class="pl-ent">button</span> <span class="pl-e">data-target-decrement</span>=<span class="pl-s"><span class="pl-pds">"</span>#qty<span class="pl-pds">"</span></span> <span class="pl-e">data-target-min</span>=<span class="pl-s"><span class="pl-pds">"</span>-10<span class="pl-pds">"</span></span>&gt;-&lt;/<span class="pl-ent">button</span>&gt;
+&lt;<span class="pl-ent">input</span> <span class="pl-e">id</span>=<span class="pl-s"><span class="pl-pds">"</span>qty<span class="pl-pds">"</span></span>&gt;1&lt;/<span class="pl-ent">input</span>&gt;
+&lt;<span class="pl-ent">button</span> <span class="pl-e">data-target-increment</span>=<span class="pl-s"><span class="pl-pds">"</span>#qty<span class="pl-pds">"</span></span> <span class="pl-e">data-target-max</span>=<span class="pl-s"><span class="pl-pds">"</span>10<span class="pl-pds">"</span></span>&gt;+&lt;/<span class="pl-ent">button</span>&gt;</pre></div>
+
+<ul>
+<li>The default minimum value for decrementers is 0</li>
+<li>There is no default maximum value</li>
+</ul>
+          </div>
+          
+          <hr>
+
+          <div>
+            <h4>Scrollbox</h4>
+
+            <p>Creates a responsive scrollbox. When the content is taller than the threshold, the element gets a scrollbar. When the content isn't, the scrollbar disappears.</p>
+
+            <table><thead>
+            <tr>
+            <th align="center">Property</th>
+            <th align="center">Value</th>
+            </tr>
+            </thead><tbody>
+            <tr>
+            <td align="center">Applicable Elements:</td>
+            <td align="center">any block-display element</td>
+            </tr>
+            <tr>
+            <td align="center">Applicable Targets:</td>
+            <td align="center">none</td>
+            </tr>
+            <tr>
+            <td align="center">Attribute Value:</td>
+            <td align="center">height:int</td>
+            </tr>
+            </tbody></table>
+
+            <br>
+            <p><strong>Usage</strong></p>
+
+<div class="highlight highlight-text-html-basic"><pre>&lt;<span class="pl-ent">div</span> <span class="pl-e">data-target-scrollbox</span>=<span class="pl-s"><span class="pl-pds">"</span>600<span class="pl-pds">"</span></span>&gt;
+    &lt;<span class="pl-ent">p</span>&gt;If this content goes over 600 pixels tall, the div will get a scrollbar&lt;/<span class="pl-ent">p</span>&gt;
+&lt;/<span class="pl-ent">div</span>&gt;</pre></div>
+
+<p>If the integer is negative, the threshold will be set relative to the window size:</p>
+
+<div class="highlight highlight-text-html-basic"><pre>&lt;<span class="pl-ent">div</span> <span class="pl-e">data-target-scrollbox</span>=<span class="pl-s"><span class="pl-pds">"</span>-300<span class="pl-pds">"</span></span>&gt;
+    &lt;<span class="pl-ent">p</span>&gt;If this content is within 299 pixels of the window height, a scrollbar will appear.&lt;/<span class="pl-ent">p</span>&gt;
+&lt;/<span class="pl-ent">div</span>&gt;</pre></div>
+
+<p>As with all Target.js elements, Scrollbox updates itself on window.resize.</p>
+          </div>
+
+          <hr>
+
+          <div>
+            <h4>Grid</h4>
+
+            <p>Makes elements in a row all the same height. Calculates its direct children. This doesn't replace your CSS grid; rather, it works in conjunction with it.</p>
+
+            <table><thead>
+            <tr>
+            <th align="center">Property</th>
+            <th align="center">Value</th>
+            </tr>
+            </thead><tbody>
+            <tr>
+            <td align="center">Applicable Elements:</td>
+            <td align="center">any</td>
+            </tr>
+            <tr>
+            <td align="center">Applicable Targets:</td>
+            <td align="center">none</td>
+            </tr>
+            <tr>
+            <td align="center">Attribute Value:</td>
+            <td align="center">Space-separated list:<br> <code>mobile-columns:int</code><br> <code>tablet-columns:int</code><br> <code>desktop-columns:int</code></td>
+            </tr>
+            </tbody></table>
+
+            <br>
+            <p><strong>Usage</strong></p>
+
+<div class="highlight highlight-text-html-basic"><pre>&lt;<span class="pl-ent">div</span> <span class="pl-e">data-target-grid</span>=<span class="pl-s"><span class="pl-pds">"</span>2 3 4<span class="pl-pds">"</span></span>&gt;
+    &lt;<span class="pl-ent">div</span>&gt;Product thumbnail here&lt;/<span class="pl-ent">div</span>&gt;
+    &lt;<span class="pl-ent">div</span>&gt;Product thumbnail here&lt;/<span class="pl-ent">div</span>&gt;
+    &lt;<span class="pl-ent">div</span>&gt;Product thumbnail here (these will all have equal height)&lt;/<span class="pl-ent">div</span>&gt;
+    &lt;<span class="pl-ent">div</span>&gt;Product thumbnail here&lt;/<span class="pl-ent">div</span>&gt;
+    &lt;<span class="pl-ent">div</span>&gt;Product thumbnail here&lt;/<span class="pl-ent">div</span>&gt;
+    &lt;<span class="pl-ent">div</span>&gt;Product thumbnail here&lt;/<span class="pl-ent">div</span>&gt;
+    &lt;<span class="pl-ent">div</span>&gt;Product thumbnail here (these will all have equal height)&lt;/<span class="pl-ent">div</span>&gt;
+    &lt;<span class="pl-ent">div</span>&gt;Product thumbnail here&lt;/<span class="pl-ent">div</span>&gt;
+&lt;/<span class="pl-ent">div</span>&gt;</pre></div>
+
+<p>Provide a space-separated list of columns per row. In the above example, there are 2 columns per row on mobile, 3 columns per row on tablet, and 4 columns per row on desktop.</p>
+
+<p>An example using Foundation's grid presentational classes:</p>
+
+<div class="highlight highlight-text-html-basic"><pre>&lt;<span class="pl-ent">div</span> <span class="pl-e">class</span>=<span class="pl-s"><span class="pl-pds">"</span>row<span class="pl-pds">"</span></span> <span class="pl-e">data-target-grid</span>=<span class="pl-s"><span class="pl-pds">"</span>2 3 4<span class="pl-pds">"</span></span>&gt;
+    &lt;<span class="pl-ent">div</span> <span class="pl-e">class</span>=<span class="pl-s"><span class="pl-pds">"</span>column small-6 medium-4 large-3<span class="pl-pds">"</span></span>&gt;Product thumbnail here&lt;/<span class="pl-ent">div</span>&gt;
+    &lt;<span class="pl-ent">div</span> <span class="pl-e">class</span>=<span class="pl-s"><span class="pl-pds">"</span>column small-6 medium-4 large-3<span class="pl-pds">"</span></span>&gt;Product thumbnail here&lt;/<span class="pl-ent">div</span>&gt;
+    &lt;<span class="pl-ent">div</span> <span class="pl-e">class</span>=<span class="pl-s"><span class="pl-pds">"</span>column small-6 medium-4 large-3<span class="pl-pds">"</span></span>&gt;Product thumbnail here (these will all have equal height)&lt;/<span class="pl-ent">div</span>&gt;
+    &lt;<span class="pl-ent">div</span> <span class="pl-e">class</span>=<span class="pl-s"><span class="pl-pds">"</span>column small-6 medium-4 large-3<span class="pl-pds">"</span></span>&gt;Product thumbnail here&lt;/<span class="pl-ent">div</span>&gt;
+    &lt;<span class="pl-ent">div</span> <span class="pl-e">class</span>=<span class="pl-s"><span class="pl-pds">"</span>column small-6 medium-4 large-3<span class="pl-pds">"</span></span>&gt;Product thumbnail here&lt;/<span class="pl-ent">div</span>&gt;
+    &lt;<span class="pl-ent">div</span> <span class="pl-e">class</span>=<span class="pl-s"><span class="pl-pds">"</span>column small-6 medium-4 large-3<span class="pl-pds">"</span></span>&gt;Product thumbnail here&lt;/<span class="pl-ent">div</span>&gt;
+    &lt;<span class="pl-ent">div</span> <span class="pl-e">class</span>=<span class="pl-s"><span class="pl-pds">"</span>column small-6 medium-4 large-3<span class="pl-pds">"</span></span>&gt;Product thumbnail here (these will all have equal height)&lt;/<span class="pl-ent">div</span>&gt;
+    &lt;<span class="pl-ent">div</span> <span class="pl-e">class</span>=<span class="pl-s"><span class="pl-pds">"</span>column small-6 medium-4 large-3<span class="pl-pds">"</span></span>&gt;Product thumbnail here&lt;/<span class="pl-ent">div</span>&gt;
+&lt;/<span class="pl-ent">div</span>&gt;</pre></div>
+
+<p><strong>Disabling the Grid</strong></p>
+
+<p>You can disable the Grid responsively, like you could any other Target.js element:</p>
+
+<div class="highlight highlight-text-html-basic"><pre>&lt;<span class="pl-ent">div</span> <span class="pl-e">data-target-grid</span>=<span class="pl-s"><span class="pl-pds">"</span>1 2 3<span class="pl-pds">"</span></span> <span class="pl-e">data-target-disable</span>=<span class="pl-s"><span class="pl-pds">"</span>mobile<span class="pl-pds">"</span></span>&gt;...&lt;/<span class="pl-ent">div</span>&gt;</pre></div>
+
+<p>Alternatively, you can disable using a shortcut:</p>
+
+<div class="highlight highlight-text-html-basic"><pre>&lt;<span class="pl-ent">div</span> <span class="pl-e">data-target-grid</span>=<span class="pl-s"><span class="pl-pds">"</span>disable 2 3<span class="pl-pds">"</span></span>&gt;...&lt;/<span class="pl-ent">div</span>&gt;</pre></div>
+          </div>
+          
+          <hr>
+
+          <div>
+            <h4>Src</h4>
+
+            <p>The Src component responsively loads images. It must be used on an <code>&lt;img&gt;</code> element.</p>
+
+            <ul>
+            <li>Applicable Elements: <code>&lt;img&gt;</code></li>
+            <li>Applicable Targets: none</li>
+            </ul>
+
+            <table><thead>
+            <tr>
+            <th align="center">Property</th>
+            <th align="center">Value</th>
+            </tr>
+            </thead><tbody>
+            <tr>
+            <td align="center">Applicable Elements:</td>
+            <td align="center"><code>&lt;img&gt;</code></td>
+            </tr>
+            <tr>
+            <td align="center">Applicable Targets:</td>
+            <td align="center">none</td>
+            </tr>
+            <tr>
+            <td align="center">Attribute Value:</td>
+            <td align="center">Space-separated list:<br> <code>mobile-img-src:string</code> <br> <code>tablet-img-src:string</code> <br> <code>desktop-img-src:string</code></td>
+            </tr>
+            </tbody></table>
+
+            <br>
+            <p><strong>Usage</strong></p>
+
+<div class="highlight highlight-text-html-basic"><pre>&lt;<span class="pl-ent">img</span> <span class="pl-e">data-target-src</span>=<span class="pl-s"><span class="pl-pds">"</span>/some-mobile-img.jpg /my-tablet-image.jpg /a-desktop-image.gif<span class="pl-pds">"</span></span>&gt;</pre></div>
+
+<p>The <code>data-target-src</code> accepts a space-separated list of 3 URLs. First, mobile; second, tablet; third, desktop. Because Src is mobile-first, you can omit URLs if you want:</p>
+
+<div class="highlight highlight-text-html-basic"><pre>&lt;<span class="pl-ent">img</span> <span class="pl-e">data-target-src</span>=<span class="pl-s"><span class="pl-pds">"</span>/some-mobile-img.jpg /my-tablet-and-desktop-image.jpg<span class="pl-pds">"</span></span>&gt;</pre></div>
+
+<p>Or, pass a null argument to inherit the smaller image:</p>
+
+<div class="highlight highlight-text-html-basic"><pre>&lt;<span class="pl-ent">img</span> <span class="pl-e">data-target-src</span>=<span class="pl-s"><span class="pl-pds">"</span>/some-mobile-and-tablet-img.jpg null /my-desktop-image.jpg<span class="pl-pds">"</span></span>&gt;</pre></div>
+
+<p>Or:</p>
+
+<div class="highlight highlight-text-html-basic"><pre>&lt;<span class="pl-ent">img</span> <span class="pl-e">data-target-src</span>=<span class="pl-s"><span class="pl-pds">"</span>/used-for-mobile-tablet-and-desktop.jpg<span class="pl-pds">"</span></span>&gt;</pre></div>
+
+<p>The Src element doesn't add its own placeholder image, so be sure to use your own:</p>
+
+<div class="highlight highlight-text-html-basic"><pre>&lt;<span class="pl-ent">img</span> <span class="pl-e">src</span>=<span class="pl-s"><span class="pl-pds">"</span>my_blank.gif<span class="pl-pds">"</span></span> <span class="pl-e">data-target-src</span>=<span class="pl-s"><span class="pl-pds">"</span>/some-mobile-img.jpg /my-tablet-image.jpg /a-desktop-image.gif<span class="pl-pds">"</span></span>&gt;</pre></div>
+          </div>
+
+          <hr>
+          
+          <h3 id="layouts">Layouts</h3>
+          
+
+          <hr>
+          <h3 id="events">Events</h3>
+          
+          <hr>
+          <h3 id="methods">Methods</h3>
+          
+          <hr>
         </div>
       </div>
     </section>
