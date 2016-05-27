@@ -1,7 +1,7 @@
 
 # Target.js!
 
->(Target.js is in active development -- expect a lot of bugs, a lot of changes, and a lot of features to come!)
+>(Target.js is in active development -- expect changes and features to come!)
 
 Target.js doesn't do much. But what it does, it does well. It adds functionality to your DOM elements using data-attributes. It lets you:
 
