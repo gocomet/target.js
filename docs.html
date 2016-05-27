@@ -30,15 +30,76 @@
           <h4><a href="#configuration">Configuration</a></h4>
           <h4><a href="#components">Components</a></h4>
           <h4><a href="#layouts">Layouts</a></h4>
-          <h4><a href="#events">Events</a></h4>
           <h4><a href="#methods">Methods</a></h4>
+          <h4><a href="#events">Events</a></h4>
+          <h4><a href="#plugins">Plugins</a></h4>
         </div>
         <div class="column small-12 medium-9 main">
           <h3 id="getting-started">Getting Started</h3>
           
+            <p>Target.js works by doing two things:</p>
+
+            <ol>
+                <li>Adding functionality to elements with the right data-attributes</li>
+                <li>Add/removing a "target-active" class -- you control the styles</li>
+            </ol>
+
+            <p>How to use:</p>
+
+            <ol>
+                <li>Include necessary JavaScript</li>
+                <li>initialize and configure target.js</li>
+                <li>add data-attributes to your HTML tags</li>
+                <li>apply styles to your elements and the "target-active" class</li>
+            </ol>
+
           <hr>
           <h3 id="installation">Installation</h3>
           
+            <h4>Step 1. Include individual JS files, or bundled JS file</h4>
+
+            <p>Grab the JS files under <code>dist/</code>. Include them on your page:</p>
+
+            <div class="highlight highlight-text-html-basic"><pre>
+&lt;<span class="pl-ent">script</span> <span class="pl-e">src</span>=<span class="pl-s"><span class="pl-pds">"</span>my-js-folder/weakmap.js<span class="pl-pds">"</span></span>&gt;&lt;/<span class="pl-ent">script</span>&gt;
+&lt;<span class="pl-ent">script</span> <span class="pl-e">src</span>=<span class="pl-s"><span class="pl-pds">"</span>my-js-folder/MutationObserver.js<span class="pl-pds">"</span></span>&gt;&lt;/<span class="pl-ent">script</span>&gt;
+&lt;<span class="pl-ent">script</span> <span class="pl-e">src</span>=<span class="pl-s"><span class="pl-pds">"</span>my-js-folder/mediator.min.js<span class="pl-pds">"</span></span>&gt;&lt;/<span class="pl-ent">script</span>&gt;
+&lt;<span class="pl-ent">script</span> <span class="pl-e">src</span>=<span class="pl-s"><span class="pl-pds">"</span>my-js-folder/proto.es5.js<span class="pl-pds">"</span></span>&gt;&lt;/<span class="pl-ent">script</span>&gt;
+&lt;<span class="pl-ent">script</span> <span class="pl-e">src</span>=<span class="pl-s"><span class="pl-pds">"</span>my-js-folder/target.js<span class="pl-pds">"</span></span>&gt;&lt;/<span class="pl-ent">script</span>&gt;</pre></div>
+
+            <p>or:</p>
+
+            <div class="highlight highlight-text-html-basic"><pre>&lt;<span class="pl-ent">script</span> <span class="pl-e">src</span>=<span class="pl-s"><span class="pl-pds">"</span>my-js-folder/target.bundled.js<span class="pl-pds">"</span></span>&gt;&lt;/<span class="pl-ent">script</span>&gt;</pre></div>
+
+            <h4>Step 2. Initialize Target.js</h4>
+
+            <div class="highlight highlight-text-html-basic"><pre><span class="pl-s1">&lt;<span class="pl-ent">script</span>&gt;</span>
+<span class="pl-s1">    <span class="pl-smi">target</span>.<span class="pl-en">init</span>();</span>
+<span class="pl-s1">&lt;/<span class="pl-ent">script</span>&gt;</span></pre></div>
+
+            <h4>Step 3. Add data-attributes on your elements</h4>
+
+            <div class="highlight highlight-text-html-basic"><pre>&lt;<span class="pl-ent">button</span> <span class="pl-e">data-target-toggle</span>=<span class="pl-s"><span class="pl-pds">"</span>.minicart<span class="pl-pds">"</span></span>&gt;
+    Cart
+&lt;/<span class="pl-ent">button</span>&gt;
+
+&lt;<span class="pl-ent">div</span> <span class="pl-e">class</span>=<span class="pl-s"><span class="pl-pds">"</span>minicart<span class="pl-pds">"</span></span>&gt;
+  This will get toggled!
+&lt;/<span class="pl-ent">div</span>&gt;
+</pre></div>
+
+            <h4>Step 4. Add styles to show/hide your elements</h4>
+
+            <div class="highlight highlight-text-css-basic"><pre><code class="language-css"><span class="hljs-class">.minicart</span> <span class="hljs-rules">{
+  <span class="hljs-rule"><span class="hljs-attribute">visibility</span>:<span class="hljs-value"> hidden</span></span>;
+}</span>
+
+<span class="hljs-class">.minicart</span><span class="hljs-class">.target-active</span> <span class="hljs-rules">{
+  <span class="hljs-rule"><span class="hljs-attribute">visibility</span>:<span class="hljs-value"> visible</span></span>;
+}</span>
+</code></pre>
+</div>
+
           <hr>
           <h3 id="configuration">Configuration</h3>
           
@@ -248,7 +309,7 @@
 <span class="pl-s1">    });</span>
 <span class="pl-s1">&lt;/<span class="pl-ent">script</span>&gt;</span></pre></div>
 
-            <p>or use default configuration:</p>
+            <p>or use the default configuration:</p>
 
             <div class="highlight highlight-text-html-basic"><pre><span class="pl-s1">&lt;<span class="pl-ent">script</span>&gt;</span>
 <span class="pl-s1">    <span class="pl-smi">target</span>.<span class="pl-en">init</span>();</span>
@@ -622,14 +683,359 @@
           
           <h3 id="layouts">Layouts</h3>
 
-          <hr>
+            <div>
 
-          <h3 id="events">Events</h3>
-          
+                <p>A layout, for our intents and purposes, is a screen size. Target.js uses three layouts: mobile, tablet and desktop. Their default breakpoints are 0px, 768px, and 1025px, respectively. You can configure the breakpoints in <a href="#configuration">your configuration</a></p>
+
+                <p>Target.js uses three layouts: mobile, tablet, and desktop. You can disable your Target components on certain layouts, by using Target's "disable" declaration (by default, "data-target-disable".</p>
+
+                <table><thead>
+                <tr>
+                <th align="center">Layout</th>
+                <th align="center">Default Breakpoint</th>
+                </tr>
+                </thead><tbody>
+                <tr>
+                <td align="center">Mobile</td>
+                <td align="center"><code>0px</code></td>
+                </tr>
+                <tr>
+                <td align="center">Tablet</td>
+                <td align="center"><code>768px</code></td>
+                </tr>
+                <tr>
+                <td align="center">Desktop</td>
+                <td align="center"><code>1025px</code></td>
+                </tr>
+                </tbody></table>
+
+                <h4>Usage</h4>
+
+                <p>Using the <code>data-target-disable</code> attribute, pass a comma-separated list of layout names:</p>
+
+                <table><thead>
+                <tr>
+                <th align="center">Attribute</th>
+                <th align="center">Value(s)</th>
+                </tr>
+                </thead><tbody>
+                <tr>
+                <td align="center"><code>data-target-disable</code></td>
+                <td align="center"><code>mobile</code><br><code>tablet</code><br><code>desktop</code></td>
+                </tr>
+                </tbody></table>
+
+                <h4>Example</h4>
+
+                <p>In the following example, we have a button that toggles the minicart visibility on desktop and tablet devices, but on the mobile layout, it's disabled, so it just links directly to the cart page.</p>
+
+                <div class="highlight highlight-text-html-basic"><pre>&lt;<span class="pl-ent">a</span> <span class="pl-e">href</span>=<span class="pl-s"><span class="pl-pds">"</span>/cart<span class="pl-pds">"</span></span> <span class="pl-e">data-target-toggle</span>=<span class="pl-s"><span class="pl-pds">"</span>#minicart<span class="pl-pds">"</span></span> <span class="pl-e">data-target-disable</span>=<span class="pl-s"><span class="pl-pds">"</span>mobile<span class="pl-pds">"</span></span>&gt;
+    Cart
+&lt;/<span class="pl-ent">a</span>&gt;</pre></div>
+
+                <p>You can disable any Target.js component for any layout or any number of layouts. For example:</p>
+
+                <div class="highlight highlight-text-html-basic"><pre>&lt;<span class="pl-ent">a</span> <span class="pl-e">href</span>=<span class="pl-s"><span class="pl-pds">"</span>/cart<span class="pl-pds">"</span></span> <span class="pl-e">data-target-toggle</span>=<span class="pl-s"><span class="pl-pds">"</span>#minicart<span class="pl-pds">"</span></span> <span class="pl-e">data-target-disable</span>=<span class="pl-s"><span class="pl-pds">"</span>mobile tablet<span class="pl-pds">"</span></span>&gt;
+    Cart
+&lt;/<span class="pl-ent">a</span>&gt;</pre></div>
+
+                <p>Now, the toggle button only toggles on desktop: it links to <code>/cart</code> on mobile and tablet layouts.</p>
+
+            </div>
+
           <hr>
           
           <h3 id="methods">Methods</h3>
           
+                <div>
+                    <p>Target.js is designed to be declarative, so that you don't have to write <em>any</em> JavaScript to use it. However, you may want to. Target.js also provides a programmatic API to hook into Target.js functionality. All methods have the exact same effect as their declarative counterparts.</p>
+
+                    <table>
+                        <thead>
+                            <tr>
+                                <th align="center">Method</th>
+                                <th align="center">Description</th>
+                                <th align="center">Arguments</th> 
+                                <th align="center">Returns</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td align="center"><code>show</code></td>
+                                <td align="center">Shows an element/elements</td>
+                                <td align="center">
+                                    <code>&lt;el:DOMElement&gt;</code> or
+                                    <code>&lt;els:NodeList&gt;</code> or
+                                    <code>&lt;cssSelector:String&gt;</code>
+                                </td>
+                                <td align="center">target.api</td>
+                            </tr>
+                            <tr>
+                                <td align="center"><code>hide</code></td>
+                                <td align="center">Hides an element/elements</td>
+                                <td align="center">
+                                    <code>&lt;el:DOMElement&gt;</code> or
+                                    <code>&lt;els:NodeList&gt;</code> or
+                                    <code>&lt;cssSelector:String&gt;</code>
+                                </td>
+                                <td align="center">target.api</td>
+                            </tr>
+                            <tr>
+                                <td align="center"><code>toggle</code></td>
+                                <td align="center">Toggles an element/elements</td>
+                                <td align="center">
+                                    <code>&lt;el:DOMElement&gt;</code> or
+                                    <code>&lt;els:NodeList&gt;</code> or
+                                    <code>&lt;cssSelector:String&gt;</code>
+                                </td>
+                                <td align="center">target.api</td>
+                            </tr>
+                            <tr>
+                                <td align="center"><code>on</code></td>
+                                <td align="center">Bind a Target event handler to an element</td>
+                                <td align="center">
+                                    <code>&lt;eventName:String&gt;</code>,<br>
+                                    <code>&lt;el:DOMElement&gt;</code> or
+                                    <code>&lt;els:NodeList&gt;</code> or
+                                    <code>&lt;cssSelector:String&gt;</code>,<br>
+                                    <code>&lt;callback:Function&gt;</code>
+                                </td>
+                                <td align="center">target.api</td>
+                            </tr>
+                            <tr>
+                                <td align="center"><code>off</code></td>
+                                <td align="center">Remove a Target event handler from an element</td>
+                                <td align="center">
+                                    <code>&lt;eventName:String&gt;</code>,<br>
+                                    <code>&lt;el:DOMElement&gt;</code> or
+                                    <code>&lt;els:NodeList&gt;</code> or
+                                    <code>&lt;cssSelector:String&gt;</code>
+                                </td>
+                                <td align="center">target.api</td>
+                            </tr>
+                            <tr>
+                                <td align="center"><code>get</code></td>
+                                <td align="center">Get a target.Component instance attached to an element</td>
+                                <td align="center">
+                                    <code>&lt;el:DOMElement&gt;</code> or
+                                    <code>&lt;cssSelector:String&gt;</code><br>
+                                    IMPORTANT: must be a Target component
+                                </td>
+                                <td align="center">target.Component instance</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <h4>Component methods</h4>
+
+                    <p>When you get a target.Component instance using <code>.get</code>, you will then have access to the instance's methods:</p>
+
+                    <table>
+                        <thead>
+                            <tr>
+                                <th align="center">Component Method</th>
+                                <th align="center">Description</th>
+                                <th align="center">Arguments</th> 
+                                <th align="center">Returns</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td align="center"><code>disable</code></td>
+                                <td align="center">Disable the component. Overrides layout declarations.</td>
+                                <td align="center">
+                                    None
+                                </td>
+                                <td align="center">instance</td>
+                            </tr>
+                            <tr>
+                                <td align="center"><code>enable</code></td>
+                                <td align="center">Enable the component. Overrides layout declarations.</td>
+                                <td align="center">
+                                    None
+                                </td>
+                                <td align="center">instance</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <h4>Usage</h4>
+
+                    <table>
+                        <thead>
+                            <tr>
+                                <th align="center">Method</th>
+                                <th align="center">Usages</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td align="center"><code>show</code></td>
+                                <td align="center">
+                                    <code>
+                                        target.show(myDomEl);
+                                    </code><br>
+                                    <code>
+                                        target.show(myNodeList);
+                                    </code><br>
+                                    <code>
+                                        target.show('#something');
+                                    </code><br>
+                                    <code>
+                                        target.show('.some-things');
+                                    </code>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td align="center"><code>hide</code></td>
+                                <td align="center">
+                                    <code>
+                                        target.hide(myDomEl);
+                                    </code><br>
+                                    <code>
+                                        target.hide(myNodeList);
+                                    </code><br>
+                                    <code>
+                                        target.hide('#something');
+                                    </code><br>
+                                    <code>
+                                        target.hide('.some-things');
+                                    </code>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td align="center"><code>toggle</code></td>
+                                <td align="center">
+                                    <code>
+                                        target.toggle(myDomEl);
+                                    </code><br>
+                                    <code>
+                                        target.toggle(myNodeList);
+                                    </code><br>
+                                    <code>
+                                        target.toggle('#something');
+                                    </code><br>
+                                    <code>
+                                        target.toggle('.some-things');
+                                    </code>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td align="center"><code>on</code></td>
+                                <td align="center">
+                                    <code>
+                                        target.on('show', myDomEl, function(el) {});
+                                    </code><br>
+                                    <code>
+                                        target.on('show', myDomEls, function(el) {});
+                                    </code><br>
+                                    <code>
+                                        target.on('show', '#dom-el', function(el) {});
+                                    </code><br>
+                                    <code>
+                                        target.on('show', '.dom-els', function(el) {});
+                                    </code>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td align="center"><code>off</code></td>
+                                <td align="center">
+                                    <code>
+                                        target.off('show', myDomEl);
+                                    </code><br>
+                                    <code>
+                                        target.off('show', myDomEls);
+                                    </code><br>
+                                    <code>
+                                        target.off('show', '#dom-el');
+                                    </code><br>
+                                    <code>
+                                        target.off('show', '.dom-els');
+                                    </code>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td align="center"><code>get</code></td>
+                                <td align="center">
+                                    <code>
+                                        var myComponent = target.get(myDomEl);
+                                    </code><br>
+                                    <code>
+                                        var myComponent = target.get('#my-component');
+                                    </code>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td align="center"><code>disable</code></td>
+                                <td align="center">
+                                    <code>
+                                        target.get(myDomEl).disable();
+                                    </code>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td align="center"><code>enable</code></td>
+                                <td align="center">
+                                    <code>
+                                        target.get(myDomEl).enable();
+                                    </code>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                </div>
+
+          <hr>
+
+          <h3 id="events">Events</h3>
+          
+            <div>
+                <p>Target.js component fire events that you can hook into using the <a href="#methods"><code>on</code> method</a>. You can stop listening by using the <a href="#methods"><code>off</code> method</a>.</p>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th align="center">Event Name</th>
+                            <th align="center">Fires When</th>
+                            <th align="center">Arg passed to Callback</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td align="center"><code>show</code></td>
+                            <td align="center">An element is shown</td>
+                            <td align="center"><code>&lt;el:DOMElement&gt;</code></td>
+                        </tr>
+                        <tr>
+                            <td align="center"><code>hide</code></td>
+                            <td align="center">An element is hidden</td>
+                            <td align="center"><code>&lt;el:DOMElement&gt;</code></td>
+                        </tr>
+                        <tr>
+                            <td align="center"><code>min</code></td>
+                            <td align="center">A decrementer has reached its minimum value</td>
+                            <td align="center"><code>&lt;input:DOMElement&gt;</code></td>
+                        </tr>
+                        <tr>
+                            <td align="center"><code>max</code></td>
+                            <td align="center">An incrementer has reached its maximum value</td>
+                            <td align="center"><code>&lt;input:DOMElement&gt;</code></td>
+                        </tr>
+                    </tbody>
+                </table>
+                <br>
+                <p>More events to come!</p>
+            </div>
+
+          <hr>
+
+          <h3 id="plugins">Plugins</h3>
+          
+            <div>
+                <p>Plugin API coming soon!</p>
+            </div>
+
           <hr>
         
         </div>
