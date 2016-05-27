@@ -5,28 +5,9 @@
 
 - none currently
 
-## Restructure documenation
+## Examples
 
-Move from README into own page/site
-
-Sections:
-
-- Installation
-- Configuration
-- Components
-- Layouts
-- Events
-- Methods
-	- Component instances
-- Plugins (eventually)
-
-## Events
-
-- documentation
-
-## API
-
-- documentation
+- create and document
 
 ## usage error messaging
 
@@ -36,19 +17,13 @@ Sections:
 ## allow library consumers to create their own UI components
 
 ```javascript
-target.addComponent = function(name, att, def) {
-
-};
-```
-
-ex. usage
-
-```javascript
-target.addComponent('Accordion', 'data-target-accordion', {
-	
+target.define('ComponentName', 'data-target-component', {
 	init: function() {
 
-	}
+	},
 
+	customMethod: function() {
+
+	}
 });
 ```
