@@ -226,6 +226,8 @@
 
 			this.disabled = true;
 
+			return this;
+
 		},
 
 		/**
@@ -242,6 +244,8 @@
 			this.overrideLayouts = !doNotOverride;
 
 			this.disabled = false;
+
+			return this;
 
 		},
 

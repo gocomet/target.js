@@ -1018,6 +1018,7 @@ if (typeof WeakMap === "undefined") {
         disable: function(doNotOverride) {
             this.overrideLayouts = !doNotOverride;
             this.disabled = true;
+            return this;
         },
         /**
 		 * set "disabled" property to false
@@ -1031,6 +1032,7 @@ if (typeof WeakMap === "undefined") {
         enable: function(doNotOverride) {
             this.overrideLayouts = !doNotOverride;
             this.disabled = false;
+            return this;
         },
         /**
 		 * show an element using css
@@ -1187,6 +1189,7 @@ if (typeof WeakMap === "undefined") {
                     }(el))
                 });
             });
+            return this;
         },
         /**
 		 * remove event handler for Target events
@@ -1201,6 +1204,7 @@ if (typeof WeakMap === "undefined") {
                     }
                 });
             });
+            return this;
         }
     });
 })(window.target = window.target || {});
