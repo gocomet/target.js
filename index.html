@@ -12,9 +12,7 @@
   <body>
     <section class="page-header">
       <h1 class="project-name">Target.js</h1>
-      <h2 class="project-tagline">Target.js doesn&#39;t do much; but what it does, it does well. It adds functionality to your DOM elements using data-attributes.</h2>
-      <a href="demo.html" class="btn">View Demo</a>
-      <a href="docs.html" class="btn">Docs</a>
+      <h2 class="project-tagline">Target.js doesn&#39;t do much; but what it does, it does well. It is a simple UI library that adds functionality to your DOM elements using data-attributes.</h2>
       <a href="https://github.com/gocomet/target.js" class="btn">View on GitHub</a>
       <a href="https://github.com/gocomet/target.js/zipball/master" class="btn">Download .zip</a>
       <a href="https://github.com/gocomet/target.js/tarball/master" class="btn">Download .tar.gz</a>
@@ -24,28 +22,32 @@
       <h1>
 <a id="targetjs" class="anchor" href="#targetjs" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Target.js!</h1>
 
-<p>Target.js doesn't do much. But what it does, it does well. It is a simple UI library that adds functionality to your DOM elements using data-attributes. It lets you:</p>
+<blockquote>
+<p>(Target.js is in active development -- expect changes and features to come!)</p>
+</blockquote>
+
+<p>Target.js doesn't do much. But what it does, it does well. It adds functionality to your DOM elements using data-attributes. It lets you:</p>
 
 <ul>
-  <li>Show/hide/toggle elements</li>
-  <li>Click away from elements to close them</li>
-  <li>Create responsive scrollboxes</li>
-  <li>Increment/decrement quantity boxes</li>
-  <li>Make all items in row equal heights</li>
-  <li>Responsively load images</li>
+<li>show/hide/toggle elements</li>
+<li>click away from elements to close them</li>
+<li>create responsive scrollboxes</li>
+<li>responsively load images</li>
+<li>increment/decrement quantity boxes</li>
+<li>give your thumbnails equal heights</li>
 </ul>
 
 <p><em>It does</em> this in a declarative way:</p>
 
 <div class="highlight highlight-text-html-basic"><pre>&lt;<span class="pl-ent">button</span> <span class="pl-e">data-target-toggle</span>=<span class="pl-s"><span class="pl-pds">"</span>#a-div<span class="pl-pds">"</span></span>&gt;
-  Toggle A Div!
+  Toggle a div!
 &lt;/<span class="pl-ent">button</span>&gt;
 
 &lt;<span class="pl-ent">div</span> <span class="pl-e">id</span>=<span class="pl-s"><span class="pl-pds">"</span>a-div<span class="pl-pds">"</span></span>&gt;
   This will get toggled!
 &lt;/<span class="pl-ent">div</span>&gt;</pre></div>
 
-<p><em>It doesn't</em> interfere with native browser events or functionality. It doesn't depend on jQuery - it works vanilla DOM methods, running faster.</p>
+<p><em>It doesn't</em> interfere with native browser events or functionality. It doesn't depend on jQuery - it uses vanilla DOM methods, running faster.</p>
 
 <p>Target.js is designed to give you JS functionality without having to write any JavaScript - just include declarations in your HTML markup, and off you go!</p>
 
@@ -74,6 +76,11 @@
 
 <p>Target.js watches the DOM for changes: if a new element is introduced with one of Target.js' data-attributes, it will automatically initialize it. That means you can swap target elements in and out of your page anyway you want, and they will <em>just work</em>.</p>
 
+<h3>
+<a id="3-event-driven-communication" class="anchor" href="#3-event-driven-communication" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>3. Event-driven communication</h3>
+
+<p>Target.js elements and their targets communicate with each other via events; this results in a two-way state bind, so that if a target is shown, the element that shows it also gets an active state.</p>
+
 <h2>
 <a id="browser-support" class="anchor" href="#browser-support" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Browser Support</h2>
 
@@ -86,19 +93,31 @@
 <a id="usage" class="anchor" href="#usage" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Usage</h2>
 
 <h3>
-<a id="1-include-the-files-under-dist-into-your-markup" class="anchor" href="#1-include-the-files-under-dist-into-your-markup" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>1. Include the files under <code>dist/</code> into your markup:</h3>
+<a id="1-include-the-files-under-dist-from-your-markup" class="anchor" href="#1-include-the-files-under-dist-from-your-markup" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>1. Include the files under <code>dist/</code> from your markup:</h3>
 
 <ul>
-<li>mediator.js (target.js' only dependency -- used as the event buss)</li>
-<li>MutationObserver.js (a polyfill -- only include for IE9 support)</li>
-<li>target.js</li>
+<li>
+<code>proto.es5.js</code> (a target.js dependency -- used for object inheritance)</li>
+<li>
+<code>mediator.min.js</code> (a target.js dependency -- used as the event buss)</li>
+<li>
+<code>weakmap.js</code> (a polyfill -- only include for IE9 support)</li>
+<li>
+<code>MutationObserver.js</code> (a polyfill -- only include for IE9 support)</li>
+<li><code>target.js</code></li>
 </ul>
 
 <p>For example:</p>
 
-<div class="highlight highlight-text-html-basic"><pre>&lt;<span class="pl-ent">script</span> <span class="pl-e">src</span>=<span class="pl-s"><span class="pl-pds">"</span>my-js-folder/mediator.min.js<span class="pl-pds">"</span></span>&gt;&lt;/<span class="pl-ent">script</span>&gt;
+<div class="highlight highlight-text-html-basic"><pre>&lt;<span class="pl-ent">script</span> <span class="pl-e">src</span>=<span class="pl-s"><span class="pl-pds">"</span>my-js-folder/weakmap.js<span class="pl-pds">"</span></span>&gt;&lt;/<span class="pl-ent">script</span>&gt;
 &lt;<span class="pl-ent">script</span> <span class="pl-e">src</span>=<span class="pl-s"><span class="pl-pds">"</span>my-js-folder/MutationObserver.js<span class="pl-pds">"</span></span>&gt;&lt;/<span class="pl-ent">script</span>&gt;
+&lt;<span class="pl-ent">script</span> <span class="pl-e">src</span>=<span class="pl-s"><span class="pl-pds">"</span>my-js-folder/mediator.min.js<span class="pl-pds">"</span></span>&gt;&lt;/<span class="pl-ent">script</span>&gt;
+&lt;<span class="pl-ent">script</span> <span class="pl-e">src</span>=<span class="pl-s"><span class="pl-pds">"</span>my-js-folder/proto.es5.js<span class="pl-pds">"</span></span>&gt;&lt;/<span class="pl-ent">script</span>&gt;
 &lt;<span class="pl-ent">script</span> <span class="pl-e">src</span>=<span class="pl-s"><span class="pl-pds">"</span>my-js-folder/target.js<span class="pl-pds">"</span></span>&gt;&lt;/<span class="pl-ent">script</span>&gt;</pre></div>
+
+<p>or:</p>
+
+<div class="highlight highlight-text-html-basic"><pre>&lt;<span class="pl-ent">script</span> <span class="pl-e">src</span>=<span class="pl-s"><span class="pl-pds">"</span>my-js-folder/target.bundled.js<span class="pl-pds">"</span></span>&gt;&lt;/<span class="pl-ent">script</span>&gt;</pre></div>
 
 <h3>
 <a id="2-initialize-targetjs" class="anchor" href="#2-initialize-targetjs" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>2. Initialize Target.js</h3>
@@ -118,157 +137,21 @@
     Click away from this element to close!
 &lt;/<span class="pl-ent">div</span>&gt;</pre></div>
 
-<p>Target.js declarations don't care what type of element they're applied to</p>
+<h3>
+<a id="4-add-styles" class="anchor" href="#4-add-styles" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>4. Add styles</h3>
 
-<h2>
-<a id="how-does-targetjs-showhide-elements" class="anchor" href="#how-does-targetjs-showhide-elements" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>How does Target.js show/hide elements?</h2>
+<div class="highlight highlight-source-css"><pre><span class="pl-e">.minicart</span> {
+    <span class="pl-c1"><span class="pl-c1">display</span></span>: <span class="pl-c1">none</span>;
+}
 
-<p>Target.js is style-agnostic -- it simply adds or removes a class on the element. You can apply your beautiful styles to that class. You can also configure that class to be whatever you want.</p>
-
-<h2>
-<a id="configuration" class="anchor" href="#configuration" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Configuration</h2>
-
-<p>You can customize Target.js so that it doesn't conflict with any of your existing CSS classes or data-attributes. You can also define your own responsive breakpoints. Breakpoints are designed mobile-first. You overwrite the defaults during initialization, like so: (I've included the default settings)</p>
-
-<div class="highlight highlight-text-html-basic"><pre><span class="pl-s1">&lt;<span class="pl-ent">script</span>&gt;</span>
-<span class="pl-s1">    <span class="pl-smi">target</span>.<span class="pl-en">js</span>({</span>
-<span class="pl-s1">        activeClass<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">'</span>target-active<span class="pl-pds">'</span></span>,</span>
-<span class="pl-s1">        attributes<span class="pl-k">:</span> {</span>
-<span class="pl-s1">            Toggle<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">'</span>data-target-toggle<span class="pl-pds">'</span></span>,</span>
-<span class="pl-s1">            Show<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">'</span>data-target-show<span class="pl-pds">'</span></span>,</span>
-<span class="pl-s1">            Hide<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">'</span>data-target-hide<span class="pl-pds">'</span></span>,</span>
-<span class="pl-s1">            Clickoff<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">'</span>data-target-clickoff<span class="pl-pds">'</span></span>,</span>
-<span class="pl-s1">            Increment<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">'</span>data-target-increment<span class="pl-pds">'</span></span>,</span>
-<span class="pl-s1">            Decrement<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">'</span>data-target-decrement<span class="pl-pds">'</span></span>,</span>
-<span class="pl-s1">            disable<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">'</span>data-target-disable<span class="pl-pds">'</span></span>,</span>
-<span class="pl-s1">            max<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">'</span>data-target-max<span class="pl-pds">'</span></span>,</span>
-<span class="pl-s1">            min<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">'</span>data-target-min<span class="pl-pds">'</span></span>,</span>
-<span class="pl-s1">            Scrollbox<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">'</span>data-target-scrollbox<span class="pl-pds">'</span></span></span>
-<span class="pl-s1">        },</span>
-<span class="pl-s1">        breakpoints<span class="pl-k">:</span> {</span>
-<span class="pl-s1">            tablet<span class="pl-k">:</span> <span class="pl-c1">768</span>,</span>
-<span class="pl-s1">            desktop<span class="pl-k">:</span> <span class="pl-c1">1025</span></span>
-<span class="pl-s1">        },</span>
-<span class="pl-s1">        debounceDelay<span class="pl-k">:</span> <span class="pl-c1">100</span></span>
-<span class="pl-s1">    });</span>
-<span class="pl-s1">&lt;/<span class="pl-ent">script</span>&gt;</span></pre></div>
-
-<h2>
-<a id="components" class="anchor" href="#components" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Components</h2>
-
-<p>Specific usage for each Target.js component</p>
+<span class="pl-e">.minicart.target-active</span> {
+    <span class="pl-c1"><span class="pl-c1">display</span></span>: <span class="pl-c1">block</span>;
+}</pre></div>
 
 <h3>
-<a id="show" class="anchor" href="#show" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Show</h3>
+<a id="get-started" class="anchor" href="#get-started" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Get Started</h3>
 
-<p>Shows an element</p>
-
-<div class="highlight highlight-text-html-basic"><pre>&lt;<span class="pl-ent">button</span> <span class="pl-e">data-target-show</span>=<span class="pl-s"><span class="pl-pds">"</span>#my-target<span class="pl-pds">"</span></span>&gt;
-    Show #my-target!
-&lt;/<span class="pl-ent">button</span>&gt;</pre></div>
-
-<h3>
-<a id="hide" class="anchor" href="#hide" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Hide</h3>
-
-<p>Hides an element</p>
-
-<div class="highlight highlight-text-html-basic"><pre>&lt;<span class="pl-ent">button</span> <span class="pl-e">data-target-hide</span>=<span class="pl-s"><span class="pl-pds">"</span>#my-target<span class="pl-pds">"</span></span>&gt;
-    Hide #my-target!
-&lt;/<span class="pl-ent">button</span>&gt;</pre></div>
-
-<h3>
-<a id="toggle" class="anchor" href="#toggle" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Toggle</h3>
-
-<p>Toggles an element</p>
-
-<div class="highlight highlight-text-html-basic"><pre>&lt;<span class="pl-ent">button</span> <span class="pl-e">data-target-toggle</span>=<span class="pl-s"><span class="pl-pds">"</span>#my-target<span class="pl-pds">"</span></span>&gt;
-    Toggle #my-target!
-&lt;/<span class="pl-ent">button</span>&gt;</pre></div>
-
-<h3>
-<a id="clickoff" class="anchor" href="#clickoff" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Clickoff</h3>
-
-<p>An element will hide itself when you click away from it</p>
-
-<div class="highlight highlight-text-html-basic"><pre>&lt;<span class="pl-ent">div</span> <span class="pl-e">data-target-clickoff</span>&gt;
-    Click away from me to close!
-&lt;/<span class="pl-ent">div</span>&gt;</pre></div>
-
-<h3>
-<a id="incrementdecrement" class="anchor" href="#incrementdecrement" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Increment/Decrement</h3>
-
-<p>Increments or decrements the value of an input</p>
-
-<div class="highlight highlight-text-html-basic"><pre>&lt;<span class="pl-ent">button</span> <span class="pl-e">data-target-increment</span>=<span class="pl-s"><span class="pl-pds">"</span>#qty<span class="pl-pds">"</span></span>&gt;-&lt;/<span class="pl-ent">button</span>&gt;
-&lt;<span class="pl-ent">input</span> <span class="pl-e">id</span>=<span class="pl-s"><span class="pl-pds">"</span>qty<span class="pl-pds">"</span></span>&gt;1&lt;/<span class="pl-ent">input</span>&gt;
-&lt;<span class="pl-ent">button</span> <span class="pl-e">data-target-increment</span>=<span class="pl-s"><span class="pl-pds">"</span>#qty<span class="pl-pds">"</span></span>&gt;+&lt;/<span class="pl-ent">button</span>&gt;</pre></div>
-
-<p>Increments and decrements can have optional min and max values</p>
-
-<div class="highlight highlight-text-html-basic"><pre>&lt;<span class="pl-ent">button</span> <span class="pl-e">data-target-increment</span>=<span class="pl-s"><span class="pl-pds">"</span>#qty<span class="pl-pds">"</span></span> <span class="pl-e">data-target-max</span>=<span class="pl-s"><span class="pl-pds">"</span>10<span class="pl-pds">"</span></span>&gt;-&lt;/<span class="pl-ent">button</span>&gt;
-&lt;<span class="pl-ent">input</span> <span class="pl-e">id</span>=<span class="pl-s"><span class="pl-pds">"</span>qty<span class="pl-pds">"</span></span>&gt;1&lt;/<span class="pl-ent">input</span>&gt;
-&lt;<span class="pl-ent">button</span> <span class="pl-e">data-target-increment</span>=<span class="pl-s"><span class="pl-pds">"</span>#qty<span class="pl-pds">"</span></span> <span class="pl-e">data-target-min</span>=<span class="pl-s"><span class="pl-pds">"</span>-10<span class="pl-pds">"</span></span>&gt;+&lt;/<span class="pl-ent">button</span>&gt;</pre></div>
-
-<p>The default minimum value for decrementers is 0</p>
-
-<h3>
-<a id="scrollbox" class="anchor" href="#scrollbox" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Scrollbox</h3>
-
-<p>Creates a responsive scrollbox. When the content is taller than the threshold, the element gets a scrollbar. When the content isn't, the scrollbar disappears.</p>
-
-<div class="highlight highlight-text-html-basic"><pre>&lt;<span class="pl-ent">div</span> <span class="pl-e">data-target-scrollbox</span>=<span class="pl-s"><span class="pl-pds">"</span>600<span class="pl-pds">"</span></span>&gt;
-    &lt;<span class="pl-ent">p</span>&gt;If this content goes over 600 pixels tall, the div will get a scrollbar&lt;/<span class="pl-ent">p</span>&gt;
-&lt;/<span class="pl-ent">div</span>&gt;</pre></div>
-
-<p>The threshold can be set relative to the window size instead by using a negative integer:</p>
-
-<div class="highlight highlight-text-html-basic"><pre>&lt;<span class="pl-ent">div</span> <span class="pl-e">data-target-scrollbox</span>=<span class="pl-s"><span class="pl-pds">"</span>-300<span class="pl-pds">"</span></span>&gt;
-    &lt;<span class="pl-ent">p</span>&gt;If this content is within 299 pixels of the window height, a scrollbar will appear.&lt;/<span class="pl-ent">p</span>&gt;
-&lt;/<span class="pl-ent">div</span>&gt;</pre></div>
-
-<p>As with all Target.js elements, Scrollbox updates itself on window.resize.</p>
-
-<h2>
-<a id="disabling-elements-responsively" class="anchor" href="#disabling-elements-responsively" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Disabling elements responsively</h2>
-
-<p>To disable any Target.js element, use Target's disable attribute and pass it the layouts you want to disable the element on:</p>
-
-<div class="highlight highlight-text-html-basic"><pre>&lt;<span class="pl-ent">div</span> <span class="pl-e">data-target-toggle</span>=<span class="pl-s"><span class="pl-pds">"</span>#minicart<span class="pl-pds">"</span></span> <span class="pl-e">data-target-disable</span>=<span class="pl-s"><span class="pl-pds">"</span>mobile<span class="pl-pds">"</span></span>&gt;
-    This does nothing on mobile layouts.
-&lt;/<span class="pl-ent">div</span>&gt;</pre></div>
-
-<p>Disable multiple layouts via a space-separated list (like CSS classes)</p>
-
-<div class="highlight highlight-text-html-basic"><pre>&lt;<span class="pl-ent">div</span> <span class="pl-e">data-target-toggle</span>=<span class="pl-s"><span class="pl-pds">"</span>#minicart<span class="pl-pds">"</span></span> <span class="pl-e">data-target-disable</span>=<span class="pl-s"><span class="pl-pds">"</span>mobile tablet<span class="pl-pds">"</span></span>&gt;
-    This does nothing on mobile and tablet layouts.
-&lt;/<span class="pl-ent">div</span>&gt;</pre></div>
-
-<p>There are three layouts in total:</p>
-
-<ul>
-<li>mobile</li>
-<li>tablet</li>
-<li>desktop</li>
-</ul>
-
-<h2>
-<a id="coming-soon" class="anchor" href="#coming-soon" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Coming Soon</h2>
-
-<p>Features on the way:</p>
-
-<h3>
-<a id="plugin-api" class="anchor" href="#plugin-api" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Plugin API</h3>
-
-<p>Soon, you'll be able to write plugins for Target.js, to define your own Target UI elements, and hook into Target's toolset.</p>
-
-<h3>
-<a id="programmatic-methods" class="anchor" href="#programmatic-methods" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Programmatic methods</h3>
-
-<p>Target.js is declarative by design, but you should be able to use Target's methods programmatically if you need to. For example:</p>
-
-<div class="highlight highlight-source-js"><pre><span class="pl-smi">target</span>.<span class="pl-en">show</span>(<span class="pl-s"><span class="pl-pds">'</span>#my-element<span class="pl-pds">'</span></span>);</pre></div>
-
-<p>These are in the works!</p>
+<p>Head on over to <a href="//gocomet.github.io/target.js/docs.html">the documentation</a> for installation, configuration, and usage!</p>
 
       <footer class="site-footer">
         <span class="site-footer-owner"><a href="https://github.com/gocomet/target.js">Target.js</a> is maintained by <a href="https://github.com/gocomet">gocomet</a>.</span>
