@@ -319,6 +319,7 @@
         disable: function(doNotOverride) {
             this.overrideLayouts = !doNotOverride;
             this.disabled = true;
+            return this;
         },
         /**
 		 * set "disabled" property to false
@@ -332,6 +333,7 @@
         enable: function(doNotOverride) {
             this.overrideLayouts = !doNotOverride;
             this.disabled = false;
+            return this;
         },
         /**
 		 * show an element using css
@@ -488,6 +490,7 @@
                     }(el))
                 });
             });
+            return this;
         },
         /**
 		 * remove event handler for Target events
@@ -502,6 +505,7 @@
                     }
                 });
             });
+            return this;
         }
     });
 })(window.target = window.target || {});
