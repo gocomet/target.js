@@ -795,8 +795,8 @@
                                 <td align="center">Bind a Target event handler to an element</td>
                                 <td align="center">
                                     <code>&lt;eventName:String&gt;</code>,<br>
-                                    <code>&lt;el:DOMElement&gt;</code> or
-                                    <code>&lt;els:NodeList&gt;</code> or
+                                    <code>&lt;el:DOMElement&gt;</code> or<br>
+                                    <code>&lt;els:NodeList&gt;</code> or<br>
                                     <code>&lt;cssSelector:String&gt;</code>,<br>
                                     <code>&lt;callback:Function&gt;</code>
                                 </td>
@@ -807,9 +807,28 @@
                                 <td align="center">Remove a Target event handler from an element</td>
                                 <td align="center">
                                     <code>&lt;eventName:String&gt;</code>,<br>
-                                    <code>&lt;el:DOMElement&gt;</code> or
-                                    <code>&lt;els:NodeList&gt;</code> or
-                                    <code>&lt;cssSelector:String&gt;</code>
+                                    <code>&lt;el:DOMElement&gt;</code> or<br>
+                                    <code>&lt;els:NodeList&gt;</code> or<br>
+                                    <code>&lt;cssSelector:String&gt;</code>,<br>
+                                    <code>&lt;callback:Function&gt;</code>
+                                </td>
+                                <td align="center">target.api</td>
+                            </tr>
+                            <tr>
+                                <td align="center"><code>on</code></td>
+                                <td align="center">Bind a Target event handler to the window resizer service</td>
+                                <td align="center">
+                                    <code>&lt;eventName:String&gt;</code>,<br>
+                                    <code>&lt;callback:Function&gt;</code>
+                                </td>
+                                <td align="center">target.api</td>
+                            </tr>
+                            <tr>
+                                <td align="center"><code>off</code></td>
+                                <td align="center">Remove a Target event handler from the window resizer service</td>
+                                <td align="center">
+                                    <code>&lt;eventName:String&gt;</code>,<br>
+                                    <code>&lt;callback:Function&gt;</code>
                                 </td>
                                 <td align="center">target.api</td>
                             </tr>
@@ -934,24 +953,43 @@
                                     </code><br>
                                     <code>
                                         target.on('show', '.dom-els', function(el) {});
+                                    </code><br>
+
+                                    or<br>
+
+                                    <code>
+                                        target.on('resize', function(layout, w, h) {});
+                                    </code><br>
+                                    <code>
+                                        target.on('mobile', function(w, h) {});
                                     </code>
+
                                 </td>
                             </tr>
                             <tr>
                                 <td align="center"><code>off</code></td>
                                 <td align="center">
                                     <code>
-                                        target.off('show', myDomEl);
+                                        target.off('show', myDomEl, function(el) {});
                                     </code><br>
                                     <code>
-                                        target.off('show', myDomEls);
+                                        target.off('show', myDomEls, function(el) {});
                                     </code><br>
                                     <code>
-                                        target.off('show', '#dom-el');
+                                        target.off('show', '#dom-el', function(el) {});
                                     </code><br>
                                     <code>
-                                        target.off('show', '.dom-els');
-                                    </code>
+                                        target.off('show', '.dom-els', function(el) {});
+                                    </code><br>
+
+                                    or<br>
+
+                                    <code>
+                                        target.off('resize', function(layout, w, h) {});
+                                    </code><br>
+                                    <code>
+                                        target.off('tablet', function(w, h) {});
+                                    </code>                                    
                                 </td>
                             </tr>
                             <tr>
@@ -1022,9 +1060,47 @@
                             <td align="center">An incrementer has reached its maximum value</td>
                             <td align="center"><code>&lt;input:DOMElement&gt;</code></td>
                         </tr>
+                        <tr>
+                            <td align="center"><code>resize</code></td>
+                            <td align="center">The window has resized (debounced)</td>
+                            <td align="center">
+                                <code>&lt;layout:Object&gt;</code>,<br>
+                                <code>&lt;width:Int&gt;</code>,<br>
+                                <code>&lt;height:Int&gt;</code>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td align="center"><code>mobile</code></td>
+                            <td align="center">The window has resized to a mobile layout (debounced)</td>
+                            <td align="center">
+                                <code>&lt;width:Int&gt;</code>,<br>
+                                <code>&lt;height:Int&gt;</code>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td align="center"><code>tablet</code></td>
+                            <td align="center">The window has resized to a tablet layout (debounced)</td>
+                            <td align="center">
+                                <code>&lt;width:Int&gt;</code>,<br>
+                                <code>&lt;height:Int&gt;</code>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td align="center"><code>desktop</code></td>
+                            <td align="center">The window has resized to a desktop layout (debounced)</td>
+                            <td align="center">
+                                <code>&lt;width:Int&gt;</code>,<br>
+                                <code>&lt;height:Int&gt;</code>
+                            </td>
+                        </tr>
                     </tbody>
                 </table>
                 <br>
+                
+                <h4>Usage</h4>
+
+
+
                 <p>More events to come!</p>
             </div>
 
