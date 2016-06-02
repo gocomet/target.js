@@ -64,6 +64,7 @@
 			// listen for when UI elements initialize or update
 			// they will request layout data
 			// pass to the via resize event
+			this.currentLayout = '';
 			this.events.subscribe('update', function() {
 
 				_this.onResize();
@@ -97,12 +98,31 @@
 		 * pass "is" layout object for responsive changes
 		 */
 		onResize: function() {
-		
+			var newLayout = '';
+
 			this.w = document.documentElement.clientWidth;
 			this.h = document.documentElement.clientHeight;
 		
-			this.events.publish('resize', this.is);
-		
+			this.events.publish('resize', this.is, this.width(), this.height());
+
+			this.utils.forIn(this.is, function(layout, is) {
+
+				if (is[layout]()) {
+			
+					newLayout = layout;
+			
+				}
+			
+			});
+
+			if (newLayout !== this.currentLayout) {
+
+				this.events.publish(newLayout, this.width(), this.height());
+			
+			}
+
+			this.currentLayout = newLayout;
+
 		}
 	
 	});

@@ -187,15 +187,35 @@
     jQuery(function() {
       target.init();
 
-      target.on('min', 'input', function(el) {
+      function disableToggler(el) {
         var blueToggler = target.get('#toggle-blue');
-
         window.console && console.log('min on', el);
-
         blueToggler.disable();
-      });
+      }
+
+      target.on('min', 'input', disableToggler);
+      setTimeout(function() {
+        target.off('min', 'input', disableToggler);
+      }, 10000);
 
       target.show('#green-div');
+
+      target.on('tablet', function(w, h) {
+        window.console && console.log('tablet layout: ' + w + ' x ' + h);
+      });
+
+      function resizeCallback(is, w, h) {
+        window.console && console.log('resize');
+        window.console && console.log(w + ' x ' + h);
+        window.console && console.log('is mobile: ' + is['mobile']());
+        window.console && console.log('is tablet: ' + is['tablet']());
+        window.console && console.log('is desktop: ' + is['desktop']());
+      }
+
+      target.on('resize', resizeCallback);
+      setTimeout(function() {
+        target.off('resize', resizeCallback);
+      }, 10000);
     })
   </script>
 </body>

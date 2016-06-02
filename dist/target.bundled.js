@@ -1092,7 +1092,7 @@ if (typeof WeakMap === "undefined") {
             this.utils = target.utils;
             this.events = target.events;
             this.componentFactory = target.componentFactory;
-            this.eventHandlers = [];
+            this.eventHandlers = {};
             // mixin public methods into global target object
             [ "get", "on", "off", "show", "hide", "toggle" ].forEach(function(method) {
                 target[method] = _this[method].bind(_this);
@@ -1170,15 +1170,48 @@ if (typeof WeakMap === "undefined") {
             return this;
         },
         /**
-		 * add event handler for Target events
+		 * add event handler meant for our window service
+		 * (resize, mobile, tablet, desktop)
 		 */
-        on: function(eventName, els, cb) {
+        onWindowEvent: function(eventName, cb) {
+            if (!this.eventHandlers[eventName]) {
+                this.eventHandlers[eventName] = [];
+            }
+            this.eventHandlers[eventName].push({
+                cb: cb,
+                event: this.events.subscribe(eventName, cb)
+            });
+            return this;
+        },
+        /**
+		 * remove event handler for our window service
+		 */
+        offWindowEvent: function(eventName, cb) {
+            var _this = this;
+            var handlersCopy = [];
+            this.eventHandlers[eventName].forEach(function(handler) {
+                if (handler.cb !== cb) {
+                    handlersCopy.push(handler);
+                } else {
+                    _this.events.remove(eventName, handler.event.id);
+                }
+            });
+            this.eventHandlers[eventName] = handlersCopy;
+            return this;
+        },
+        /**
+		 * add event handler for Target component events
+		 */
+        onElEvent: function(eventName, els, cb) {
             var _this = this;
             els = this.normalizeEls(els);
+            if (!this.eventHandlers[eventName]) {
+                this.eventHandlers[eventName] = [];
+            }
             this.utils.forEach.call(els, function(el) {
                 // will return object containing id for removal
-                _this.eventHandlers.push({
-                    eventName: eventName,
+                _this.eventHandlers[eventName].push({
+                    cb: cb,
                     el: el,
                     event: _this.events.subscribe(eventName, function(el) {
                         return function(evEl) {
@@ -1194,16 +1227,44 @@ if (typeof WeakMap === "undefined") {
         /**
 		 * remove event handler for Target events
 		 */
-        off: function(eventName, els, cb) {
+        offElEvent: function(eventName, els, cb) {
             var _this = this;
+            var handlersCopy = [];
             els = this.normalizeEls(els);
-            this.utils.forEach.call(els, function(el) {
-                _this.utils.forEach.call(_this.eventHandlers, function(handler) {
-                    if (handler.eventName === eventName && handler.el === el) {
-                        _this.events.remove(handler.eventName, handler.event.id);
-                    }
-                });
+            this.eventHandlers[eventName].forEach(function(handler) {
+                if (_this.utils.contains(els, handler.el) && cb === cb) {
+                    _this.events.remove(eventName, handler.event.id);
+                } else {
+                    handlersCopy.push(handler);
+                }
             });
+            this.eventHandlers[eventName] = handlersCopy;
+            return this;
+        },
+        /**
+		 * normalize on handler
+		 * (facade pattern)
+		 * allow user to just call the .on method
+		 * internally figure out which type of event we should bind
+		 * because we could be binding to component events or our window service events
+		 */
+        on: function(eventName, arg2, arg3) {
+            if (typeof arg2 === "function") {
+                this.onWindowEvent(eventName, arg2);
+            } else {
+                this.onElEvent(eventName, arg2, arg3);
+            }
+            return this;
+        },
+        /**
+		 * facade for removing event handlers
+		 */
+        off: function(eventName, arg2, arg3) {
+            if (typeof arg2 === "function") {
+                this.offWindowEvent(eventName, arg2);
+            } else {
+                this.offElEvent(eventName, arg2, arg3);
+            }
             return this;
         }
     });
@@ -1435,6 +1496,7 @@ if (typeof WeakMap === "undefined") {
             // listen for when UI elements initialize or update
             // they will request layout data
             // pass to the via resize event
+            this.currentLayout = "";
             this.events.subscribe("update", function() {
                 _this.onResize();
             });
@@ -1458,9 +1520,19 @@ if (typeof WeakMap === "undefined") {
 		 * pass "is" layout object for responsive changes
 		 */
         onResize: function() {
+            var newLayout = "";
             this.w = document.documentElement.clientWidth;
             this.h = document.documentElement.clientHeight;
-            this.events.publish("resize", this.is);
+            this.events.publish("resize", this.is, this.width(), this.height());
+            this.utils.forIn(this.is, function(layout, is) {
+                if (is[layout]()) {
+                    newLayout = layout;
+                }
+            });
+            if (newLayout !== this.currentLayout) {
+                this.events.publish(newLayout, this.width(), this.height());
+            }
+            this.currentLayout = newLayout;
         }
     });
 })(window.target = window.target || {});
