@@ -25,6 +25,7 @@
 			Scrollbox: 'data-target-scrollbox',
 			Grid: 'data-target-grid',
 			Src: 'data-target-src',
+			Filetext: 'data-target-filetext',
 			disable: 'data-target-disable',
 			max: 'data-target-max',
 			min: 'data-target-min'

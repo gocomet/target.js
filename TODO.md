@@ -1,9 +1,15 @@
 
 # TODO
 
+## Improvements
+
+- automatically disable callbacks from within addDomEventHandler
+- performance - hook into requestAnimationFrame before making DOM changes?
+- error messaging from every component on incorrect initialization
+
 ## Bugfixes
 
-- none currently
+- examine and fix current Clickoff bug
 
 ## Examples
 
