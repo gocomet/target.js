@@ -976,6 +976,7 @@
 		 * and set as text of target element
 		 */
         onChange: function(e) {
+            var _this = this;
             var filename = this.el.files && this.el.files[0];
             if (!this.isDisabled()) {
                 if (this.el.files.length) {

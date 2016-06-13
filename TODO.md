@@ -3,7 +3,6 @@
 
 ## Improvements
 
-- automatically disable callbacks from within addDomEventHandler
 - performance - hook into requestAnimationFrame before making DOM changes?
 - error messaging from every component on incorrect initialization
 
