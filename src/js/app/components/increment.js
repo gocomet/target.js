@@ -14,7 +14,9 @@
 	target.Increment = target.UI.extend({
 	
 		init: function(el, _id, target, name) {
-	
+
+			var _this = this;
+
 			this._super.apply(this, arguments);
 
 			this.targets = this.utils.qsa(
@@ -22,6 +24,16 @@
 				this.el.getAttribute(this.utils.stripBrackets(this.config.attributes.Increment))
 	
 			);
+
+			this.utils.forEach.call(this.targets, function(target) {
+
+				if (target.nodeName !== 'INPUT') {
+
+					throw 'Target.js Error on Increment component: the selector in "' + _this.utils.stripBrackets(_this.config.attributes.Increment) + '" must target an <input> element';
+				
+				}
+
+			});
 
 			this.setLimits();
 

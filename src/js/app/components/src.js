@@ -33,6 +33,12 @@
 	
 			this._super.apply(this, arguments);
 
+			if (this.NODE_NAME !== 'IMG') {
+
+				throw 'Target.js Error on Src component: "' + this.utils.stripBrackets(this.config.attributes.Src) + '" must be applied to an <img> element';
+			
+			}
+
 			this.srcs = {
 				mobile: '',
 				tablet: '',
@@ -46,6 +52,7 @@
 				tablet: false,
 				desktop: false
 			};
+
 		
 			this.addEventHandler('resize', this.onResize);
 

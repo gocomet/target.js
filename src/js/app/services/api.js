@@ -86,7 +86,7 @@
 
 			if (!component) {
 				
-				throw 'Error at Target.API.get(): ' + el.toString() + ' is not a Target.js element.';
+				throw 'Target.js Error at target.api.get(): ' + el.toString() + ' is not a Target.js element.';
 			
 			}
 
