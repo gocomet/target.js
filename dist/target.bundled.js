@@ -719,6 +719,7 @@ if (typeof WeakMap === "undefined") {
             Scrollbox: "data-target-scrollbox",
             Grid: "data-target-grid",
             Src: "data-target-src",
+            Filetext: "data-target-filetext",
             disable: "data-target-disable",
             max: "data-target-max",
             min: "data-target-min"
@@ -1135,7 +1136,7 @@ if (typeof WeakMap === "undefined") {
             el = this.normalize(el);
             component = this.componentFactory.find(el);
             if (!component) {
-                throw "Error at Target.API.get(): " + el.toString() + " is not a Target.js element.";
+                throw "Target.js Error at target.api.get(): " + el.toString() + " is not a Target.js element.";
             }
             return component;
         },
@@ -1596,8 +1597,14 @@ if (typeof WeakMap === "undefined") {
     "use strict";
     target.Decrement = target.UI.extend({
         init: function(el, _id, target, name) {
+            var _this = this;
             this._super.apply(this, arguments);
             this.targets = this.utils.qsa(this.el.getAttribute(this.utils.stripBrackets(this.config.attributes.Decrement)));
+            this.utils.forEach.call(this.targets, function(target) {
+                if (target.nodeName !== "INPUT") {
+                    throw 'Target.js Error on Decrement component: the selector in "' + _this.utils.stripBrackets(_this.config.attributes.Decrement) + '" must target an <input> element';
+                }
+            });
             this.setLimits();
             this.addDomEventHandler("click", this.onClick);
         },
@@ -1641,6 +1648,48 @@ if (typeof WeakMap === "undefined") {
                 this.utils.forEach.call(this.targets, function(target) {
                     _this.decrement(target);
                 });
+            }
+        }
+    });
+})(window.target = window.target || {});
+
+/**
+ * target.Filetext
+ *
+ * gives you the text of a file input
+ * allows you to style file inputs any way you like
+ *
+ * usage:
+ *
+ * `<input type="file" data-target-filetext="#my-filetext-element" />`
+ */
+(function(target, undefined) {
+    "use strict";
+    target.Filetext = target.UI.extend({
+        init: function(el, _id, target, name) {
+            var inputType;
+            this._super.apply(this, arguments);
+            if (this.NODE_NAME !== "INPUT" || this.el.getAttribute("type") !== "file") {
+                throw 'Error on Target.Filetext component: "' + this.utils.stripBrackets(this.config.attributes.Filetext) + '" must be applied to an <input> element with \'type="file"\'';
+            }
+            this.targets = this.utils.qsa(this.el.getAttribute(this.utils.stripBrackets(this.config.attributes.Filetext)));
+            this.addDomEventHandler("change", this.onChange);
+        },
+        /**
+		 * when the file input is changed
+		 * get filename
+		 * and set as text of target element
+		 */
+        onChange: function(e) {
+            var _this = this;
+            var filename = this.el.files && this.el.files[0];
+            if (!this.isDisabled()) {
+                if (this.el.files.length) {
+                    filename = this.el.files[0].name;
+                    this.utils.forEach.call(this.targets, function(target) {
+                        target.innerHTML = filename;
+                    });
+                }
             }
         }
     });
@@ -1877,8 +1926,14 @@ if (typeof WeakMap === "undefined") {
     "use strict";
     target.Increment = target.UI.extend({
         init: function(el, _id, target, name) {
+            var _this = this;
             this._super.apply(this, arguments);
             this.targets = this.utils.qsa(this.el.getAttribute(this.utils.stripBrackets(this.config.attributes.Increment)));
+            this.utils.forEach.call(this.targets, function(target) {
+                if (target.nodeName !== "INPUT") {
+                    throw 'Target.js Error on Increment component: the selector in "' + _this.utils.stripBrackets(_this.config.attributes.Increment) + '" must target an <input> element';
+                }
+            });
             this.setLimits();
             this.addDomEventHandler("click", this.onClick);
         },
@@ -2080,6 +2135,9 @@ if (typeof WeakMap === "undefined") {
     target.Src = target.UI.extend({
         init: function(el, _id, target, name) {
             this._super.apply(this, arguments);
+            if (this.NODE_NAME !== "IMG") {
+                throw 'Target.js Error on Src component: "' + this.utils.stripBrackets(this.config.attributes.Src) + '" must be applied to an <img> element';
+            }
             this.srcs = {
                 mobile: "",
                 tablet: "",
