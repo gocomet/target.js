@@ -91,11 +91,11 @@
             <h4>Step 4. Add styles to show/hide your elements</h4>
 
             <div class="highlight highlight-text-css-basic"><pre><code class="language-css"><span class="hljs-class">.minicart</span> <span class="hljs-rules">{
-  <span class="hljs-rule"><span class="hljs-attribute">visibility</span>:<span class="hljs-value"> hidden</span></span>;
+  <span class="hljs-rule"><span class="pl-e">visibility</span>:<span class="pl-s"> hidden</span></span>;
 }</span>
 
 <span class="hljs-class">.minicart</span><span class="hljs-class">.target-active</span> <span class="hljs-rules">{
-  <span class="hljs-rule"><span class="hljs-attribute">visibility</span>:<span class="hljs-value"> visible</span></span>;
+  <span class="hljs-rule"><span class="pl-e">visibility</span>:<span class="pl-s"> visible</span></span>;
 }</span>
 </code></pre>
 </div>
@@ -339,6 +339,10 @@
             <td align="center">any</td>
             </tr>
             <tr>
+            <td align="center">Default Attribute:</td>
+            <td align="center"><code>data-target-show</code></td>
+            </tr>
+            <tr>
             <td align="center">Attribute Value:</td>
             <td align="center">any valid CSS selector</td>
             </tr>
@@ -377,6 +381,10 @@
             <tr>
             <td align="center">Applicable Targets:</td>
             <td align="center">any</td>
+            </tr>
+            <tr>
+            <td align="center">Default Attribute:</td>
+            <td align="center"><code>data-target-hide</code></td>
             </tr>
             <tr>
             <td align="center">Attribute Value:</td>
@@ -420,6 +428,10 @@
             <td align="center">any</td>
             </tr>
             <tr>
+            <td align="center">Default Attribute:</td>
+            <td align="center"><code>data-target-toggle</code></td>
+            </tr>
+            <tr>
             <td align="center">Attribute Value:</td>
             <td align="center">any valid CSS selector</td>
             </tr>
@@ -461,6 +473,10 @@
             <td align="center">none</td>
             </tr>
             <tr>
+            <td align="center">Default Attribute:</td>
+            <td align="center"><code>data-target-clickoff</code></td>
+            </tr>
+            <tr>
             <td align="center">Attribute Value:</td>
             <td align="center">none</td>
             </tr>
@@ -494,6 +510,11 @@
             <tr>
             <td align="center">Applicable Targets:</td>
             <td align="center"><code>&lt;input&gt;</code></td>
+            </tr>
+            <tr>
+            <td align="center">Default Attribute:</td>
+            <td align="center"><code>data-target-increment</code> or <br>
+            <code>data-target-decrement</code></td>
             </tr>
             <tr>
             <td align="center">Attribute Values:</td>
@@ -542,6 +563,10 @@
             <td align="center">none</td>
             </tr>
             <tr>
+            <td align="center">Default Attribute:</td>
+            <td align="center"><code>data-target-scrollbox</code></td>
+            </tr>
+            <tr>
             <td align="center">Attribute Value:</td>
             <td align="center">height:int</td>
             </tr>
@@ -583,6 +608,10 @@
             <tr>
             <td align="center">Applicable Targets:</td>
             <td align="center">none</td>
+            </tr>
+            <tr>
+            <td align="center">Default Attribute:</td>
+            <td align="center"><code>data-target-grid</code></td>
             </tr>
             <tr>
             <td align="center">Attribute Value:</td>
@@ -652,6 +681,10 @@
             <td align="center">none</td>
             </tr>
             <tr>
+            <td align="center">Default Attribute:</td>
+            <td align="center"><code>data-target-src</code></td>
+            </tr>
+            <tr>
             <td align="center">Attribute Value:</td>
             <td align="center">Space-separated list:<br> <code>mobile-img-src:string</code> <br> <code>tablet-img-src:string</code> <br> <code>desktop-img-src:string</code></td>
             </tr>
@@ -677,6 +710,66 @@
 <p>The Src component doesn't add its own placeholder image, so be sure to use your own:</p>
 
 <div class="highlight highlight-text-html-basic"><pre>&lt;<span class="pl-ent">img</span> <span class="pl-e">src</span>=<span class="pl-s"><span class="pl-pds">"</span>my_blank.gif<span class="pl-pds">"</span></span> <span class="pl-e">data-target-src</span>=<span class="pl-s"><span class="pl-pds">"</span>/some-mobile-img.jpg /my-tablet-image.jpg /a-desktop-image.gif<span class="pl-pds">"</span></span>&gt;</pre></div>
+          </div>
+
+          <hr>
+
+          <div>
+            <h4>Filetext</h4>
+
+            <p>Sets an element's innerHTML with an uploaded file's name. Useful for custom-styling file inputs. It must be used on an <code>&lt;input type="file"&gt;</code> element.</p>
+
+            <table><thead>
+            <tr>
+            <th align="center">Property</th>
+            <th align="center">Value</th>
+            </tr>
+            </thead><tbody>
+            <tr>
+            <td align="center">Applicable Elements:</td>
+            <td align="center"><code>&lt;input type="file"&gt;</code></td>
+            </tr>
+            <tr>
+            <td align="center">Applicable Targets:</td>
+            <td align="center">any element with an <code>.innerHTML</code> property</td>
+            </tr>
+            <tr>
+            <td align="center">Default Attribute:</td>
+            <td align="center"><code>data-target-filetext</code></td>
+            </tr>
+            <tr>
+            <td align="center">Attribute Value:</td>
+            <td align="center">any valid CSS selector</td>
+            </tr>
+            </tbody></table>
+
+            <br>
+            <p><strong>Usage</strong></p>
+
+<div class="highlight highlight-text-html-basic"><pre>&lt;<span class="pl-ent">input</span> <span class="pl-e">data-target-filetext</span>=<span class="pl-s"><span class="pl-pds">"</span>#my-filetext-element<span class="pl-pds">"</span></span>&gt;</pre></div>
+
+<p>On the file input's <code>change</code> event, the selected file's name will be passed as innerHTML to the element selected in the <code>data-target-filetext</code> attribute. You can use this in conjunction with HTML <code>&lt;label&gt;</code> elements and CSS styles to create completely custom file inputs.</p>
+
+            <p><strong>Making a Custom File Input</strong></p>
+
+            <div class="highlight highlight-text-html-basic"><pre><span class="hljs-tag">&lt;<span class="pl-ent">label</span> <span class="pl-e">for</span>=<span class="pl-s"><span class="pl-pds">"</span>my-file-input<span class="pl-pds">"</span></span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="pl-ent">input</span>
+        <span class="pl-e">type</span>=<span class="pl-s"><span class="pl-pds">"</span>file<span class="pl-pds">"</span></span>
+        <span class="pl-e">id</span>=<span class="pl-s"><span class="pl-pds">"</span>my-file-input<span class="pl-pds">"</span></span>
+        <span class="pl-e">data-target-filetext</span>=<span class="pl-s"><span class="pl-pds">"</span>#my-file-text<span class="pl-pds">"</span></span>
+        <span class="pl-e">style</span>=<span class="pl-s"><span class="pl-pds">"</span>display: none;<span class="pl-pds">"</span></span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="pl-ent">span</span> <span class="pl-e">id</span>=<span class="pl-s"><span class="pl-pds">"</span>#my-file-text<span class="pl-pds">"</span></span>&gt;</span>Upload File<span class="hljs-tag">&lt;/<span class="pl-ent">span</span>&gt;</span>
+<span class="hljs-tag">&lt;/<span class="pl-ent">label</span>&gt;</span>
+</pre></div>
+
+            <p>In the above example:<p>
+            <ul>
+                <li>a label tag contains a file input and a span tag</li>
+                <li>the file input is hidden, so only the span tag inside the label is shown</li>
+                <li>when the user clicks on the span, they therefore click the label, which invokes the file input functionality</li>
+                <li>when the user selects a file for upload, the text inside the span is updated automatically, because of the target js data-attribute on the file input</li>
+            </ul>
+
           </div>
 
           <hr>
@@ -1029,7 +1122,7 @@
           <h3 id="events">Events</h3>
           
             <div>
-                <p>Target.js component fire events that you can hook into using the <a href="#methods"><code>on</code> method</a>. You can stop listening by using the <a href="#methods"><code>off</code> method</a>.</p>
+                <p>Target.js components fire events that you can hook into using the <a href="#methods"><code>on</code> method</a>. You can stop listening by using the <a href="#methods"><code>off</code> method</a>.</p>
 
                 <table>
                     <thead>
