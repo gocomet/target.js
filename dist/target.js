@@ -901,7 +901,7 @@
             args = args.split(",");
             this.args = args;
             if (this.args.length !== 2) {
-                throw 'Target.js Error on Accordion component: the value of "' + _this.utils.stripBrackets(_this.config.attributes.Accordion) + '" must contain two comma-separated CSS selectors';
+                throw 'Target.js Error on Accordion component: the value of "' + this.utils.stripBrackets(this.config.attributes.Accordion) + '" must contain two comma-separated CSS selectors';
             }
             return this.args;
         },
