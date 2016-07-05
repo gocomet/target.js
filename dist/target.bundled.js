@@ -1574,25 +1574,7 @@ if (typeof WeakMap === "undefined") {
             }
             this.current = null;
             this.utils.forEach.call(this.toggles, function(toggle, i) {
-                _this.addDomEventHandler("click", function(e) {
-                    var _this = this;
-                    if (this.isDisabled()) {
-                        return;
-                    }
-                    if (toggle.nodeType === "A") {
-                        e.preventDefault();
-                    }
-                    if (this.current === i) {
-                        this.current = null;
-                        this.hide(this.contents[i]);
-                    } else {
-                        this.current = i;
-                        this.utils.forEach.call(this.contents, function(content) {
-                            _this.hide(content);
-                        });
-                        this.show(this.contents[i]);
-                    }
-                }, toggle);
+                _this.addDomEventHandler("click", _this.toggle(toggle, i), toggle);
             });
         },
         setArgs: function() {
@@ -1614,7 +1596,30 @@ if (typeof WeakMap === "undefined") {
             this.contents = this.utils.qsa(this.args[1]);
             return this.contents;
         },
-        toggle: function() {}
+        toggle: function(toggle, i) {
+            return function(e) {
+                var _this = this;
+                if (this.isDisabled()) {
+                    return;
+                }
+                if (toggle.nodeType === "A") {
+                    e.preventDefault();
+                }
+                if (this.current === i) {
+                    this.current = null;
+                    this.hide(this.toggles[i]);
+                    this.hide(this.contents[i]);
+                } else {
+                    this.current = i;
+                    this.utils.forEach.call(this.contents, function(content, i) {
+                        _this.hide(_this.toggles[i]);
+                        _this.hide(content);
+                    });
+                    this.show(this.toggles[i]);
+                    this.show(this.contents[i]);
+                }
+            };
+        }
     });
 })(window.target = window.target || {});
 
