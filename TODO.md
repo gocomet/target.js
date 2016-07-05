@@ -1,6 +1,8 @@
 
 # TODO
 
+- add documentation for new Accordion component
+
 ## Improvements
 
 - performance - hook into requestAnimationFrame before making DOM changes?

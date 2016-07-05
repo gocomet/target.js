@@ -26,6 +26,7 @@
 			Grid: 'data-target-grid',
 			Src: 'data-target-src',
 			Filetext: 'data-target-filetext',
+			Accordion: 'data-target-accordion',
 			disable: 'data-target-disable',
 			max: 'data-target-max',
 			min: 'data-target-min'
