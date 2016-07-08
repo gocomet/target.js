@@ -33,9 +33,9 @@
 	
 			this._super.apply(this, arguments);
 
-			if (this.NODE_NAME !== 'IMG') {
+			if (this.NODE_NAME !== 'IMG' && this.NODE_NAME !== 'DIV') {
 
-				throw 'Target.js Error on Src component: "' + this.utils.stripBrackets(this.config.attributes.Src) + '" must be applied to an <img> element';
+				throw 'Target.js Error on Src component: "' + this.utils.stripBrackets(this.config.attributes.Src) + '" must be applied to an <img> or <div> element';
 			
 			}
 
@@ -46,6 +46,8 @@
 			};
 
 			this.getSrcs();
+
+			this.img = document.createElement('img');
 
 			this.loaded = {
 				mobile: false,
@@ -97,6 +99,21 @@
 
 		},
 
+
+		showImage: function(img) {
+
+			if (this.NODE_NAME === 'IMG') {
+
+				this.el.src = img;
+			
+			} else if (this.NODE_NAME === 'DIV') {
+
+				this.el.style.backgroundImage = 'url("' + img + '")';
+
+			}
+
+		},
+
 		/**
 		 * once image is loaded,
 		 * request a layout update
@@ -106,6 +123,8 @@
 
 			this.removeDomEventHandler('load');
 			
+			this.showImage(this.loadingImg);
+
 			this.events.publish('update');
 
 		},
@@ -115,7 +134,11 @@
 		 */
 		load: function(img) {
 
-			this.addDomEventHandler('load', this.onLoad, this.el);
+			this.loadingImg = img;
+
+			this.addDomEventHandler('load', this.onLoad, this.img);
+
+			this.img.src = img;
 
 		},
 
@@ -137,12 +160,14 @@
 					if (!_this.loaded[layout]) {
 						
 						_this.loaded[layout] = img;
-
+						
 						_this.load(img);
+					
+					} else {
+
+						_this.showImage(img);
 
 					}
-
-					_this.el.src = img;
 
 				}
 

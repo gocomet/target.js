@@ -1521,8 +1521,8 @@
     target.Src = target.UI.extend({
         init: function(el, _id, target, name) {
             this._super.apply(this, arguments);
-            if (this.NODE_NAME !== "IMG") {
-                throw 'Target.js Error on Src component: "' + this.utils.stripBrackets(this.config.attributes.Src) + '" must be applied to an <img> element';
+            if (this.NODE_NAME !== "IMG" && this.NODE_NAME !== "DIV") {
+                throw 'Target.js Error on Src component: "' + this.utils.stripBrackets(this.config.attributes.Src) + '" must be applied to an <img> or <div> element';
             }
             this.srcs = {
                 mobile: "",
@@ -1530,6 +1530,7 @@
                 desktop: ""
             };
             this.getSrcs();
+            this.img = document.createElement("img");
             this.loaded = {
                 mobile: false,
                 tablet: false,
@@ -1563,6 +1564,13 @@
                 _this.srcs[layout] = latestSrc;
             });
         },
+        showImage: function(img) {
+            if (this.NODE_NAME === "IMG") {
+                this.el.src = img;
+            } else if (this.NODE_NAME === "DIV") {
+                this.el.style.backgroundImage = 'url("' + img + '")';
+            }
+        },
         /**
 		 * once image is loaded,
 		 * request a layout update
@@ -1570,13 +1578,16 @@
 		 */
         onLoad: function() {
             this.removeDomEventHandler("load");
+            this.showImage(this.loadingImg);
             this.events.publish("update");
         },
         /**
 		 * add event handler to load image
 		 */
         load: function(img) {
-            this.addDomEventHandler("load", this.onLoad, this.el);
+            this.loadingImg = img;
+            this.addDomEventHandler("load", this.onLoad, this.img);
+            this.img.src = img;
         },
         /**
 		 * when the window is resized,
@@ -1591,8 +1602,9 @@
                     if (!_this.loaded[layout]) {
                         _this.loaded[layout] = img;
                         _this.load(img);
+                    } else {
+                        _this.showImage(img);
                     }
-                    _this.el.src = img;
                 }
             });
         }
