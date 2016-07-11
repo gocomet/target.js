@@ -27,6 +27,35 @@
 	
 	'use strict';
 
+	// utility object for tracking which images are already cached
+	// track localStorage to prevent bug
+	// in which an image stored in cache
+	// would not be loaded
+	// because target will try to load it and wait for onload event
+	// but browser will not load cached images
+	var CACHE_NAME = 'targetImgsLoaded';
+	var imageCache = {
+		contains: function(item) {
+			return this.images.indexOf(item) !== -1;
+		},
+		add: function(item) {
+			this.images += item;
+			if (localStorage) {
+				localStorage[CACHE_NAME] = this.images;
+			}
+		},
+		init: function() {
+			if (localStorage) { 
+				this.images = '';
+			} else if (localStorage[CACHE_NAME]) {
+				this.images = localStorage[CACHE_NAME];
+			} else {
+				this.images = '';
+			}
+		}
+	};
+	imageCache.init();
+
 	target.Src = target.UI.extend({
 	
 		init: function(el, _id, target, name) {
@@ -49,12 +78,7 @@
 
 			this.img = document.createElement('img');
 
-			this.loaded = {
-				mobile: false,
-				tablet: false,
-				desktop: false
-			};
-
+			this.imageCache = imageCache;
 		
 			this.addEventHandler('resize', this.onResize);
 
@@ -100,15 +124,15 @@
 		},
 
 
-		showImage: function(img) {
+		showImage: function(src) {
 
 			if (this.NODE_NAME === 'IMG') {
 
-				this.el.src = img;
+				this.el.src = src;
 			
 			} else if (this.NODE_NAME === 'DIV') {
 
-				this.el.style.backgroundImage = 'url("' + img + '")';
+				this.el.style.backgroundImage = 'url("' + src + '")';
 
 			}
 
@@ -123,6 +147,8 @@
 
 			this.removeDomEventHandler('load');
 			
+			this.imageCache.add(this.loadingImg);
+			
 			this.showImage(this.loadingImg);
 
 			this.events.publish('update');
@@ -132,13 +158,13 @@
 		/**
 		 * add event handler to load image
 		 */
-		load: function(img) {
+		load: function(src) {
 
-			this.loadingImg = img;
+			this.loadingImg = src;
 
 			this.addDomEventHandler('load', this.onLoad, this.img);
 
-			this.img.src = img;
+			this.img.src = src;
 
 		},
 
@@ -153,19 +179,17 @@
 
 			Object.keys(this.srcs).forEach(function(layout) {
 
-				var img = _this.srcs[layout];
+				var src = _this.srcs[layout];
 
 				if (is[layout]()) {
 					
-					if (!_this.loaded[layout]) {
+					if (!_this.imageCache.contains(src)) {
 						
-						_this.loaded[layout] = img;
-						
-						_this.load(img);
+						_this.load(src);
 					
 					} else {
 
-						_this.showImage(img);
+						_this.showImage(src);
 
 					}
 
