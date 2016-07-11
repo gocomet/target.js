@@ -1536,9 +1536,7 @@
             }
         },
         init: function() {
-            if (localStorage) {
-                this.images = "";
-            } else if (localStorage[CACHE_NAME]) {
+            if (localStorage && localStorage[CACHE_NAME]) {
                 this.images = localStorage[CACHE_NAME];
             } else {
                 this.images = "";

@@ -45,9 +45,7 @@
 			}
 		},
 		init: function() {
-			if (localStorage) { 
-				this.images = '';
-			} else if (localStorage[CACHE_NAME]) {
+			if (localStorage && localStorage[CACHE_NAME]) {
 				this.images = localStorage[CACHE_NAME];
 			} else {
 				this.images = '';
@@ -148,7 +146,7 @@
 			this.removeDomEventHandler('load');
 			
 			this.imageCache.add(this.loadingImg);
-			
+
 			this.showImage(this.loadingImg);
 
 			this.events.publish('update');
