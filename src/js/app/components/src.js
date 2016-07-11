@@ -54,6 +54,17 @@
 	};
 	imageCache.init();
 
+	var img = document.createElement('img');
+
+	var appended = false;
+
+	img.id = 'target-img-loader';
+	img.style.display = 'none';
+	img.style.visibility = 'hidden';
+	img.style.height = '0';
+	img.style.width = '0';
+	img.style.overflow = 'hidden';
+
 	target.Src = target.UI.extend({
 	
 		init: function(el, _id, target, name) {
@@ -72,9 +83,14 @@
 				desktop: ''
 			};
 
-			this.getSrcs();
+			if (!appended) {
+				document.body.appendChild(img);
+				appended = true;
+			}
 
-			this.img = document.createElement('img');
+			this.img = img;
+
+			this.getSrcs();
 
 			this.imageCache = imageCache;
 		
