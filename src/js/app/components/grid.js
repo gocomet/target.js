@@ -31,6 +31,8 @@
 			this.TEXT_NODE = 3;
 			this.COMMENT_NODE = 8;
 
+			this.published = false;
+
 			this.setChildren();
 
 			this.setBreakpoints();
@@ -270,6 +272,14 @@
 		 */
 		onResize: function(is) {
 			
+			// TODO: update application after we change the page layout
+			// // if we're responding to our own resize event,
+			// // ignore and reset flag
+			// if (this.published === true) {
+			// 	this.published = false;
+			// 	return;
+			// }
+
 			if (!this.isDisabled()) {
 
 				this.calculateGrid(is);
@@ -279,6 +289,10 @@
 				this.resetGrid();
 
 			}
+
+			// TODO: update application after we change the page layout
+			// this.published = true;
+			// this.events.publish('update');
 
 		}
 

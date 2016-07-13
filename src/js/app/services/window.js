@@ -61,6 +61,12 @@
 			}, this.config.debounceDelay), false);
 
 
+			window.addEventListener('scroll', function(e) {
+
+				_this.onScroll();
+
+			});
+
 			// listen for when UI elements initialize or update
 			// they will request layout data
 			// pass to the via resize event
@@ -92,15 +98,28 @@
 		},
 		
 		/**
+		 * on window.scroll
+		 * get scroll top and pass on
+		 */
+		onScroll: function(e) {
+
+			this.events.publish('scroll', window.pageYOffset);
+
+		},
+
+		/**
 		 * on window.resize
 		 * update internal window properties
 		 * update application
 		 */
 		onResize: function() {
 
+			console.log('resize fired');
+
 			this.w = document.documentElement.clientWidth;
 			this.h = document.documentElement.clientHeight;
 		
+
 			this.update();
 
 		},

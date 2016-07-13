@@ -27,6 +27,7 @@
 			Src: 'data-target-src',
 			Filetext: 'data-target-filetext',
 			Accordion: 'data-target-accordion',
+			Scroll: 'data-target-scroll',
 			disable: 'data-target-disable',
 			max: 'data-target-max',
 			min: 'data-target-min'

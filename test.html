@@ -47,6 +47,19 @@
       width: 50%;
     }
 
+    .show-on-scroll.target-active {
+      background: blue;
+    }
+
+    .show-bg-on-scroll {
+      opacity: 0;
+      transition: opacity .5s;
+    }
+
+    .show-bg-on-scroll.target-active {
+      opacity: 1;
+    }
+
     @media only screen and (min-width: 768px) {
       .third-tablet {
         width: 33.333%;
@@ -221,6 +234,24 @@
     class="bg"
     data-target-src="//placehold.it/300x300 //placehold.it/600x600 //placehold.it/900x900"
     style="display: block; height: 500px;">
+  </div>
+
+  <div
+    data-target-scroll
+    class="show-on-scroll"
+    style="color: black; display: block; height: 200px">
+    whoa whoa whoa whoa whoa
+  </div>
+
+  <div
+    class="bg show-bg-on-scroll"
+    data-target-scroll
+    data-target-src="//placehold.it/300x300 //placehold.it/600x600 //placehold.it/900x900"
+    style="display: block; height: 500px;">
+  </div>
+
+  <div
+    style="color: black; display: block; height: 500px">
   </div>
 
   <script src="dist/proto.es5.js"></script>

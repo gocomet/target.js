@@ -68,6 +68,8 @@
 			
 			}
 
+			this.published = false;
+
 			this.img = img;
 
 			this.getSrcs();
@@ -132,19 +134,23 @@
 			if (this.NODE_NAME === 'IMG') {
 
 				this.el.src = src;
+				
 
-				// TODO:
-				// determine if this element is in a Grid
-				// how to do this efficiently?
-				// then, trigger an update so that Grid can re-layout
-				// without creating an infinite loop a la next line
-				// >>>> this.events.publish('update', this.id);
+				// TODO: update application
+				// after changing page layout
+				// this.published = true;
+				// this.events.publish('update');
 			
 			} else if (this.NODE_NAME === 'DIV') {
 
 				this.el.style.backgroundImage = 'url("' + src + '")';
 
-				// wait for next repaint frame _after_ setting src
+				// wait for next repaint frame _after_ new src is painted
+				// TODO:
+				// this will still have animation problems
+				// if we're transitioning the hide method,
+				// then the transition will still be happening
+				// when the show method is applied
 
 				this.utils.render(function() {
 
@@ -197,6 +203,13 @@
 		onResize: function(is) {
 
 			var _this = this;
+
+			// TODO: update application
+			// after changing page layout
+			// if (this.published === true) {
+			// 	this.published = false;
+			// 	return;
+			// }
 
 			Object.keys(this.srcs).forEach(function(layout) {
 
