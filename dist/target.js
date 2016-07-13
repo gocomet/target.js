@@ -1626,11 +1626,15 @@
             });
         },
         showImage: function(src) {
+            var _this = this;
             if (this.NODE_NAME === "IMG") {
                 this.el.src = src;
             } else if (this.NODE_NAME === "DIV") {
                 this.el.style.backgroundImage = 'url("' + src + '")';
-                this.show(this.el);
+                // wait for next repaint frame _after_ setting src
+                this.utils.render(function() {
+                    _this.show(_this.el);
+                });
             }
         },
         /**
@@ -1670,9 +1674,6 @@
                         }
                         _this.load(src);
                     } else {
-                        if (_this.NODE_NAME === "DIV") {
-                            _this.hide(_this.el);
-                        }
                         _this.showImage(src);
                     }
                 }
