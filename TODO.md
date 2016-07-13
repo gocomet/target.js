@@ -1,11 +1,10 @@
 
 # TODO
 
-<<<<<<< HEAD
 - fix dom event handling in Accordion component
-=======
->>>>>>> 303f0e18d3e5e9387651dc05d87048e4eef432b2
 - add documentation for new Accordion component
+- add documentation for `observeDom` config option
+- fix Src component responsive img loading bugs
 
 ## Improvements
 

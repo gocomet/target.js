@@ -13,6 +13,12 @@
       padding: 20px;
     }
 
+    .bg {
+      background-position: center center;
+      background-repeat: no-repeat;
+      background-size: cover;
+    }
+
     .block {
       display: block;
     }
@@ -118,7 +124,7 @@
     <p>adfsl;kj opasij adopsijas als;dfjsals ;ddfjs io;fjs fs iopj</p>
   </div>
 
-  <div data-target-grid="2 3 4" data-target-disable="mobile" class="row block">
+  <div data-target-grid="2 3 4" data-target-disable="tablet" class="row block">
     <!-- grid ignores comments -->
     <div class="column half-mobile third-tablet quarter-desktop">
       <img src="img/blank.gif" data-target-src="//placehold.it/300x300 //placehold.it/600x600 //placehold.it/900x900">
@@ -211,7 +217,10 @@
     </div>
   </div>
 
-  <div data-target-src="//placehold.it/300x300 //placehold.it/900x900" style="display: block; height: 500px;">
+  <div
+    class="bg"
+    data-target-src="//placehold.it/300x300 //placehold.it/600x600 //placehold.it/900x900"
+    style="display: block; height: 500px;">
   </div>
 
   <script src="dist/proto.es5.js"></script>
@@ -242,18 +251,18 @@
         window.console && console.log('tablet layout: ' + w + ' x ' + h);
       });
 
-      function resizeCallback(is, w, h) {
-        window.console && console.log('resize');
-        window.console && console.log(w + ' x ' + h);
-        window.console && console.log('is mobile: ' + is['mobile']());
-        window.console && console.log('is tablet: ' + is['tablet']());
-        window.console && console.log('is desktop: ' + is['desktop']());
-      }
+      // function resizeCallback(is, w, h) {
+      //   window.console && console.log('resize');
+      //   window.console && console.log(w + ' x ' + h);
+      //   window.console && console.log('is mobile: ' + is['mobile']());
+      //   window.console && console.log('is tablet: ' + is['tablet']());
+      //   window.console && console.log('is desktop: ' + is['desktop']());
+      // }
 
-      target.on('resize', resizeCallback);
-      setTimeout(function() {
-        target.off('resize', resizeCallback);
-      }, 10000);
+      // target.on('resize', resizeCallback);
+      // setTimeout(function() {
+      //   target.off('resize', resizeCallback);
+      // }, 10000);
     })
   </script>
 </body>

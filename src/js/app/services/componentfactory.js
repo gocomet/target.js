@@ -24,12 +24,18 @@
 			
 			attsArray = Object.keys(this.config.attributes);
 			
-			this.ignoreAtts = ['disable', 'min', 'max'];
-			this.componentClasses = attsArray.filter(function(val) {
-				return this.ignoreAtts.indexOf(val) === -1;
+			this.IGNORE_ATTS = ['disable', 'min', 'max'];
+			this.COMPONENT_CLASSES = attsArray.filter(function(val) {
+				
+				return this.IGNORE_ATTS.indexOf(val) === -1;
+			
 			}, this);
 
-			this.events.subscribe('nodeadded.mutation', this.build, {}, this);
+			if (this.config.observeDom) {
+				
+				this.events.subscribe('nodeadded.mutation', this.build, {}, this);
+			
+			}
 		
 		},
 
@@ -43,7 +49,7 @@
 
 			// don't initialise a component because of an att
 			// we should ignore: (disable, min, max)
-			if (this.ignoreAtts.indexOf(name) !== -1) {
+			if (this.IGNORE_ATTS.indexOf(name) !== -1) {
 
 				return;
 
@@ -152,7 +158,7 @@
 
 			var _this = this;
 
-			this.componentClasses.forEach(function(name) {
+			this.COMPONENT_CLASSES.forEach(function(name) {
 
 				_this.initComponent(name);
 

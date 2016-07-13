@@ -40,6 +40,8 @@
 	
 		},
 	
+		observeDom: false,
+
 		debounceDelay: 100
 	
 	};

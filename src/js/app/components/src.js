@@ -33,7 +33,7 @@
 	// would not be loaded
 	// because target will try to load it and wait for onload event
 	// but browser will not load cached images
-	var CACHE_NAME = 'targetImgsLoaded';
+	var CACHE_NAME = 'targetJsImgsLoaded';
 	var imageCache = {
 		contains: function(item) {
 			return this.images.indexOf(item) !== -1;
@@ -56,15 +56,6 @@
 
 	var img = document.createElement('img');
 
-	var appended = false;
-
-	img.id = 'target-img-loader';
-	img.style.display = 'none';
-	img.style.visibility = 'hidden';
-	img.style.height = '0';
-	img.style.width = '0';
-	img.style.overflow = 'hidden';
-
 	target.Src = target.UI.extend({
 	
 		init: function(el, _id, target, name) {
@@ -75,17 +66,6 @@
 
 				throw 'Target.js Error on Src component: "' + this.utils.stripBrackets(this.config.attributes.Src) + '" must be applied to an <img> or <div> element';
 			
-			}
-
-			this.srcs = {
-				mobile: '',
-				tablet: '',
-				desktop: ''
-			};
-
-			if (!appended) {
-				document.body.appendChild(img);
-				appended = true;
 			}
 
 			this.img = img;
@@ -116,6 +96,12 @@
 			var srcAtt = this.el.getAttribute(this.config.attributes.Src);
 			var srcs = srcAtt.split(' ');
 			var latestSrc = null;
+
+			this.srcs = {
+				mobile: '',
+				tablet: '',
+				desktop: ''
+			};
 
 			Object.keys(this.srcs).forEach(function(layout, i) {
 
@@ -159,7 +145,11 @@
 		 */
 		onLoad: function() {
 
-			this.removeDomEventHandler('load');
+			if (this.domEventHandlers.load) {
+				
+				this.removeDomEventHandler('load');
+			
+			}
 			
 			this.imageCache.add(this.loadingImg);
 

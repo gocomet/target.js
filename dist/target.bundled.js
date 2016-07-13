@@ -729,6 +729,7 @@ if (typeof WeakMap === "undefined") {
             tablet: 768,
             desktop: 1025
         },
+        observeDom: false,
         debounceDelay: 100
     };
 })(window.target = window.target || {});
@@ -1290,11 +1291,13 @@ if (typeof WeakMap === "undefined") {
             this.topId = 0;
             this.components = {};
             attsArray = Object.keys(this.config.attributes);
-            this.ignoreAtts = [ "disable", "min", "max" ];
-            this.componentClasses = attsArray.filter(function(val) {
-                return this.ignoreAtts.indexOf(val) === -1;
+            this.IGNORE_ATTS = [ "disable", "min", "max" ];
+            this.COMPONENT_CLASSES = attsArray.filter(function(val) {
+                return this.IGNORE_ATTS.indexOf(val) === -1;
             }, this);
-            this.events.subscribe("nodeadded.mutation", this.build, {}, this);
+            if (this.config.observeDom) {
+                this.events.subscribe("nodeadded.mutation", this.build, {}, this);
+            }
         },
         /**
 		 * create an element after a DOM mutation
@@ -1304,7 +1307,7 @@ if (typeof WeakMap === "undefined") {
             var Component;
             // don't initialise a component because of an att
             // we should ignore: (disable, min, max)
-            if (this.ignoreAtts.indexOf(name) !== -1) {
+            if (this.IGNORE_ATTS.indexOf(name) !== -1) {
                 return;
             }
             // if the component is already initialised
@@ -1369,7 +1372,7 @@ if (typeof WeakMap === "undefined") {
 		 */
         start: function() {
             var _this = this;
-            this.componentClasses.forEach(function(name) {
+            this.COMPONENT_CLASSES.forEach(function(name) {
                 _this.initComponent(name);
             });
         }
@@ -2223,7 +2226,7 @@ if (typeof WeakMap === "undefined") {
     // would not be loaded
     // because target will try to load it and wait for onload event
     // but browser will not load cached images
-    var CACHE_NAME = "targetImgsLoaded";
+    var CACHE_NAME = "targetJsImgsLoaded";
     var imageCache = {
         contains: function(item) {
             return this.images.indexOf(item) !== -1;
@@ -2244,27 +2247,11 @@ if (typeof WeakMap === "undefined") {
     };
     imageCache.init();
     var img = document.createElement("img");
-    var appended = false;
-    img.id = "target-img-loader";
-    img.style.display = "none";
-    img.style.visibility = "hidden";
-    img.style.height = "0";
-    img.style.width = "0";
-    img.style.overflow = "hidden";
     target.Src = target.UI.extend({
         init: function(el, _id, target, name) {
             this._super.apply(this, arguments);
             if (this.NODE_NAME !== "IMG" && this.NODE_NAME !== "DIV") {
                 throw 'Target.js Error on Src component: "' + this.utils.stripBrackets(this.config.attributes.Src) + '" must be applied to an <img> or <div> element';
-            }
-            this.srcs = {
-                mobile: "",
-                tablet: "",
-                desktop: ""
-            };
-            if (!appended) {
-                document.body.appendChild(img);
-                appended = true;
             }
             this.img = img;
             this.getSrcs();
@@ -2287,6 +2274,11 @@ if (typeof WeakMap === "undefined") {
             var srcAtt = this.el.getAttribute(this.config.attributes.Src);
             var srcs = srcAtt.split(" ");
             var latestSrc = null;
+            this.srcs = {
+                mobile: "",
+                tablet: "",
+                desktop: ""
+            };
             Object.keys(this.srcs).forEach(function(layout, i) {
                 var src = srcs[i];
                 if (src) {
@@ -2310,7 +2302,9 @@ if (typeof WeakMap === "undefined") {
 		 * and remove event handler
 		 */
         onLoad: function() {
-            this.removeDomEventHandler("load");
+            if (this.domEventHandlers.load) {
+                this.removeDomEventHandler("load");
+            }
             this.imageCache.add(this.loadingImg);
             this.showImage(this.loadingImg);
             this.events.publish("update");
@@ -2413,7 +2407,10 @@ if (typeof WeakMap === "undefined") {
         // init services
         target.events = new window.Mediator();
         target.window = target.Window.create(target);
-        target.domObserver = target.DomObserver.create(target);
+        // for performance's sake, only observe dom if required
+        if (target.config.observeDom) {
+            target.domObserver = target.DomObserver.create(target);
+        }
         target.componentFactory = target.ComponentFactory.create(target);
         target.api = target.API.create(target);
         // init components
