@@ -13,6 +13,8 @@
 		
 		init: function(el, _id, target, name) {
 		
+			var _this = this;
+
 			this.id = _id;
 			this.componentType = name;
 
@@ -33,7 +35,13 @@
 			// event handlers
 			this.eventHandlers = {};
 			this.addEventHandler('resize', this.setDisabled);
-			this.addEventHandler('attributes.mutation', this.handleAttMutation);
+			
+			if (this.config.observeDom) {
+
+				this.addEventHandler('attributes.mutation', this.handleAttMutation);
+
+			}
+
 			this.addEventHandler('show', this.onShow);
 			this.addEventHandler('hide', this.onHide);
 
@@ -165,7 +173,7 @@
 			}
 
 			// request layout from current window object
-			this.events.publish('update');
+			this.events.publish('update', this.id);
 
 		},
 
@@ -255,11 +263,17 @@
 		 */
 		show: function(el) {
 		
+			var _this = this;
+
 			if (!el.classList.contains(this.config.activeClass)) {
 		
-				el.classList.add(this.config.activeClass);
+				this.utils.render(function() {
 
-				this.events.publish('show', el);
+					el.classList.add(_this.config.activeClass);
+
+					_this.events.publish('show', el);
+					
+				});
 		
 			}
 		
@@ -271,11 +285,17 @@
 		 */
 		hide: function(el) {
 		
+			var _this = this;
+
 			if (el.classList.contains(this.config.activeClass)) {
 		
-				el.classList.remove(this.config.activeClass);
+				this.utils.render(function() {
 
-				this.events.publish('hide', el);
+					el.classList.remove(_this.config.activeClass);
+
+					_this.events.publish('hide', el);
+				
+				});
 		
 			}
 		

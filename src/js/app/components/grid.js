@@ -36,8 +36,9 @@
 			this.setBreakpoints();
 
 			this.addEventHandler('resize', this.onResize);
+			this.addEventHandler('resize' + this.id, this.onResize);
 
-			this.events.publish('update');
+			this.events.publish('update', this.id);
 
 			// since the grid usually contains images,
 			// let's update the layout on window.load as well
@@ -98,7 +99,7 @@
 		onLoad: function(e) {
 
 			this.removeDomEventHandler('load');
-			this.events.publish('update');
+			this.events.publish('update', this.id);
 
 		},
 

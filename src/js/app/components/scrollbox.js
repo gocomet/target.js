@@ -37,8 +37,9 @@
 			}
 			
 			this.addEventHandler('resize', this.onResize);
+			this.addEventHandler('resize' + this.id, this.onResize);
 			
-			this.events.publish('update');
+			this.events.publish('update', this.id);
 
 		},
 		

@@ -65,9 +65,9 @@
 			// they will request layout data
 			// pass to the via resize event
 			this.currentLayout = '';
-			this.events.subscribe('update', function() {
+			this.events.subscribe('update', function(componentID) {
 
-				_this.onResize();
+				_this.update(componentID);
 		
 			});
 		
@@ -94,16 +94,31 @@
 		/**
 		 * on window.resize
 		 * update internal window properties
-		 * fire event for UI components to update themselves
-		 * pass "is" layout object for responsive changes
+		 * update application
 		 */
 		onResize: function() {
-			var newLayout = '';
 
 			this.w = document.documentElement.clientWidth;
 			this.h = document.documentElement.clientHeight;
 		
-			this.events.publish('resize', this.is, this.width(), this.height());
+			this.update();
+
+		},
+
+		/**
+		 * update
+		 * fire event for UI components to update themselves
+		 * pass "is" layout object for responsive changes
+		 */
+		update: function(componentID) {
+
+			var newLayout = '';
+
+			if (!componentID) {
+
+				componentID = '';
+
+			}
 
 			this.utils.forIn(this.is, function(layout, is) {
 
@@ -115,13 +130,15 @@
 			
 			});
 
+			this.currentLayout = newLayout;
+			
+			this.events.publish('resize' + componentID, this.is, this.width(), this.height());
+
 			if (newLayout !== this.currentLayout) {
 
 				this.events.publish(newLayout, this.width(), this.height());
 			
 			}
-
-			this.currentLayout = newLayout;
 
 		}
 	

@@ -209,7 +209,33 @@
 			
 			}
 	
-		}
+		},
+
+		render: (function() {
+
+			if (window.requestAnimationFrame) {
+
+				return function(cb) {
+
+					window.requestAnimationFrame(function() {
+
+						cb();
+
+					});
+
+				};
+
+			} else {
+
+				return function(cb) {
+
+					cb();
+
+				};
+				
+			}
+
+		})()
 
 		/**
 		 * TODO: add polyfilled `matches` support

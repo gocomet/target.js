@@ -75,9 +75,10 @@
 			this.imageCache = imageCache;
 		
 			this.addEventHandler('resize', this.onResize);
+			this.addEventHandler('resize' + this.id, this.onResize);
 
 			// request an update from target.Window
-			this.events.publish('update');
+			this.events.publish('update', this.id);
 		
 		},
 
@@ -126,22 +127,33 @@
 
 		showImage: function(src) {
 
+
 			if (this.NODE_NAME === 'IMG') {
 
 				this.el.src = src;
+
+				// TODO:
+				// determine if this element is in a Grid
+				// how to do this efficiently?
+				// then, trigger an update so that Grid can re-layout
+				// without creating an infinite loop a la next line
+				// >>>> this.events.publish('update', this.id);
 			
 			} else if (this.NODE_NAME === 'DIV') {
 
 				this.el.style.backgroundImage = 'url("' + src + '")';
+
+				this.show(this.el);
 
 			}
 
 		},
 
 		/**
-		 * once image is loaded,
-		 * request a layout update
-		 * and remove event handler
+		 * once image is loaded
+		 * remove event handler
+		 * if this is an <img>
+		 * in a grid, request a layout update
 		 */
 		onLoad: function() {
 
@@ -154,8 +166,6 @@
 			this.imageCache.add(this.loadingImg);
 
 			this.showImage(this.loadingImg);
-
-			this.events.publish('update');
 
 		},
 
@@ -189,9 +199,21 @@
 					
 					if (!_this.imageCache.contains(src)) {
 						
+						if (_this.NODE_NAME === 'DIV') {
+
+							_this.hide(_this.el);
+						
+						}
+
 						_this.load(src);
 					
 					} else {
+
+						if (_this.NODE_NAME === 'DIV') {
+
+							_this.hide(_this.el);
+						
+						}
 
 						_this.showImage(src);
 

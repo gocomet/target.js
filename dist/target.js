@@ -170,7 +170,20 @@
                     cb(prop, obj);
                 }
             }
-        }
+        },
+        render: function() {
+            if (window.requestAnimationFrame) {
+                return function(cb) {
+                    window.requestAnimationFrame(function() {
+                        cb();
+                    });
+                };
+            } else {
+                return function(cb) {
+                    cb();
+                };
+            }
+        }()
     };
 })(window.target = window.target || {});
 
@@ -185,6 +198,7 @@
     "use strict";
     target.UI = window.Proto.extend({
         init: function(el, _id, target, name) {
+            var _this = this;
             this.id = _id;
             this.componentType = name;
             // mixin shared target.js resources
@@ -201,7 +215,9 @@
             // event handlers
             this.eventHandlers = {};
             this.addEventHandler("resize", this.setDisabled);
-            this.addEventHandler("attributes.mutation", this.handleAttMutation);
+            if (this.config.observeDom) {
+                this.addEventHandler("attributes.mutation", this.handleAttMutation);
+            }
             this.addEventHandler("show", this.onShow);
             this.addEventHandler("hide", this.onHide);
             // DOM event handlers
@@ -281,7 +297,7 @@
                 this.disableLayouts = [];
             }
             // request layout from current window object
-            this.events.publish("update");
+            this.events.publish("update", this.id);
         },
         /**
 		 * on window.resize
@@ -343,9 +359,12 @@
 		 * could be this UI element, could be another target
 		 */
         show: function(el) {
+            var _this = this;
             if (!el.classList.contains(this.config.activeClass)) {
-                el.classList.add(this.config.activeClass);
-                this.events.publish("show", el);
+                this.utils.render(function() {
+                    el.classList.add(_this.config.activeClass);
+                    _this.events.publish("show", el);
+                });
             }
         },
         /**
@@ -353,9 +372,12 @@
 		 * could be this UI element, could be another target
 		 */
         hide: function(el) {
+            var _this = this;
             if (el.classList.contains(this.config.activeClass)) {
-                el.classList.remove(this.config.activeClass);
-                this.events.publish("hide", el);
+                this.utils.render(function() {
+                    el.classList.remove(_this.config.activeClass);
+                    _this.events.publish("hide", el);
+                });
             }
         },
         /**
@@ -803,8 +825,8 @@
             // they will request layout data
             // pass to the via resize event
             this.currentLayout = "";
-            this.events.subscribe("update", function() {
-                _this.onResize();
+            this.events.subscribe("update", function(componentID) {
+                _this.update(componentID);
             });
         },
         /**
@@ -822,23 +844,33 @@
         /**
 		 * on window.resize
 		 * update internal window properties
+		 * update application
+		 */
+        onResize: function() {
+            this.w = document.documentElement.clientWidth;
+            this.h = document.documentElement.clientHeight;
+            this.update();
+        },
+        /**
+		 * update
 		 * fire event for UI components to update themselves
 		 * pass "is" layout object for responsive changes
 		 */
-        onResize: function() {
+        update: function(componentID) {
             var newLayout = "";
-            this.w = document.documentElement.clientWidth;
-            this.h = document.documentElement.clientHeight;
-            this.events.publish("resize", this.is, this.width(), this.height());
+            if (!componentID) {
+                componentID = "";
+            }
             this.utils.forIn(this.is, function(layout, is) {
                 if (is[layout]()) {
                     newLayout = layout;
                 }
             });
+            this.currentLayout = newLayout;
+            this.events.publish("resize" + componentID, this.is, this.width(), this.height());
             if (newLayout !== this.currentLayout) {
                 this.events.publish(newLayout, this.width(), this.height());
             }
-            this.currentLayout = newLayout;
         }
     });
 })(window.target = window.target || {});
@@ -1114,7 +1146,8 @@
             this.setChildren();
             this.setBreakpoints();
             this.addEventHandler("resize", this.onResize);
-            this.events.publish("update");
+            this.addEventHandler("resize" + this.id, this.onResize);
+            this.events.publish("update", this.id);
             // since the grid usually contains images,
             // let's update the layout on window.load as well
             this.addDomEventHandler("load", this.onLoad, window);
@@ -1149,7 +1182,7 @@
         },
         onLoad: function(e) {
             this.removeDomEventHandler("load");
-            this.events.publish("update");
+            this.events.publish("update", this.id);
         },
         /**
 		 * find child nodes of element
@@ -1397,7 +1430,8 @@
                 this.children = this.el.childNodes;
             }
             this.addEventHandler("resize", this.onResize);
-            this.events.publish("update");
+            this.addEventHandler("resize" + this.id, this.onResize);
+            this.events.publish("update", this.id);
         },
         /**
 		 * get the user-declared max height threshold
@@ -1558,8 +1592,9 @@
             this.getSrcs();
             this.imageCache = imageCache;
             this.addEventHandler("resize", this.onResize);
+            this.addEventHandler("resize" + this.id, this.onResize);
             // request an update from target.Window
-            this.events.publish("update");
+            this.events.publish("update", this.id);
         },
         /**
 		 * get list of image urls from element attribute
@@ -1595,12 +1630,14 @@
                 this.el.src = src;
             } else if (this.NODE_NAME === "DIV") {
                 this.el.style.backgroundImage = 'url("' + src + '")';
+                this.show(this.el);
             }
         },
         /**
-		 * once image is loaded,
-		 * request a layout update
-		 * and remove event handler
+		 * once image is loaded
+		 * remove event handler
+		 * if this is an <img>
+		 * in a grid, request a layout update
 		 */
         onLoad: function() {
             if (this.domEventHandlers.load) {
@@ -1608,7 +1645,6 @@
             }
             this.imageCache.add(this.loadingImg);
             this.showImage(this.loadingImg);
-            this.events.publish("update");
         },
         /**
 		 * add event handler to load image
@@ -1629,8 +1665,14 @@
                 var src = _this.srcs[layout];
                 if (is[layout]()) {
                     if (!_this.imageCache.contains(src)) {
+                        if (_this.NODE_NAME === "DIV") {
+                            _this.hide(_this.el);
+                        }
                         _this.load(src);
                     } else {
+                        if (_this.NODE_NAME === "DIV") {
+                            _this.hide(_this.el);
+                        }
                         _this.showImage(src);
                     }
                 }
