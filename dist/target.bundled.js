@@ -721,6 +721,7 @@ if (typeof WeakMap === "undefined") {
             Src: "data-target-src",
             Filetext: "data-target-filetext",
             Accordion: "data-target-accordion",
+            Scroll: "data-target-scroll",
             disable: "data-target-disable",
             max: "data-target-max",
             min: "data-target-min"
@@ -1520,6 +1521,9 @@ if (typeof WeakMap === "undefined") {
             window.addEventListener("resize", this.utils.debounce(function(e) {
                 _this.onResize();
             }, this.config.debounceDelay), false);
+            window.addEventListener("scroll", function(e) {
+                _this.onScroll();
+            });
             // listen for when UI elements initialize or update
             // they will request layout data
             // pass to the via resize event
@@ -1541,11 +1545,19 @@ if (typeof WeakMap === "undefined") {
             return this.h;
         },
         /**
+		 * on window.scroll
+		 * get scroll top and pass on
+		 */
+        onScroll: function(e) {
+            this.events.publish("scroll", window.pageYOffset);
+        },
+        /**
 		 * on window.resize
 		 * update internal window properties
 		 * update application
 		 */
         onResize: function() {
+            console.log("resize fired");
             this.w = document.documentElement.clientWidth;
             this.h = document.documentElement.clientHeight;
             this.update();
@@ -1842,6 +1854,7 @@ if (typeof WeakMap === "undefined") {
             this._super.apply(this, arguments);
             this.TEXT_NODE = 3;
             this.COMMENT_NODE = 8;
+            this.published = false;
             this.setChildren();
             this.setBreakpoints();
             this.addEventHandler("resize", this.onResize);
@@ -1989,6 +2002,13 @@ if (typeof WeakMap === "undefined") {
 		 * depending on if enabled or disabled
 		 */
         onResize: function(is) {
+            // TODO: update application after we change the page layout
+            // // if we're responding to our own resize event,
+            // // ignore and reset flag
+            // if (this.published === true) {
+            // 	this.published = false;
+            // 	return;
+            // }
             if (!this.isDisabled()) {
                 this.calculateGrid(is);
             } else {
@@ -2099,6 +2119,59 @@ if (typeof WeakMap === "undefined") {
                     _this.increment(target);
                 });
             }
+        }
+    });
+})(window.target = window.target || {});
+
+/**
+ * target.Scroll
+ *
+ * show an element when it scrolls into view
+ *
+ * calculate an offset on the element by the attribute value, if it exists
+ */
+(function(target, undefined) {
+    "use strict";
+    target.Scroll = target.UI.extend({
+        init: function(el, _id, target, name) {
+            this._super.apply(this, arguments);
+            this.getOffset();
+            this.addEventHandler("resize", this.onResize);
+            this.addEventHandler("resize" + this.id, this.onResize);
+            this.addEventHandler("scroll", this.onScroll);
+            this.events.publish("update", this.id);
+        },
+        getOffset: function() {
+            // TODO: add declarative settings
+            // this.offset = this.el.getAttribute(
+            // 	this.config.attributes.Scroll
+            // );
+            // if (this.offset) {
+            // 	this.offset = parseInt(this.offset, 10);
+            // } else {
+            // 	this.offset = 0;
+            // }
+            this.top = 0;
+        },
+        calculateThreshold: function(h) {
+            var rect = this.el.getBoundingClientRect();
+            this.threshold = rect.top + this.top - h * .6;
+        },
+        onScroll: function(top) {
+            this.top = top;
+            if (this.top >= this.threshold) {
+                this.show(this.el);
+            } else {
+                this.hide(this.el);
+            }
+        },
+        /**
+		 * on window.resize
+		 * calculate or recalculate
+		 * when our element should be shown or hidden
+		 */
+        onResize: function(is, w, h) {
+            this.calculateThreshold(h);
         }
     });
 })(window.target = window.target || {});
@@ -2287,6 +2360,7 @@ if (typeof WeakMap === "undefined") {
             if (this.NODE_NAME !== "IMG" && this.NODE_NAME !== "DIV") {
                 throw 'Target.js Error on Src component: "' + this.utils.stripBrackets(this.config.attributes.Src) + '" must be applied to an <img> or <div> element';
             }
+            this.published = false;
             this.img = img;
             this.getSrcs();
             this.imageCache = imageCache;
@@ -2325,11 +2399,20 @@ if (typeof WeakMap === "undefined") {
             });
         },
         showImage: function(src) {
+            var _this = this;
             if (this.NODE_NAME === "IMG") {
                 this.el.src = src;
             } else if (this.NODE_NAME === "DIV") {
                 this.el.style.backgroundImage = 'url("' + src + '")';
-                this.show(this.el);
+                // wait for next repaint frame _after_ new src is painted
+                // TODO:
+                // this will still have animation problems
+                // if we're transitioning the hide method,
+                // then the transition will still be happening
+                // when the show method is applied
+                this.utils.render(function() {
+                    _this.show(_this.el);
+                });
             }
         },
         /**
@@ -2360,6 +2443,12 @@ if (typeof WeakMap === "undefined") {
 		 */
         onResize: function(is) {
             var _this = this;
+            // TODO: update application
+            // after changing page layout
+            // if (this.published === true) {
+            // 	this.published = false;
+            // 	return;
+            // }
             Object.keys(this.srcs).forEach(function(layout) {
                 var src = _this.srcs[layout];
                 if (is[layout]()) {
@@ -2369,9 +2458,6 @@ if (typeof WeakMap === "undefined") {
                         }
                         _this.load(src);
                     } else {
-                        if (_this.NODE_NAME === "DIV") {
-                            _this.hide(_this.el);
-                        }
                         _this.showImage(src);
                     }
                 }

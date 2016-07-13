@@ -53,9 +53,6 @@
 
 			this.top = top;
 
-			console.log(top);
-			console.log(this.threshold);
-
 			if (this.top >= this.threshold) {
 
 				this.show(this.el);
