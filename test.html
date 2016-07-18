@@ -251,6 +251,11 @@
   </div>
 
   <div
+    id="bind-test"
+    style="color: black; display: block; height: 500px">
+  </div>
+
+  <div
     style="color: black; display: block; height: 500px">
   </div>
 
@@ -281,6 +286,14 @@
       target.on('tablet', function(w, h) {
         window.console && console.log('tablet layout: ' + w + ' x ' + h);
       });
+
+      setTimeout(function() {
+        $('<button id="bind-text-button" data-target-show="#blue-div">hey</button>')
+          .appendTo('#bind-test');
+
+        target.bind('#bind-test');
+      }, 500);
+
 
       // function resizeCallback(is, w, h) {
       //   window.console && console.log('resize');

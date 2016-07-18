@@ -22,8 +22,20 @@
 			this.eventHandlers = {};
 
 			// mixin public methods into global target object
-			['get', 'on', 'off', 'show', 'hide', 'toggle'].forEach(function(method) {
+			[
+			
+				'get',
+				'on',
+				'off',
+				'show',
+				'hide',
+				'toggle',
+				'bind'
+			
+			].forEach(function(method) {
+			
 				target[method] = _this[method].bind(_this);
+			
 			});
 		
 		},
@@ -310,7 +322,25 @@
 
 			return this;
 			
+		},
+
+		/**
+		 * bind target to an element/document fragment
+		 *
+		 * search within the element
+		 * and initialize any components
+		 * declared on elements within
+		 *
+		 * useful for binding to elements after being rendered dynamically
+		 */
+		bind: function(el) {
+
+			el = this.normalize(el);
+
+			this.componentFactory.start(el);
+
 		}
+
 	});
 
 })(window.target = window.target || {});

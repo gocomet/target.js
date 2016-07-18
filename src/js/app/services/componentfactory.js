@@ -77,15 +77,28 @@
 		 * by name
 		 * for each Target element that currently exists
 		 * in DOM
+		 * if scope is used, only get elements contained within scope
 		 */
-		initComponent: function(name) {
+		initComponent: function(name, scope) {
 
 			var _this = this;
 			var Component = this.target[name];
+			var selector = '[' + _this.config.attributes[name] + ']';
+			var elList;
+
+			if (scope) {
+
+				elList = scope.querySelectorAll(selector);
+
+			} else {
+
+				elList = _this.utils.qsa(selector);
+
+			}
 
 			this.utils.forEach.call(
 				
-				_this.utils.qsa('[' + _this.config.attributes[name] + ']'),
+				elList,
 				
 				function(el, i) {
 				
@@ -154,13 +167,13 @@
 		 * start function run manually
 		 * after object instantiation
 		 */
-		start: function() {
+		start: function(scope) {
 
 			var _this = this;
 
 			this.COMPONENT_CLASSES.forEach(function(name) {
 
-				_this.initComponent(name);
+				_this.initComponent(name, scope);
 
 			});
 
