@@ -879,7 +879,6 @@
 		 * update application
 		 */
         onResize: function() {
-            console.log("resize fired");
             this.w = document.documentElement.clientWidth;
             this.h = document.documentElement.clientHeight;
             this.update();
