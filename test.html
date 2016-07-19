@@ -237,7 +237,7 @@
   </div>
 
   <div
-    data-target-scroll
+    data-target-scroll="-200"
     class="show-on-scroll"
     style="color: black; display: block; height: 200px">
     whoa whoa whoa whoa whoa
@@ -250,6 +250,7 @@
     style="display: block; height: 500px;">
   </div>
 
+  <!--
   <div
     id="bind-test"
     style="color: black; display: block; height: 500px">
@@ -258,6 +259,7 @@
   <div
     style="color: black; display: block; height: 500px">
   </div>
+  -->
 
   <script src="dist/proto.es5.js"></script>
   <script src="dist/MutationObserver.js"></script>
@@ -287,12 +289,12 @@
         window.console && console.log('tablet layout: ' + w + ' x ' + h);
       });
 
-      setTimeout(function() {
-        $('<button id="bind-text-button" data-target-show="#blue-div">hey</button>')
-          .appendTo('#bind-test');
+      // setTimeout(function() {
+      //   $('<button id="bind-text-button" data-target-show="#blue-div">hey</button>')
+      //     .appendTo('#bind-test');
 
-        target.bind('#bind-test');
-      }, 500);
+      //   target.bind('#bind-test');
+      // }, 500);
 
 
       // function resizeCallback(is, w, h) {
