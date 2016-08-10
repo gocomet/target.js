@@ -189,6 +189,30 @@
 })(window.target = window.target || {});
 
 /**
+ * target.queue
+ *
+ * queue functionality can be added to UI components
+ */
+(function(target, undefined) {
+    "use strict";
+    target.Queue = window.Proto.extend({
+        init: function() {
+            this.items = [];
+        },
+        push: function(cb) {
+            this.items.push(cb);
+        },
+        next: function() {
+            var cb;
+            if (this.items.length) {
+                cb = this.items.shift();
+                cb();
+            }
+        }
+    });
+})(window.target = window.target || {});
+
+/**
  * target.UI
  *
  * Base class component object
@@ -197,6 +221,9 @@
  */
 (function(target, undefined) {
     "use strict";
+    //
+    // TODO: add queue functionality
+    //
     target.UI = window.Proto.extend({
         init: function(el, _id, target, name) {
             var _this = this;
@@ -1691,10 +1718,15 @@
             }
             this.published = false;
             this.img = img;
+            // TODO: only load when in view
+            // this.inview = false;
+            // this.queue = target.Queue.create();
             this.getSrcs();
             this.imageCache = imageCache;
             this.addEventHandler("resize", this.onResize);
             this.addEventHandler("resize" + this.id, this.onResize);
+            // TODO: only load when in view
+            //this.addEventHandler('scroll', this.onScroll);
             // request an update from target.Window
             this.events.publish("update", this.id);
         },
@@ -1717,6 +1749,7 @@
                 tablet: "",
                 desktop: ""
             };
+            this.currentSrc = "";
             Object.keys(this.srcs).forEach(function(layout, i) {
                 var src = srcs[i];
                 if (src) {
@@ -1729,6 +1762,7 @@
         },
         showImage: function(src) {
             var _this = this;
+            this.currentSrc = src;
             if (this.NODE_NAME === "IMG") {
                 this.el.src = src;
             } else if (this.NODE_NAME === "DIV") {
@@ -1770,17 +1804,20 @@
 		 * check which layout we're currently at
 		 * and load the appropriate image
 		 */
-        onResize: function(is) {
+        onResize: function(is, w, h) {
             var _this = this;
-            // TODO: update application
-            // after changing page layout
-            // if (this.published === true) {
-            // 	this.published = false;
-            // 	return;
+            // TODO: only load when in view
+            // this.calculateThreshold(h);
+            // if (this.threshold < h) {
+            // 	this.inview = true;
+            // 	this.queue.next();
             // }
             Object.keys(this.srcs).forEach(function(layout) {
                 var src = _this.srcs[layout];
-                if (is[layout]()) {
+                //
+                // TODO: damn, clean this up
+                // 
+                if (is[layout]() && src !== _this.currentSrc) {
                     if (!_this.imageCache.contains(src)) {
                         if (_this.NODE_NAME === "DIV") {
                             _this.hide(_this.el);

@@ -72,12 +72,18 @@
 
 			this.img = img;
 
+			// TODO: only load when in view
+			// this.inview = false;
+			// this.queue = target.Queue.create();
+
 			this.getSrcs();
 
 			this.imageCache = imageCache;
 		
 			this.addEventHandler('resize', this.onResize);
 			this.addEventHandler('resize' + this.id, this.onResize);
+			// TODO: only load when in view
+			//this.addEventHandler('scroll', this.onScroll);
 
 			// request an update from target.Window
 			this.events.publish('update', this.id);
@@ -106,6 +112,8 @@
 				desktop: ''
 			};
 
+			this.currentSrc = '';
+
 			Object.keys(this.srcs).forEach(function(layout, i) {
 
 				var src = srcs[i];
@@ -131,15 +139,19 @@
 
 			var _this = this;
 
+			this.currentSrc = src;
+
 			if (this.NODE_NAME === 'IMG') {
 
 				this.el.src = src;
 				
-
 				// TODO: update application
 				// after changing page layout
 				// this.published = true;
 				// this.events.publish('update');
+				// can't currently because choke up the browser
+				// if too many update fire at once
+				// (because they cause a reflow)
 			
 			} else if (this.NODE_NAME === 'DIV') {
 
@@ -200,22 +212,30 @@
 		 * check which layout we're currently at
 		 * and load the appropriate image
 		 */
-		onResize: function(is) {
+		onResize: function(is, w, h) {
 
 			var _this = this;
 
-			// TODO: update application
-			// after changing page layout
-			// if (this.published === true) {
-			// 	this.published = false;
-			// 	return;
+			// TODO: only load when in view
+			// this.calculateThreshold(h);
+
+			// if (this.threshold < h) {
+
+			// 	this.inview = true;
+
+			// 	this.queue.next();
+
 			// }
 
 			Object.keys(this.srcs).forEach(function(layout) {
 
 				var src = _this.srcs[layout];
 
-				if (is[layout]()) {
+				//
+				// TODO: damn, clean this up
+				// 
+
+				if (is[layout]() && src !== _this.currentSrc) {
 					
 					if (!_this.imageCache.contains(src)) {
 						
@@ -226,10 +246,41 @@
 						}
 
 						_this.load(src);
+
+						// TODO: only load when in view
+						// if (_this.inview) {
+
+						// 	_this.load(src);
+
+						// } else {
+
+						// 	_this.queue.push(function() {
+
+						// 		_this.load(src);
+							
+						// 	});
+							
+						// }
+
 					
 					} else {
 
 						_this.showImage(src);
+
+						// TODO: only load when in view
+						// if (_this.inview) {
+
+						// 	_this.showImage(src);
+
+						// } else {
+
+						// 	_this.queue.push(function() {
+
+						// 		_this.showImage(src);
+								
+						// 	});
+
+						// }
 
 					}
 
@@ -237,7 +288,38 @@
 
 			});
 
-		}
+		}//,
+
+		// TODO: only load when in view
+		// calculateThreshold: function(h) {
+
+		// 	var rect = this.el.getBoundingClientRect();
+
+		// 	this.threshold = rect.top - h;
+
+		// },
+
+		// TODO: only load when in view
+		// /**
+		//  * when the page scrolls,
+		//  * determine if this image is in view or not
+		//  * only load images once in view
+		//  */
+		// onScroll: function(top) {
+
+		// 	if (top >= this.threshold) {
+
+		// 		this.inview = true;
+
+		// 		this.queue.next();
+
+		// 	} else {
+
+		// 		this.inview = false;
+			
+		// 	}
+
+		// }
 
 	});
 

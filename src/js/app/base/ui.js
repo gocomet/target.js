@@ -9,6 +9,11 @@
 	
 	'use strict';
 
+	//
+	// TODO: add queue functionality
+	//
+	
+
 	target.UI = window.Proto.extend({
 		
 		init: function(el, _id, target, name) {

@@ -888,6 +888,30 @@ if (typeof WeakMap === "undefined") {
 })(window.target = window.target || {});
 
 /**
+ * target.queue
+ *
+ * queue functionality can be added to UI components
+ */
+(function(target, undefined) {
+    "use strict";
+    target.Queue = window.Proto.extend({
+        init: function() {
+            this.items = [];
+        },
+        push: function(cb) {
+            this.items.push(cb);
+        },
+        next: function() {
+            var cb;
+            if (this.items.length) {
+                cb = this.items.shift();
+                cb();
+            }
+        }
+    });
+})(window.target = window.target || {});
+
+/**
  * target.UI
  *
  * Base class component object
@@ -896,6 +920,9 @@ if (typeof WeakMap === "undefined") {
  */
 (function(target, undefined) {
     "use strict";
+    //
+    // TODO: add queue functionality
+    //
     target.UI = window.Proto.extend({
         init: function(el, _id, target, name) {
             var _this = this;
@@ -2390,10 +2417,13 @@ if (typeof WeakMap === "undefined") {
             }
             this.published = false;
             this.img = img;
+            this.inview = false;
+            this.queue = target.Queue.create();
             this.getSrcs();
             this.imageCache = imageCache;
             this.addEventHandler("resize", this.onResize);
             this.addEventHandler("resize" + this.id, this.onResize);
+            this.addEventHandler("scroll", this.onScroll);
             // request an update from target.Window
             this.events.publish("update", this.id);
         },
@@ -2416,6 +2446,7 @@ if (typeof WeakMap === "undefined") {
                 tablet: "",
                 desktop: ""
             };
+            this.currentSrc = "";
             Object.keys(this.srcs).forEach(function(layout, i) {
                 var src = srcs[i];
                 if (src) {
@@ -2428,6 +2459,7 @@ if (typeof WeakMap === "undefined") {
         },
         showImage: function(src) {
             var _this = this;
+            this.currentSrc = src;
             if (this.NODE_NAME === "IMG") {
                 this.el.src = src;
             } else if (this.NODE_NAME === "DIV") {
@@ -2469,27 +2501,54 @@ if (typeof WeakMap === "undefined") {
 		 * check which layout we're currently at
 		 * and load the appropriate image
 		 */
-        onResize: function(is) {
+        onResize: function(is, w, h) {
             var _this = this;
-            // TODO: update application
-            // after changing page layout
-            // if (this.published === true) {
-            // 	this.published = false;
-            // 	return;
-            // }
+            this.calculateThreshold(h);
             Object.keys(this.srcs).forEach(function(layout) {
                 var src = _this.srcs[layout];
-                if (is[layout]()) {
+                //
+                // TODO: damn, clean this up
+                // 
+                if (is[layout]() && src !== _this.currentSrc) {
                     if (!_this.imageCache.contains(src)) {
                         if (_this.NODE_NAME === "DIV") {
                             _this.hide(_this.el);
                         }
-                        _this.load(src);
+                        if (_this.inview) {
+                            _this.load(src);
+                        } else {
+                            _this.queue.push(function() {
+                                _this.load(src);
+                            });
+                        }
                     } else {
-                        _this.showImage(src);
+                        if (_this.inview) {
+                            _this.showImage(src);
+                        } else {
+                            _this.queue.push(function() {
+                                _this.showImage(src);
+                            });
+                        }
                     }
                 }
             });
+        },
+        calculateThreshold: function(h) {
+            var rect = this.el.getBoundingClientRect();
+            this.threshold = rect.top - h;
+        },
+        /**
+		 * when the page scrolls,
+		 * determine if this image is in view or not
+		 * only load images once in view
+		 */
+        onScroll: function(top) {
+            if (top >= this.threshold) {
+                this.inview = true;
+                this.queue.next();
+            } else {
+                this.inview = false;
+            }
         }
     });
 })(window.target = window.target || {});
