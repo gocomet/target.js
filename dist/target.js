@@ -873,6 +873,13 @@
             window.addEventListener("scroll", function(e) {
                 _this.onScroll();
             });
+            // on browser load,
+            // run another update
+            // to ensure all our scrolling stuff is calculating correctly
+            // after images have been loaded
+            window.addEventListener("load", function() {
+                _this.onResize();
+            });
             // listen for when UI elements initialize or update
             // they will request layout data
             // pass to the via resize event
@@ -1480,6 +1487,7 @@
  */
 (function(target, undefined) {
     "use strict";
+    var PAGE_FACTOR = .2;
     target.Scroll = target.UI.extend({
         init: function(el, _id, target, name) {
             this._super.apply(this, arguments);
@@ -1500,7 +1508,7 @@
         },
         calculateThreshold: function(h) {
             var rect = this.el.getBoundingClientRect();
-            this.threshold = rect.top + this.top - h * .6;
+            this.threshold = rect.top + this.top - h * (1 - PAGE_FACTOR);
         },
         onScroll: function(top) {
             this.top = top;

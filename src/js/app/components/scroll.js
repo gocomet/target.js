@@ -9,6 +9,8 @@
 	
 	'use strict';
 
+	var PAGE_FACTOR = 0.2;
+
 	target.Scroll = target.UI.extend({
 		
 		init: function(el, _id, target, name) {
@@ -51,7 +53,7 @@
 
 			var rect = this.el.getBoundingClientRect();
 
-			this.threshold = rect.top + this.top - (h * 0.6);
+			this.threshold = rect.top + this.top - (h * (1 - PAGE_FACTOR));
 
 		},
 

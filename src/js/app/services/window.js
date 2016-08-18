@@ -67,6 +67,16 @@
 
 			});
 
+			// on browser load,
+			// run another update
+			// to ensure all our scrolling stuff is calculating correctly
+			// after images have been loaded
+			window.addEventListener('load', function() {
+
+				_this.onResize();
+
+			});
+
 			// listen for when UI elements initialize or update
 			// they will request layout data
 			// pass to the via resize event

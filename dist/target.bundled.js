@@ -1572,6 +1572,13 @@ if (typeof WeakMap === "undefined") {
             window.addEventListener("scroll", function(e) {
                 _this.onScroll();
             });
+            // on browser load,
+            // run another update
+            // to ensure all our scrolling stuff is calculating correctly
+            // after images have been loaded
+            window.addEventListener("load", function() {
+                _this.onResize();
+            });
             // listen for when UI elements initialize or update
             // they will request layout data
             // pass to the via resize event
@@ -2179,6 +2186,7 @@ if (typeof WeakMap === "undefined") {
  */
 (function(target, undefined) {
     "use strict";
+    var PAGE_FACTOR = .2;
     target.Scroll = target.UI.extend({
         init: function(el, _id, target, name) {
             this._super.apply(this, arguments);
@@ -2199,7 +2207,7 @@ if (typeof WeakMap === "undefined") {
         },
         calculateThreshold: function(h) {
             var rect = this.el.getBoundingClientRect();
-            this.threshold = rect.top + this.top - h * .6;
+            this.threshold = rect.top + this.top - h * (1 - PAGE_FACTOR);
         },
         onScroll: function(top) {
             this.top = top;
@@ -2417,13 +2425,15 @@ if (typeof WeakMap === "undefined") {
             }
             this.published = false;
             this.img = img;
-            this.inview = false;
-            this.queue = target.Queue.create();
+            // TODO: only load when in view
+            // this.inview = false;
+            // this.queue = target.Queue.create();
             this.getSrcs();
             this.imageCache = imageCache;
             this.addEventHandler("resize", this.onResize);
             this.addEventHandler("resize" + this.id, this.onResize);
-            this.addEventHandler("scroll", this.onScroll);
+            // TODO: only load when in view
+            //this.addEventHandler('scroll', this.onScroll);
             // request an update from target.Window
             this.events.publish("update", this.id);
         },
@@ -2503,7 +2513,12 @@ if (typeof WeakMap === "undefined") {
 		 */
         onResize: function(is, w, h) {
             var _this = this;
-            this.calculateThreshold(h);
+            // TODO: only load when in view
+            // this.calculateThreshold(h);
+            // if (this.threshold < h) {
+            // 	this.inview = true;
+            // 	this.queue.next();
+            // }
             Object.keys(this.srcs).forEach(function(layout) {
                 var src = _this.srcs[layout];
                 //
@@ -2514,41 +2529,12 @@ if (typeof WeakMap === "undefined") {
                         if (_this.NODE_NAME === "DIV") {
                             _this.hide(_this.el);
                         }
-                        if (_this.inview) {
-                            _this.load(src);
-                        } else {
-                            _this.queue.push(function() {
-                                _this.load(src);
-                            });
-                        }
+                        _this.load(src);
                     } else {
-                        if (_this.inview) {
-                            _this.showImage(src);
-                        } else {
-                            _this.queue.push(function() {
-                                _this.showImage(src);
-                            });
-                        }
+                        _this.showImage(src);
                     }
                 }
             });
-        },
-        calculateThreshold: function(h) {
-            var rect = this.el.getBoundingClientRect();
-            this.threshold = rect.top - h;
-        },
-        /**
-		 * when the page scrolls,
-		 * determine if this image is in view or not
-		 * only load images once in view
-		 */
-        onScroll: function(top) {
-            if (top >= this.threshold) {
-                this.inview = true;
-                this.queue.next();
-            } else {
-                this.inview = false;
-            }
         }
     });
 })(window.target = window.target || {});
