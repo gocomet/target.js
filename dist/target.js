@@ -29,7 +29,8 @@
         },
         breakpoints: {
             tablet: 768,
-            desktop: 1025
+            desktop: 1025,
+            large: 1440
         },
         observeDom: false,
         debounceDelay: 100
@@ -184,7 +185,10 @@
                     cb();
                 };
             }
-        }()
+        }(),
+        isIOS: function(ua) {
+            return ua.match(/iphone/gi) || ua.match(/ipad/gi);
+        }(window.navigator.userAgent)
     };
 })(window.target = window.target || {});
 
@@ -865,6 +869,9 @@
                 },
                 desktop: function() {
                     return _this.w >= _this.config.breakpoints.desktop;
+                },
+                large: function() {
+                    return _this.w >= _this.config.breakpoints.large;
                 }
             };
             window.addEventListener("resize", this.utils.debounce(function(e) {
@@ -1222,14 +1229,14 @@
         /**
 		 * set breakpoints
 		 * this will determine how many items are in a row
-		 * at various breakpoints (mobile, tablet, desktop)
+		 * at various breakpoints (mobile, tablet, desktop, large)
 		 * also, if the breakpoint is "disable", instead of an int,
 		 * disable at that breakpoint
 		 */
         setBreakpoints: function() {
             var breakpoints = this.el.getAttribute(this.config.attributes.Grid).split(" ");
             var disableLayouts = [];
-            var layouts = [ "mobile", "tablet", "desktop" ];
+            var layouts = [ "mobile", "tablet", "desktop", "large" ];
             breakpoints.forEach(function(breakpoint, i) {
                 if (breakpoint === "disable") {
                     disableLayouts.push(layouts[i]);
@@ -1241,7 +1248,8 @@
             this.breakpoints = {
                 mobile: breakpoints[0],
                 tablet: breakpoints[1],
-                desktop: breakpoints[2]
+                desktop: breakpoints[2],
+                large: breakpoints[3]
             };
             if (disableLayouts.length) {
                 this.el.setAttribute(this.config.attributes.disable, disableLayouts.join(" "));
@@ -1357,13 +1365,6 @@
 		 * depending on if enabled or disabled
 		 */
         onResize: function(is) {
-            // TODO: update application after we change the page layout
-            // // if we're responding to our own resize event,
-            // // ignore and reset flag
-            // if (this.published === true) {
-            // 	this.published = false;
-            // 	return;
-            // }
             if (!this.isDisabled()) {
                 this.calculateGrid(is);
             } else {
@@ -1678,6 +1679,7 @@
  * the first is for mobile
  * the second is for tablet
  * the third is for desktop
+ * the fourth is for large
  *
  * `<img src="my_blang_img.gif" data-target-src="/mobile-img.jpg /tablet-img.jpg /desktop-img.jpg">`
  *
@@ -1703,13 +1705,15 @@
             return this.images.indexOf(item) !== -1;
         },
         add: function(item) {
-            this.images += item;
-            if (localStorage) {
+            if (!this.contains(item)) {
+                this.images += item;
+            }
+            if (!target.utils.isIOS && localStorage) {
                 localStorage[CACHE_NAME] = this.images;
             }
         },
         init: function() {
-            if (localStorage && localStorage[CACHE_NAME]) {
+            if (!target.utils.isIOS && localStorage && localStorage[CACHE_NAME]) {
                 this.images = localStorage[CACHE_NAME];
             } else {
                 this.images = "";
@@ -1755,7 +1759,8 @@
             this.srcs = {
                 mobile: "",
                 tablet: "",
-                desktop: ""
+                desktop: "",
+                large: ""
             };
             this.currentSrc = "";
             Object.keys(this.srcs).forEach(function(layout, i) {

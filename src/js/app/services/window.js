@@ -50,6 +50,12 @@
 		
 					return _this.w >= _this.config.breakpoints.desktop;
 		
+				},
+
+				large: function() {
+
+					return _this.w >= _this.config.breakpoints.large;
+
 				}
 		
 			};

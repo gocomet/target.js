@@ -235,7 +235,11 @@
 				
 			}
 
-		})()
+		})(),
+
+		isIOS: (function(ua) {
+			return ua.match(/iphone/gi) || ua.match(/ipad/gi);
+		})(window.navigator.userAgent)
 
 		/**
 		 * TODO: add polyfilled `matches` support

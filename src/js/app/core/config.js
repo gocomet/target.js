@@ -37,7 +37,8 @@
 		breakpoints: {
 	
 			tablet: 768,
-			desktop: 1025
+			desktop: 1025,
+			large: 1440
 	
 		},
 	

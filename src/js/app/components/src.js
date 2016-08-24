@@ -12,6 +12,7 @@
  * the first is for mobile
  * the second is for tablet
  * the third is for desktop
+ * the fourth is for large
  *
  * `<img src="my_blang_img.gif" data-target-src="/mobile-img.jpg /tablet-img.jpg /desktop-img.jpg">`
  *
@@ -39,13 +40,16 @@
 			return this.images.indexOf(item) !== -1;
 		},
 		add: function(item) {
-			this.images += item;
-			if (localStorage) {
+			if (!this.contains(item)) {
+				this.images += item;
+			}
+			
+			if (!target.utils.isIOS && localStorage) {
 				localStorage[CACHE_NAME] = this.images;
 			}
 		},
 		init: function() {
-			if (localStorage && localStorage[CACHE_NAME]) {
+			if (!target.utils.isIOS && localStorage && localStorage[CACHE_NAME]) {
 				this.images = localStorage[CACHE_NAME];
 			} else {
 				this.images = '';
@@ -109,7 +113,8 @@
 			this.srcs = {
 				mobile: '',
 				tablet: '',
-				desktop: ''
+				desktop: '',
+				large: ''
 			};
 
 			this.currentSrc = '';

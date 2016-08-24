@@ -51,7 +51,7 @@
 		/**
 		 * set breakpoints
 		 * this will determine how many items are in a row
-		 * at various breakpoints (mobile, tablet, desktop)
+		 * at various breakpoints (mobile, tablet, desktop, large)
 		 * also, if the breakpoint is "disable", instead of an int,
 		 * disable at that breakpoint
 		 */
@@ -64,7 +64,8 @@
 			var layouts = [
 				'mobile',
 				'tablet',
-				'desktop'
+				'desktop',
+				'large'
 			];
 
 			breakpoints.forEach(function(breakpoint, i) {
@@ -86,7 +87,8 @@
 				
 				mobile: breakpoints[0],
 				tablet: breakpoints[1],
-				desktop: breakpoints[2]
+				desktop: breakpoints[2],
+				large: breakpoints[3]
 			
 			};
 
@@ -271,14 +273,6 @@
 		 * depending on if enabled or disabled
 		 */
 		onResize: function(is) {
-			
-			// TODO: update application after we change the page layout
-			// // if we're responding to our own resize event,
-			// // ignore and reset flag
-			// if (this.published === true) {
-			// 	this.published = false;
-			// 	return;
-			// }
 
 			if (!this.isDisabled()) {
 
@@ -289,10 +283,6 @@
 				this.resetGrid();
 
 			}
-
-			// TODO: update application after we change the page layout
-			// this.published = true;
-			// this.events.publish('update');
 
 		}
 
