@@ -1729,6 +1729,7 @@
                 throw 'Target.js Error on Src component: "' + this.utils.stripBrackets(this.config.attributes.Src) + '" must be applied to an <img> or <div> element';
             }
             this.published = false;
+            this.isLoading = false;
             this.img = img;
             // TODO: only load when in view
             // this.inview = false;
@@ -1801,6 +1802,9 @@
             if (this.domEventHandlers.load) {
                 this.removeDomEventHandler("load");
             }
+            if (this.isLoading) {
+                this.isLoading = false;
+            }
             this.imageCache.add(this.loadingImg);
             this.showImage(this.loadingImg);
         },
@@ -1808,8 +1812,16 @@
 		 * add event handler to load image
 		 */
         load: function(src) {
+            var _this = this;
+            this.isLoading = true;
             this.loadingImg = src;
             this.addDomEventHandler("load", this.onLoad, this.img);
+            this.loadingFallback = setTimeout(function() {
+                if (_this.isLoading) {
+                    _this.onLoad();
+                    clearTimeout(_this.loadingFallback);
+                }
+            }, 5e3);
             this.img.src = src;
         },
         /**
@@ -1819,17 +1831,8 @@
 		 */
         onResize: function(is, w, h) {
             var _this = this;
-            // TODO: only load when in view
-            // this.calculateThreshold(h);
-            // if (this.threshold < h) {
-            // 	this.inview = true;
-            // 	this.queue.next();
-            // }
             Object.keys(this.srcs).forEach(function(layout) {
                 var src = _this.srcs[layout];
-                //
-                // TODO: damn, clean this up
-                // 
                 if (is[layout]() && src !== _this.currentSrc) {
                     if (!_this.imageCache.contains(src)) {
                         if (_this.NODE_NAME === "DIV") {

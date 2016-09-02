@@ -35,27 +35,48 @@
 	// because target will try to load it and wait for onload event
 	// but browser will not load cached images
 	var CACHE_NAME = 'targetJsImgsLoaded';
+	
 	var imageCache = {
+		
 		contains: function(item) {
+		
 			return this.images.indexOf(item) !== -1;
+	
 		},
+	
 		add: function(item) {
+	
 			if (!this.contains(item)) {
+	
 				this.images += item;
+	
 			}
 			
 			if (!target.utils.isIOS && localStorage) {
+	
 				localStorage[CACHE_NAME] = this.images;
+	
 			}
+	
 		},
+	
 		init: function() {
+	
 			if (!target.utils.isIOS && localStorage && localStorage[CACHE_NAME]) {
+	
 				this.images = localStorage[CACHE_NAME];
+	
 			} else {
+	
 				this.images = '';
+	
+
 			}
+	
 		}
+	
 	};
+	
 	imageCache.init();
 
 	var img = document.createElement('img');
@@ -73,6 +94,8 @@
 			}
 
 			this.published = false;
+
+			this.isLoading = false;
 
 			this.img = img;
 
@@ -192,6 +215,12 @@
 				this.removeDomEventHandler('load');
 			
 			}
+
+			if (this.isLoading) {
+
+				this.isLoading = false;
+
+			}
 			
 			this.imageCache.add(this.loadingImg);
 
@@ -204,9 +233,25 @@
 		 */
 		load: function(src) {
 
+			var _this = this;
+
+			this.isLoading = true;
+
 			this.loadingImg = src;
 
 			this.addDomEventHandler('load', this.onLoad, this.img);
+
+			this.loadingFallback = setTimeout(function() {
+
+				if (_this.isLoading) {
+
+					_this.onLoad();
+
+					clearTimeout(_this.loadingFallback);
+
+				}
+
+			}, 5000);
 
 			this.img.src = src;
 
@@ -221,24 +266,9 @@
 
 			var _this = this;
 
-			// TODO: only load when in view
-			// this.calculateThreshold(h);
-
-			// if (this.threshold < h) {
-
-			// 	this.inview = true;
-
-			// 	this.queue.next();
-
-			// }
-
 			Object.keys(this.srcs).forEach(function(layout) {
 
 				var src = _this.srcs[layout];
-
-				//
-				// TODO: damn, clean this up
-				// 
 
 				if (is[layout]() && src !== _this.currentSrc) {
 					
@@ -251,41 +281,10 @@
 						}
 
 						_this.load(src);
-
-						// TODO: only load when in view
-						// if (_this.inview) {
-
-						// 	_this.load(src);
-
-						// } else {
-
-						// 	_this.queue.push(function() {
-
-						// 		_this.load(src);
-							
-						// 	});
-							
-						// }
-
 					
 					} else {
 
 						_this.showImage(src);
-
-						// TODO: only load when in view
-						// if (_this.inview) {
-
-						// 	_this.showImage(src);
-
-						// } else {
-
-						// 	_this.queue.push(function() {
-
-						// 		_this.showImage(src);
-								
-						// 	});
-
-						// }
 
 					}
 
@@ -293,38 +292,7 @@
 
 			});
 
-		}//,
-
-		// TODO: only load when in view
-		// calculateThreshold: function(h) {
-
-		// 	var rect = this.el.getBoundingClientRect();
-
-		// 	this.threshold = rect.top - h;
-
-		// },
-
-		// TODO: only load when in view
-		// /**
-		//  * when the page scrolls,
-		//  * determine if this image is in view or not
-		//  * only load images once in view
-		//  */
-		// onScroll: function(top) {
-
-		// 	if (top >= this.threshold) {
-
-		// 		this.inview = true;
-
-		// 		this.queue.next();
-
-		// 	} else {
-
-		// 		this.inview = false;
-			
-		// 	}
-
-		// }
+		}
 
 	});
 
