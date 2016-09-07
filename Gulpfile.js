@@ -23,6 +23,7 @@ var jspaths = [
 
 var bundlepaths = [
 	pkg.pathToSrc + 'js/vendor/weakmap.js',
+	pkg.pathToSrc + 'js/vendor/classlist.js',
 	pkg.pathToSrc + 'js/vendor/MutationObserver.js',
 	pkg.pathToSrc + 'js/vendor/proto.es5.js',
 	pkg.pathToSrc + 'js/vendor/mediator.min.js',
