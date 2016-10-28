@@ -75,11 +75,14 @@ For example:
 
 ```html
 <script src="my-js-folder/weakmap.js"></script>
+<script src="my-js-folder/classlist.js"></script>
 <script src="my-js-folder/MutationObserver.js"></script>
 <script src="my-js-folder/mediator.min.js"></script>
 <script src="my-js-folder/proto.es5.js"></script>
 <script src="my-js-folder/target.js"></script>
 ```
+
+>_Note: the first 3 scripts are polyfills for browser support in IE 9_
 
 or:
 
