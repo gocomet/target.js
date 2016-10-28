@@ -40,6 +40,168 @@ if (typeof WeakMap === "undefined") {
     })();
 }
 
+/* 
+ * classList.js: Cross-browser full element.classList implementation.
+ * 2014-07-23
+ *
+ * By Eli Grey, http://eligrey.com
+ * Public Domain.
+ * NO WARRANTY EXPRESSED OR IMPLIED. USE AT YOUR OWN RISK.
+ */
+/*global self, document, DOMException */
+/*! @source http://purl.eligrey.com/github/classList.js/blob/master/classList.js*/
+if ("document" in self) {
+    // Full polyfill for browsers with no classList support
+    if (!("classList" in document.createElement("_"))) {
+        (function(view) {
+            "use strict";
+            if (!("Element" in view)) return;
+            var classListProp = "classList", protoProp = "prototype", elemCtrProto = view.Element[protoProp], objCtr = Object, strTrim = String[protoProp].trim || function() {
+                return this.replace(/^\s+|\s+$/g, "");
+            }, arrIndexOf = Array[protoProp].indexOf || function(item) {
+                var i = 0, len = this.length;
+                for (;i < len; i++) {
+                    if (i in this && this[i] === item) {
+                        return i;
+                    }
+                }
+                return -1;
+            }, DOMEx = function(type, message) {
+                this.name = type;
+                this.code = DOMException[type];
+                this.message = message;
+            }, checkTokenAndGetIndex = function(classList, token) {
+                if (token === "") {
+                    throw new DOMEx("SYNTAX_ERR", "An invalid or illegal string was specified");
+                }
+                if (/\s/.test(token)) {
+                    throw new DOMEx("INVALID_CHARACTER_ERR", "String contains an invalid character");
+                }
+                return arrIndexOf.call(classList, token);
+            }, ClassList = function(elem) {
+                var trimmedClasses = strTrim.call(elem.getAttribute("class") || ""), classes = trimmedClasses ? trimmedClasses.split(/\s+/) : [], i = 0, len = classes.length;
+                for (;i < len; i++) {
+                    this.push(classes[i]);
+                }
+                this._updateClassName = function() {
+                    elem.setAttribute("class", this.toString());
+                };
+            }, classListProto = ClassList[protoProp] = [], classListGetter = function() {
+                return new ClassList(this);
+            };
+            // Most DOMException implementations don't allow calling DOMException's toString()
+            // on non-DOMExceptions. Error's toString() is sufficient here.
+            DOMEx[protoProp] = Error[protoProp];
+            classListProto.item = function(i) {
+                return this[i] || null;
+            };
+            classListProto.contains = function(token) {
+                token += "";
+                return checkTokenAndGetIndex(this, token) !== -1;
+            };
+            classListProto.add = function() {
+                var tokens = arguments, i = 0, l = tokens.length, token, updated = false;
+                do {
+                    token = tokens[i] + "";
+                    if (checkTokenAndGetIndex(this, token) === -1) {
+                        this.push(token);
+                        updated = true;
+                    }
+                } while (++i < l);
+                if (updated) {
+                    this._updateClassName();
+                }
+            };
+            classListProto.remove = function() {
+                var tokens = arguments, i = 0, l = tokens.length, token, updated = false, index;
+                do {
+                    token = tokens[i] + "";
+                    index = checkTokenAndGetIndex(this, token);
+                    while (index !== -1) {
+                        this.splice(index, 1);
+                        updated = true;
+                        index = checkTokenAndGetIndex(this, token);
+                    }
+                } while (++i < l);
+                if (updated) {
+                    this._updateClassName();
+                }
+            };
+            classListProto.toggle = function(token, force) {
+                token += "";
+                var result = this.contains(token), method = result ? force !== true && "remove" : force !== false && "add";
+                if (method) {
+                    this[method](token);
+                }
+                if (force === true || force === false) {
+                    return force;
+                } else {
+                    return !result;
+                }
+            };
+            classListProto.toString = function() {
+                return this.join(" ");
+            };
+            if (objCtr.defineProperty) {
+                var classListPropDesc = {
+                    get: classListGetter,
+                    enumerable: true,
+                    configurable: true
+                };
+                try {
+                    objCtr.defineProperty(elemCtrProto, classListProp, classListPropDesc);
+                } catch (ex) {
+                    // IE 8 doesn't support enumerable:true
+                    if (ex.number === -2146823252) {
+                        classListPropDesc.enumerable = false;
+                        objCtr.defineProperty(elemCtrProto, classListProp, classListPropDesc);
+                    }
+                }
+            } else if (objCtr[protoProp].__defineGetter__) {
+                elemCtrProto.__defineGetter__(classListProp, classListGetter);
+            }
+        })(self);
+    } else {
+        // There is full or partial native classList support, so just check if we need
+        // to normalize the add/remove and toggle APIs.
+        (function() {
+            "use strict";
+            var testElement = document.createElement("_");
+            testElement.classList.add("c1", "c2");
+            // Polyfill for IE 10/11 and Firefox <26, where classList.add and
+            // classList.remove exist but support only one argument at a time.
+            if (!testElement.classList.contains("c2")) {
+                var createMethod = function(method) {
+                    var original = DOMTokenList.prototype[method];
+                    DOMTokenList.prototype[method] = function(token) {
+                        var i, len = arguments.length;
+                        for (i = 0; i < len; i++) {
+                            token = arguments[i];
+                            original.call(this, token);
+                        }
+                    };
+                };
+                createMethod("add");
+                createMethod("remove");
+            }
+            testElement.classList.toggle("c3", false);
+            // Polyfill for IE 10 and Firefox <24, where classList.toggle does not
+            // support the second argument.
+            if (testElement.classList.contains("c3")) {
+                var _toggle = DOMTokenList.prototype.toggle;
+                DOMTokenList.prototype.toggle = function(token, force) {
+                    if (1 in arguments && !this.contains(token) === !force) {
+                        return force;
+                    } else {
+                        return _toggle.call(this, token);
+                    }
+                };
+            }
+            testElement = null;
+        })();
+    }
+}
+
 /*
  * Copyright 2012 The Polymer Authors. All rights reserved.
  * Use of this source code is goverened by a BSD-style
@@ -719,14 +881,20 @@ if (typeof WeakMap === "undefined") {
             Scrollbox: "data-target-scrollbox",
             Grid: "data-target-grid",
             Src: "data-target-src",
+            Filetext: "data-target-filetext",
+            Accordion: "data-target-accordion",
+            Scroll: "data-target-scroll",
+            Height: "data-target-height",
             disable: "data-target-disable",
             max: "data-target-max",
             min: "data-target-min"
         },
         breakpoints: {
             tablet: 768,
-            desktop: 1025
+            desktop: 1025,
+            large: 1440
         },
+        observeDom: false,
         debounceDelay: 100
     };
 })(window.target = window.target || {});
@@ -866,8 +1034,48 @@ if (typeof WeakMap === "undefined") {
                     cb(prop, obj);
                 }
             }
-        }
+        },
+        render: function() {
+            if (window.requestAnimationFrame) {
+                return function(cb) {
+                    window.requestAnimationFrame(function() {
+                        cb();
+                    });
+                };
+            } else {
+                return function(cb) {
+                    cb();
+                };
+            }
+        }(),
+        isIOS: function(ua) {
+            return ua.match(/iphone/gi) || ua.match(/ipad/gi);
+        }(window.navigator.userAgent)
     };
+})(window.target = window.target || {});
+
+/**
+ * target.queue
+ *
+ * queue functionality can be added to UI components
+ */
+(function(target, undefined) {
+    "use strict";
+    target.Queue = window.Proto.extend({
+        init: function() {
+            this.items = [];
+        },
+        push: function(cb) {
+            this.items.push(cb);
+        },
+        next: function() {
+            var cb;
+            if (this.items.length) {
+                cb = this.items.shift();
+                cb();
+            }
+        }
+    });
 })(window.target = window.target || {});
 
 /**
@@ -879,8 +1087,12 @@ if (typeof WeakMap === "undefined") {
  */
 (function(target, undefined) {
     "use strict";
+    //
+    // TODO: add queue functionality
+    //
     target.UI = window.Proto.extend({
         init: function(el, _id, target, name) {
+            var _this = this;
             this.id = _id;
             this.componentType = name;
             // mixin shared target.js resources
@@ -897,7 +1109,9 @@ if (typeof WeakMap === "undefined") {
             // event handlers
             this.eventHandlers = {};
             this.addEventHandler("resize", this.setDisabled);
-            this.addEventHandler("attributes.mutation", this.handleAttMutation);
+            if (this.config.observeDom) {
+                this.addEventHandler("attributes.mutation", this.handleAttMutation);
+            }
             this.addEventHandler("show", this.onShow);
             this.addEventHandler("hide", this.onHide);
             // DOM event handlers
@@ -977,7 +1191,7 @@ if (typeof WeakMap === "undefined") {
                 this.disableLayouts = [];
             }
             // request layout from current window object
-            this.events.publish("update");
+            this.events.publish("update", this.id);
         },
         /**
 		 * on window.resize
@@ -1039,9 +1253,12 @@ if (typeof WeakMap === "undefined") {
 		 * could be this UI element, could be another target
 		 */
         show: function(el) {
+            var _this = this;
             if (!el.classList.contains(this.config.activeClass)) {
-                el.classList.add(this.config.activeClass);
-                this.events.publish("show", el);
+                this.utils.render(function() {
+                    el.classList.add(_this.config.activeClass);
+                    _this.events.publish("show", el);
+                });
             }
         },
         /**
@@ -1049,9 +1266,12 @@ if (typeof WeakMap === "undefined") {
 		 * could be this UI element, could be another target
 		 */
         hide: function(el) {
+            var _this = this;
             if (el.classList.contains(this.config.activeClass)) {
-                el.classList.remove(this.config.activeClass);
-                this.events.publish("hide", el);
+                this.utils.render(function() {
+                    el.classList.remove(_this.config.activeClass);
+                    _this.events.publish("hide", el);
+                });
             }
         },
         /**
@@ -1094,7 +1314,7 @@ if (typeof WeakMap === "undefined") {
             this.componentFactory = target.componentFactory;
             this.eventHandlers = {};
             // mixin public methods into global target object
-            [ "get", "on", "off", "show", "hide", "toggle" ].forEach(function(method) {
+            [ "get", "on", "off", "show", "hide", "toggle", "bind" ].forEach(function(method) {
                 target[method] = _this[method].bind(_this);
             });
         },
@@ -1135,7 +1355,7 @@ if (typeof WeakMap === "undefined") {
             el = this.normalize(el);
             component = this.componentFactory.find(el);
             if (!component) {
-                throw "Error at Target.API.get(): " + el.toString() + " is not a Target.js element.";
+                throw "Target.js Error at target.api.get(): " + el.toString() + " is not a Target.js element.";
             }
             return component;
         },
@@ -1266,6 +1486,19 @@ if (typeof WeakMap === "undefined") {
                 this.offElEvent(eventName, arg2, arg3);
             }
             return this;
+        },
+        /**
+		 * bind target to an element/document fragment
+		 *
+		 * search within the element
+		 * and initialize any components
+		 * declared on elements within
+		 *
+		 * useful for binding to elements after being rendered dynamically
+		 */
+        bind: function(el) {
+            el = this.normalize(el);
+            this.componentFactory.start(el);
         }
     });
 })(window.target = window.target || {});
@@ -1288,11 +1521,13 @@ if (typeof WeakMap === "undefined") {
             this.topId = 0;
             this.components = {};
             attsArray = Object.keys(this.config.attributes);
-            this.ignoreAtts = [ "disable", "min", "max" ];
-            this.componentClasses = attsArray.filter(function(val) {
-                return this.ignoreAtts.indexOf(val) === -1;
+            this.IGNORE_ATTS = [ "disable", "min", "max" ];
+            this.COMPONENT_CLASSES = attsArray.filter(function(val) {
+                return this.IGNORE_ATTS.indexOf(val) === -1;
             }, this);
-            this.events.subscribe("nodeadded.mutation", this.build, {}, this);
+            if (this.config.observeDom) {
+                this.events.subscribe("nodeadded.mutation", this.build, {}, this);
+            }
         },
         /**
 		 * create an element after a DOM mutation
@@ -1302,7 +1537,7 @@ if (typeof WeakMap === "undefined") {
             var Component;
             // don't initialise a component because of an att
             // we should ignore: (disable, min, max)
-            if (this.ignoreAtts.indexOf(name) !== -1) {
+            if (this.IGNORE_ATTS.indexOf(name) !== -1) {
                 return;
             }
             // if the component is already initialised
@@ -1320,11 +1555,19 @@ if (typeof WeakMap === "undefined") {
 		 * by name
 		 * for each Target element that currently exists
 		 * in DOM
+		 * if scope is used, only get elements contained within scope
 		 */
-        initComponent: function(name) {
+        initComponent: function(name, scope) {
             var _this = this;
             var Component = this.target[name];
-            this.utils.forEach.call(_this.utils.qsa("[" + _this.config.attributes[name] + "]"), function(el, i) {
+            var selector = "[" + _this.config.attributes[name] + "]";
+            var elList;
+            if (scope) {
+                elList = scope.querySelectorAll(selector);
+            } else {
+                elList = _this.utils.qsa(selector);
+            }
+            this.utils.forEach.call(elList, function(el, i) {
                 _this.topId++;
                 _this.components[_this.topId] = Component.create(el, _this.topId, _this.target, name);
             });
@@ -1365,10 +1608,10 @@ if (typeof WeakMap === "undefined") {
 		 * start function run manually
 		 * after object instantiation
 		 */
-        start: function() {
+        start: function(scope) {
             var _this = this;
-            this.componentClasses.forEach(function(name) {
-                _this.initComponent(name);
+            this.COMPONENT_CLASSES.forEach(function(name) {
+                _this.initComponent(name, scope);
             });
         }
     });
@@ -1488,17 +1731,30 @@ if (typeof WeakMap === "undefined") {
                 },
                 desktop: function() {
                     return _this.w >= _this.config.breakpoints.desktop;
+                },
+                large: function() {
+                    return _this.w >= _this.config.breakpoints.large;
                 }
             };
             window.addEventListener("resize", this.utils.debounce(function(e) {
                 _this.onResize();
             }, this.config.debounceDelay), false);
+            window.addEventListener("scroll", function(e) {
+                _this.onScroll();
+            });
+            // on browser load,
+            // run another update
+            // to ensure all our scrolling stuff is calculating correctly
+            // after images have been loaded
+            window.addEventListener("load", function() {
+                _this.onResize();
+            });
             // listen for when UI elements initialize or update
             // they will request layout data
             // pass to the via resize event
             this.currentLayout = "";
-            this.events.subscribe("update", function() {
-                _this.onResize();
+            this.events.subscribe("update", function(componentID) {
+                _this.update(componentID);
             });
         },
         /**
@@ -1514,25 +1770,124 @@ if (typeof WeakMap === "undefined") {
             return this.h;
         },
         /**
+		 * on window.scroll
+		 * get scroll top and pass on
+		 */
+        onScroll: function(e) {
+            this.events.publish("scroll", window.pageYOffset);
+        },
+        /**
 		 * on window.resize
 		 * update internal window properties
+		 * update application
+		 */
+        onResize: function() {
+            this.w = document.documentElement.clientWidth;
+            this.h = document.documentElement.clientHeight;
+            this.update();
+        },
+        /**
+		 * update
 		 * fire event for UI components to update themselves
 		 * pass "is" layout object for responsive changes
 		 */
-        onResize: function() {
+        update: function(componentID) {
             var newLayout = "";
-            this.w = document.documentElement.clientWidth;
-            this.h = document.documentElement.clientHeight;
-            this.events.publish("resize", this.is, this.width(), this.height());
+            if (!componentID) {
+                componentID = "";
+            }
             this.utils.forIn(this.is, function(layout, is) {
                 if (is[layout]()) {
                     newLayout = layout;
                 }
             });
+            this.currentLayout = newLayout;
+            this.events.publish("resize" + componentID, this.is, this.width(), this.height());
             if (newLayout !== this.currentLayout) {
                 this.events.publish(newLayout, this.width(), this.height());
             }
-            this.currentLayout = newLayout;
+        }
+    });
+})(window.target = window.target || {});
+
+/**
+ *
+ * target.Accordion
+ *
+ * UI consisting of group of toggles that work together
+ *
+ * usage:
+ *
+ * ```
+ * <div data-target-accordion=".js-toggle, .js-content">
+ *   <h2 class="js-toggle">Click to Toggle Content</h2>
+ *   <div class="js-content">Content here</div>
+ *   <h2 class="js-toggle">Click to Toggle Content</h2>
+ *   <div class="js-content">Content here</div>
+ * </div>
+ * ```
+ *
+ * TODO: proper event handling
+ * currently, only one reference for each event name is stored
+ * the accordion will require multiple event handlers of the same name to be stored
+ */
+(function(target, undefined) {
+    "use strict";
+    target.Accordion = target.UI.extend({
+        init: function(el, _id, target, name) {
+            var _this = this;
+            this._super.apply(this, arguments);
+            this.setArgs();
+            this.setToggles();
+            this.setContents();
+            if (this.toggles.length !== this.contents.length) {
+                throw "Target.js Error on Accordion component: component must contain an equal number of toggles and contents";
+            }
+            this.current = null;
+            this.utils.forEach.call(this.toggles, function(toggle, i) {
+                _this.addDomEventHandler("click", _this.toggle(toggle, i), toggle);
+            });
+        },
+        setArgs: function() {
+            var args = this.el.getAttribute(this.utils.stripBrackets(this.config.attributes.Accordion));
+            args = args.split(",");
+            this.args = args;
+            if (this.args.length !== 2) {
+                throw 'Target.js Error on Accordion component: the value of "' + this.utils.stripBrackets(this.config.attributes.Accordion) + '" must contain two comma-separated CSS selectors';
+            }
+            return this.args;
+        },
+        setToggles: function() {
+            this.toggles = this.el.querySelectorAll(this.args[0]);
+            return this.toggles;
+        },
+        setContents: function() {
+            this.contents = this.el.querySelectorAll(this.args[1]);
+            return this.contents;
+        },
+        toggle: function(toggle, i) {
+            return function(e) {
+                var _this = this;
+                if (this.isDisabled()) {
+                    return;
+                }
+                if (toggle.nodeType === "A") {
+                    e.preventDefault();
+                }
+                if (this.current === i) {
+                    this.current = null;
+                    this.hide(this.toggles[i]);
+                    this.hide(this.contents[i]);
+                } else {
+                    this.current = i;
+                    this.utils.forEach.call(this.contents, function(content, i) {
+                        _this.hide(_this.toggles[i]);
+                        _this.hide(content);
+                    });
+                    this.show(this.toggles[i]);
+                    this.show(this.contents[i]);
+                }
+            };
         }
     });
 })(window.target = window.target || {});
@@ -1596,8 +1951,14 @@ if (typeof WeakMap === "undefined") {
     "use strict";
     target.Decrement = target.UI.extend({
         init: function(el, _id, target, name) {
+            var _this = this;
             this._super.apply(this, arguments);
             this.targets = this.utils.qsa(this.el.getAttribute(this.utils.stripBrackets(this.config.attributes.Decrement)));
+            this.utils.forEach.call(this.targets, function(target) {
+                if (target.nodeName !== "INPUT") {
+                    throw 'Target.js Error on Decrement component: the selector in "' + _this.utils.stripBrackets(_this.config.attributes.Decrement) + '" must target an <input> element';
+                }
+            });
             this.setLimits();
             this.addDomEventHandler("click", this.onClick);
         },
@@ -1647,6 +2008,48 @@ if (typeof WeakMap === "undefined") {
 })(window.target = window.target || {});
 
 /**
+ * target.Filetext
+ *
+ * gives you the text of a file input
+ * allows you to style file inputs any way you like
+ *
+ * usage:
+ *
+ * `<input type="file" data-target-filetext="#my-filetext-element" />`
+ */
+(function(target, undefined) {
+    "use strict";
+    target.Filetext = target.UI.extend({
+        init: function(el, _id, target, name) {
+            var inputType;
+            this._super.apply(this, arguments);
+            if (this.NODE_NAME !== "INPUT" || this.el.getAttribute("type") !== "file") {
+                throw 'Error on Target.Filetext component: "' + this.utils.stripBrackets(this.config.attributes.Filetext) + '" must be applied to an <input> element with \'type="file"\'';
+            }
+            this.targets = this.utils.qsa(this.el.getAttribute(this.utils.stripBrackets(this.config.attributes.Filetext)));
+            this.addDomEventHandler("change", this.onChange);
+        },
+        /**
+		 * when the file input is changed
+		 * get filename
+		 * and set as text of target element
+		 */
+        onChange: function(e) {
+            var _this = this;
+            var filename = this.el.files && this.el.files[0];
+            if (!this.isDisabled()) {
+                if (this.el.files.length) {
+                    filename = this.el.files[0].name;
+                    this.utils.forEach.call(this.targets, function(target) {
+                        target.innerHTML = filename;
+                    });
+                }
+            }
+        }
+    });
+})(window.target = window.target || {});
+
+/**
  * target.Grid
  *
  * gives element the same height as the other items on its row
@@ -1673,10 +2076,12 @@ if (typeof WeakMap === "undefined") {
             this._super.apply(this, arguments);
             this.TEXT_NODE = 3;
             this.COMMENT_NODE = 8;
+            this.published = false;
             this.setChildren();
             this.setBreakpoints();
             this.addEventHandler("resize", this.onResize);
-            this.events.publish("update");
+            this.addEventHandler("resize" + this.id, this.onResize);
+            this.events.publish("update", this.id);
             // since the grid usually contains images,
             // let's update the layout on window.load as well
             this.addDomEventHandler("load", this.onLoad, window);
@@ -1684,14 +2089,14 @@ if (typeof WeakMap === "undefined") {
         /**
 		 * set breakpoints
 		 * this will determine how many items are in a row
-		 * at various breakpoints (mobile, tablet, desktop)
+		 * at various breakpoints (mobile, tablet, desktop, large)
 		 * also, if the breakpoint is "disable", instead of an int,
 		 * disable at that breakpoint
 		 */
         setBreakpoints: function() {
             var breakpoints = this.el.getAttribute(this.config.attributes.Grid).split(" ");
             var disableLayouts = [];
-            var layouts = [ "mobile", "tablet", "desktop" ];
+            var layouts = [ "mobile", "tablet", "desktop", "large" ];
             breakpoints.forEach(function(breakpoint, i) {
                 if (breakpoint === "disable") {
                     disableLayouts.push(layouts[i]);
@@ -1703,7 +2108,8 @@ if (typeof WeakMap === "undefined") {
             this.breakpoints = {
                 mobile: breakpoints[0],
                 tablet: breakpoints[1],
-                desktop: breakpoints[2]
+                desktop: breakpoints[2],
+                large: breakpoints[3]
             };
             if (disableLayouts.length) {
                 this.el.setAttribute(this.config.attributes.disable, disableLayouts.join(" "));
@@ -1711,7 +2117,7 @@ if (typeof WeakMap === "undefined") {
         },
         onLoad: function(e) {
             this.removeDomEventHandler("load");
-            this.events.publish("update");
+            this.events.publish("update", this.id);
         },
         /**
 		 * find child nodes of element
@@ -1829,6 +2235,70 @@ if (typeof WeakMap === "undefined") {
 })(window.target = window.target || {});
 
 /**
+ * target.Height
+ *
+ * sets the height of an element programmatically
+ *
+ * defaults to window height (cross-browser)
+ *
+ * updates on window.resize
+ *
+ * usage:
+ * `<div data-target-height="window">Is always window height</div>`
+ *
+ * or
+ *
+ * `<div data-target-height="-100">is always window height - 100px</div>`
+ */
+(function(target, undefined) {
+    "use strict";
+    target.Height = target.UI.extend({
+        init: function(el, _id, target, name) {
+            this._super.apply(this, arguments);
+            this.initHeight();
+            this.addEventHandler("resize", this.setHeight);
+            this.addEventHandler("resize" + this.id, this.setHeight);
+            this.events.publish("update", this.id);
+        },
+        /**
+		 * create initial height settings
+		 * based on attributes
+		 */
+        initHeight: function() {
+            this.height = this.el.getAttribute(this.config.attributes.Height);
+            if (!this.height || this.height === "window") {
+                this.height = 0;
+            } else {
+                this.height = parseInt(this.height, 10);
+            }
+        },
+        /**
+		 * get the user-declared max height threshold
+		 */
+        getHeight: function() {
+            if (this.height > 0) {
+                return this.height;
+            } else {
+                return this.windowHeight + this.height;
+            }
+        },
+        /**
+		 * on window.resize
+		 * if enabled, set element height
+		 * else reset height
+		 */
+        setHeight: function(is, w, h) {
+            this.windowHeight = h;
+            if (this.isDisabled()) {
+                this.el.style.height = "";
+            } else {
+                this.el.style.height = this.getHeight() + "px";
+            }
+        }
+    });
+})(window.target = window.target || {});
+
+/**
  * target.Hide
  *
  * UI element that hides another element onclick
@@ -1877,8 +2347,14 @@ if (typeof WeakMap === "undefined") {
     "use strict";
     target.Increment = target.UI.extend({
         init: function(el, _id, target, name) {
+            var _this = this;
             this._super.apply(this, arguments);
             this.targets = this.utils.qsa(this.el.getAttribute(this.utils.stripBrackets(this.config.attributes.Increment)));
+            this.utils.forEach.call(this.targets, function(target) {
+                if (target.nodeName !== "INPUT") {
+                    throw 'Target.js Error on Increment component: the selector in "' + _this.utils.stripBrackets(_this.config.attributes.Increment) + '" must target an <input> element';
+                }
+            });
             this.setLimits();
             this.addDomEventHandler("click", this.onClick);
         },
@@ -1928,6 +2404,68 @@ if (typeof WeakMap === "undefined") {
 })(window.target = window.target || {});
 
 /**
+ * target.Scroll
+ *
+ * show an element when it scrolls into view
+ *
+ * calculate an offset on the element by the attribute value, if it exists
+ */
+(function(target, undefined) {
+    "use strict";
+    var PAGE_FACTOR = .2;
+    target.Scroll = target.UI.extend({
+        init: function(el, _id, target, name) {
+            this._super.apply(this, arguments);
+            this.getOffset();
+            this.addEventHandler("resize", this.onResize);
+            this.addEventHandler("resize" + this.id, this.onResize);
+            this.addEventHandler("scroll", this.onScroll);
+            this.events.publish("update", this.id);
+        },
+        getOffset: function() {
+            this.offset = this.el.getAttribute(this.utils.stripBrackets(this.config.attributes.Scroll));
+            if (this.offset) {
+                this.offset = parseInt(this.offset, 10);
+            } else {
+                this.offset = 0;
+            }
+            this.top = 0;
+        },
+        calculateThreshold: function(h) {
+            var rect = this.el.getBoundingClientRect();
+            this.threshold = rect.top + this.top - h * (1 - PAGE_FACTOR);
+        },
+        onScroll: function(top) {
+            this.top = top;
+            // if we're past threshold,
+            // or at bottom of document
+            // show el
+            if (this.top >= this.threshold + this.offset || this.top >= this.docH - this.windowH) {
+                this.show(this.el);
+            } else {
+                this.hide(this.el);
+            }
+        },
+        getDocHeight: function() {
+            var body = document.body;
+            var html = document.documentElement;
+            var height = Math.max(body.scrollHeight, body.offsetHeight, html.clientHeight, html.scrollHeight, html.offsetHeight);
+            return height;
+        },
+        /**
+		 * on window.resize
+		 * calculate or recalculate
+		 * when our element should be shown or hidden
+		 */
+        onResize: function(is, w, h) {
+            this.docH = this.getDocHeight();
+            this.windowH = h;
+            this.calculateThreshold(h);
+        }
+    });
+})(window.target = window.target || {});
+
+/**
  * target.Scrollbox
  *
  * creates a box that automatically gets scrollbars
@@ -1953,7 +2491,8 @@ if (typeof WeakMap === "undefined") {
                 this.children = this.el.childNodes;
             }
             this.addEventHandler("resize", this.onResize);
-            this.events.publish("update");
+            this.addEventHandler("resize" + this.id, this.onResize);
+            this.events.publish("update", this.id);
         },
         /**
 		 * get the user-declared max height threshold
@@ -2064,6 +2603,7 @@ if (typeof WeakMap === "undefined") {
  * the first is for mobile
  * the second is for tablet
  * the third is for desktop
+ * the fourth is for large
  *
  * `<img src="my_blang_img.gif" data-target-src="/mobile-img.jpg /tablet-img.jpg /desktop-img.jpg">`
  *
@@ -2077,23 +2617,55 @@ if (typeof WeakMap === "undefined") {
  */
 (function(target, undefined) {
     "use strict";
+    // utility object for tracking which images are already cached
+    // track localStorage to prevent bug
+    // in which an image stored in cache
+    // would not be loaded
+    // because target will try to load it and wait for onload event
+    // but browser will not load cached images
+    var CACHE_NAME = "targetJsImgsLoaded";
+    var imageCache = {
+        contains: function(item) {
+            return this.images.indexOf(item) !== -1;
+        },
+        add: function(item) {
+            if (!this.contains(item)) {
+                this.images += item;
+            }
+            if (!target.utils.isIOS && localStorage) {
+                localStorage[CACHE_NAME] = this.images;
+            }
+        },
+        init: function() {
+            if (!target.utils.isIOS && localStorage && localStorage[CACHE_NAME]) {
+                this.images = localStorage[CACHE_NAME];
+            } else {
+                this.images = "";
+            }
+        }
+    };
+    imageCache.init();
+    var img = document.createElement("img");
     target.Src = target.UI.extend({
         init: function(el, _id, target, name) {
             this._super.apply(this, arguments);
-            this.srcs = {
-                mobile: "",
-                tablet: "",
-                desktop: ""
-            };
+            if (this.NODE_NAME !== "IMG" && this.NODE_NAME !== "DIV") {
+                throw 'Target.js Error on Src component: "' + this.utils.stripBrackets(this.config.attributes.Src) + '" must be applied to an <img> or <div> element';
+            }
+            this.published = false;
+            this.isLoading = false;
+            this.img = img;
+            // TODO: only load when in view
+            // this.inview = false;
+            // this.queue = target.Queue.create();
             this.getSrcs();
-            this.loaded = {
-                mobile: false,
-                tablet: false,
-                desktop: false
-            };
+            this.imageCache = imageCache;
             this.addEventHandler("resize", this.onResize);
+            this.addEventHandler("resize" + this.id, this.onResize);
+            // TODO: only load when in view
+            //this.addEventHandler('scroll', this.onScroll);
             // request an update from target.Window
-            this.events.publish("update");
+            this.events.publish("update", this.id);
         },
         /**
 		 * get list of image urls from element attribute
@@ -2109,6 +2681,13 @@ if (typeof WeakMap === "undefined") {
             var srcAtt = this.el.getAttribute(this.config.attributes.Src);
             var srcs = srcAtt.split(" ");
             var latestSrc = null;
+            this.srcs = {
+                mobile: "",
+                tablet: "",
+                desktop: "",
+                large: ""
+            };
+            this.currentSrc = "";
             Object.keys(this.srcs).forEach(function(layout, i) {
                 var src = srcs[i];
                 if (src) {
@@ -2119,36 +2698,74 @@ if (typeof WeakMap === "undefined") {
                 _this.srcs[layout] = latestSrc;
             });
         },
+        showImage: function(src) {
+            var _this = this;
+            this.currentSrc = src;
+            if (this.NODE_NAME === "IMG") {
+                this.el.src = src;
+            } else if (this.NODE_NAME === "DIV") {
+                this.el.style.backgroundImage = 'url("' + src + '")';
+                // wait for next repaint frame _after_ new src is painted
+                // TODO:
+                // this will still have animation problems
+                // if we're transitioning the hide method,
+                // then the transition will still be happening
+                // when the show method is applied
+                this.utils.render(function() {
+                    _this.show(_this.el);
+                });
+            }
+        },
         /**
-		 * once image is loaded,
-		 * request a layout update
-		 * and remove event handler
+		 * once image is loaded
+		 * remove event handler
+		 * if this is an <img>
+		 * in a grid, request a layout update
 		 */
         onLoad: function() {
-            this.removeDomEventHandler("load");
-            this.events.publish("update");
+            if (this.domEventHandlers.load) {
+                this.removeDomEventHandler("load");
+            }
+            if (this.isLoading) {
+                this.isLoading = false;
+            }
+            this.imageCache.add(this.loadingImg);
+            this.showImage(this.loadingImg);
         },
         /**
 		 * add event handler to load image
 		 */
-        load: function(img) {
-            this.addDomEventHandler("load", this.onLoad, this.el);
+        load: function(src) {
+            var _this = this;
+            this.isLoading = true;
+            this.loadingImg = src;
+            this.addDomEventHandler("load", this.onLoad, this.img);
+            this.loadingFallback = setTimeout(function() {
+                if (_this.isLoading) {
+                    _this.onLoad();
+                    clearTimeout(_this.loadingFallback);
+                }
+            }, 5e3);
+            this.img.src = src;
         },
         /**
 		 * when the window is resized,
 		 * check which layout we're currently at
 		 * and load the appropriate image
 		 */
-        onResize: function(is) {
+        onResize: function(is, w, h) {
             var _this = this;
             Object.keys(this.srcs).forEach(function(layout) {
-                var img = _this.srcs[layout];
-                if (is[layout]()) {
-                    if (!_this.loaded[layout]) {
-                        _this.loaded[layout] = img;
-                        _this.load(img);
+                var src = _this.srcs[layout];
+                if (is[layout]() && src !== _this.currentSrc) {
+                    if (!_this.imageCache.contains(src)) {
+                        if (_this.NODE_NAME === "DIV") {
+                            _this.hide(_this.el);
+                        }
+                        _this.load(src);
+                    } else {
+                        _this.showImage(src);
                     }
-                    _this.el.src = img;
                 }
             });
         }
@@ -2224,7 +2841,10 @@ if (typeof WeakMap === "undefined") {
         // init services
         target.events = new window.Mediator();
         target.window = target.Window.create(target);
-        target.domObserver = target.DomObserver.create(target);
+        // for performance's sake, only observe dom if required
+        if (target.config.observeDom) {
+            target.domObserver = target.DomObserver.create(target);
+        }
         target.componentFactory = target.ComponentFactory.create(target);
         target.api = target.API.create(target);
         // init components
