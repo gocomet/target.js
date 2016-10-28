@@ -1858,13 +1858,11 @@ if ("document" in self) {
             return this.args;
         },
         setToggles: function() {
-            // TODO: scope selection to parent element
-            this.toggles = this.utils.qsa(this.args[0]);
+            this.toggles = this.el.querySelectorAll(this.args[0]);
             return this.toggles;
         },
         setContents: function() {
-            // TODO: scope selection to parent element
-            this.contents = this.utils.qsa(this.args[1]);
+            this.contents = this.el.querySelectorAll(this.args[1]);
             return this.contents;
         },
         toggle: function(toggle, i) {
