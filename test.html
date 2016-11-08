@@ -262,56 +262,56 @@
     style="color: black; display: block; height: 500px">
   </div>
   -->
-
-  <script src="dist/proto.es5.js"></script>
+  <script src="dist/classlist.js"></script>
+  <script src="dist/weakmap.js"></script>
   <script src="dist/MutationObserver.js"></script>
   <script src="dist/mediator.min.js"></script>
-  <script src="dist/target.js"></script>
+  <script src="dist/app.js"></script>
   <!--
   <script src="dist/target.bundled.js"></script>
   -->
   <script>
-    jQuery(function() {
-      target.init();
+    // jQuery(function() {
+    //   target.init();
 
-      function disableToggler(el) {
-        var blueToggler = target.get('#toggle-blue');
-        window.console && console.log('min on', el);
-        blueToggler.disable();
-      }
+    //   function disableToggler(el) {
+    //     var blueToggler = target.get('#toggle-blue');
+    //     window.console && console.log('min on', el);
+    //     blueToggler.disable();
+    //   }
 
-      target.on('min', 'input', disableToggler);
-      setTimeout(function() {
-        target.off('min', 'input', disableToggler);
-      }, 10000);
+    //   target.on('min', 'input', disableToggler);
+    //   setTimeout(function() {
+    //     target.off('min', 'input', disableToggler);
+    //   }, 10000);
 
-      target.show('#green-div');
+    //   target.show('#green-div');
 
-      target.on('tablet', function(w, h) {
-        window.console && console.log('tablet layout: ' + w + ' x ' + h);
-      });
+    //   target.on('tablet', function(w, h) {
+    //     window.console && console.log('tablet layout: ' + w + ' x ' + h);
+    //   });
 
-      // setTimeout(function() {
-      //   $('<button id="bind-text-button" data-target-show="#blue-div">hey</button>')
-      //     .appendTo('#bind-test');
+    //   // setTimeout(function() {
+    //   //   $('<button id="bind-text-button" data-target-show="#blue-div">hey</button>')
+    //   //     .appendTo('#bind-test');
 
-      //   target.bind('#bind-test');
-      // }, 500);
+    //   //   target.bind('#bind-test');
+    //   // }, 500);
 
 
-      // function resizeCallback(is, w, h) {
-      //   window.console && console.log('resize');
-      //   window.console && console.log(w + ' x ' + h);
-      //   window.console && console.log('is mobile: ' + is['mobile']());
-      //   window.console && console.log('is tablet: ' + is['tablet']());
-      //   window.console && console.log('is desktop: ' + is['desktop']());
-      // }
+    //   // function resizeCallback(is, w, h) {
+    //   //   window.console && console.log('resize');
+    //   //   window.console && console.log(w + ' x ' + h);
+    //   //   window.console && console.log('is mobile: ' + is['mobile']());
+    //   //   window.console && console.log('is tablet: ' + is['tablet']());
+    //   //   window.console && console.log('is desktop: ' + is['desktop']());
+    //   // }
 
-      // target.on('resize', resizeCallback);
-      // setTimeout(function() {
-      //   target.off('resize', resizeCallback);
-      // }, 10000);
-    })
+    //   // target.on('resize', resizeCallback);
+    //   // setTimeout(function() {
+    //   //   target.off('resize', resizeCallback);
+    //   // }, 10000);
+    // })
   </script>
 </body>
 </html>

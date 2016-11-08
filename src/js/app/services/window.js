@@ -1,179 +1,163 @@
 /**
- * target.window
+ * Window
  *
  * store the window dimensions
  * as well as the current breakpoint
- * fires events on window.resize
+ * fire events on window.resize
  * allowing UI to update and enable/disable themselves
  * according to breakpoints
  */
-(function(target, undefined) {
+import utils from '../core/utils';
+import Layout from './layout';
+
+class Window {
+	constructor(events, breakpoints, debounceDelay) {
 	
-	'use strict';
+		let _this = this;
+
+		this.events = events;
+		
+		this.updateDims();
+		
+		// "is" object
+		// allows UI components to update their functionality
+		// based on layout
+		// usage:
+		// if (is['mobile']())
+		// or, dynamically, for example:
+		// for (layout in this.layouts)
+		//   if (is[layout]())
+		this.is = new Layout(this, breakpoints);
+
+		window.addEventListener('resize', utils.debounce(e => {
 	
-	target.Window = window.Proto.extend({
+			_this.onResize();
+	
+		}, debounceDelay), false);
+
+
+		window.addEventListener('scroll', e => {
+
+			_this.onScroll();
+
+		});
+
+		// on browser load,
+		// run another update
+		// to ensure all our scrolling stuff is calculating correctly
+		// after images have been loaded
+		window.addEventListener('load', () => {
+
+			_this.onResize();
+
+		});
+
+		// listen for when UI elements initialize or update
+		// they will request layout data
+		// pass to the via resize event
+		this.events.subscribe('update', componentID => {
+
+			_this.update(componentID);
+	
+		});
+	
+		this.update();
+
+	}
+
+	/**
+	 * updateDims
+	 * update internal dimensions with
+	 * cross-browser window width and height
+	 */
+	updateDims() {
 		
-		init: function(target) {
-		
-			var _this = this;
+		this._w = document.documentElement.clientWidth;
+		this._h = document.documentElement.clientHeight;
+	
+	}
 
-			this.w = document.documentElement.clientWidth;
-			this.h = document.documentElement.clientHeight;
+	/**
+	 * width
+	 */
+	get width() {
+	
+		return this._w;
+	
+	}
 
-			this.events = target.events;
-			this.config = target.config;
-			this.utils = target.utils;
+	/**
+	 * height
+	 */
+	get height() {
+	
+		return this._h;
+	
+	}
+	
+	/**
+	 * onScroll
+	 * on window.scroll
+	 * get scroll top and pass on
+	 */
+	onScroll(e) {
 
-			// "is" object
-			// allows UI components to update their functionality
-			// based on layout
-			// usage:
-			// if (is['mobile']())
-			// or, dynamically, for example:
-			// for (layout in this.layouts)
-			//   if (is[layout]())
-			this.is = {
-		
-				mobile: function() {
-		
-					return _this.w < _this.config.breakpoints.tablet;
-		
-				},
-		
-				tablet: function() {
-		
-					return _this.w >= _this.config.breakpoints.tablet && _this.w < _this.config.breakpoints.desktop;
-		
-				},
-		
-				desktop: function() {
-		
-					return _this.w >= _this.config.breakpoints.desktop;
-		
-				},
+		this.events.publish('scroll', window.pageYOffset);
 
-				large: function() {
+	}
+	
+	/**
+	 * onResize
+	 * on window.resize
+	 * update internal window properties
+	 * update application
+	 */
+	onResize() {
 
-					return _this.w >= _this.config.breakpoints.large;
+		this.updateDims();
+		this.update();
 
-				}
-		
-			};
+	}
+	
+	/**
+	 * update
+	 * fire event for UI components to update themselves
+	 * pass "is" layout object for responsive changes
+	 */
+	update(componentID) {
 
-			window.addEventListener('resize', this.utils.debounce(function(e) {
-		
-				_this.onResize();
-		
-			}, this.config.debounceDelay), false);
+		var newLayout = '';
 
+		if (!componentID) {
 
-			window.addEventListener('scroll', function(e) {
-
-				_this.onScroll();
-
-			});
-
-			// on browser load,
-			// run another update
-			// to ensure all our scrolling stuff is calculating correctly
-			// after images have been loaded
-			window.addEventListener('load', function() {
-
-				_this.onResize();
-
-			});
-
-			// listen for when UI elements initialize or update
-			// they will request layout data
-			// pass to the via resize event
-			this.currentLayout = '';
-			this.events.subscribe('update', function(componentID) {
-
-				_this.update(componentID);
-		
-			});
-		
-		},
-		
-		/**
-		 * get width
-		 */
-		width: function() {
-		
-			return this.w;
-		
-		},
-		
-		/**
-		 * get height
-		 */
-		height: function() {
-		
-			return this.h;
-		
-		},
-		
-		/**
-		 * on window.scroll
-		 * get scroll top and pass on
-		 */
-		onScroll: function(e) {
-
-			this.events.publish('scroll', window.pageYOffset);
-
-		},
-
-		/**
-		 * on window.resize
-		 * update internal window properties
-		 * update application
-		 */
-		onResize: function() {
-
-			this.w = document.documentElement.clientWidth;
-			this.h = document.documentElement.clientHeight;		
-
-			this.update();
-
-		},
-
-		/**
-		 * update
-		 * fire event for UI components to update themselves
-		 * pass "is" layout object for responsive changes
-		 */
-		update: function(componentID) {
-
-			var newLayout = '';
-
-			if (!componentID) {
-
-				componentID = '';
-
-			}
-
-			this.utils.forIn(this.is, function(layout, is) {
-
-				if (is[layout]()) {
-			
-					newLayout = layout;
-			
-				}
-			
-			});
-
-			this.currentLayout = newLayout;
-			
-			this.events.publish('resize' + componentID, this.is, this.width(), this.height());
-
-			if (newLayout !== this.currentLayout) {
-
-				this.events.publish(newLayout, this.width(), this.height());
-			
-			}
+			componentID = '';
 
 		}
-	
-	});
 
-})(window.target = window.target || {});
+		// couldn't get for..of to work here
+		// kept getting "this.is[Symbol.iterator] is not a function"
+		utils.forIn(this.is, (layout, is) => {
+
+			if (is[layout]) {
+		
+				newLayout = layout;
+		
+			}
+		
+		});
+
+		this.currentLayout = newLayout;
+		
+		this.events.publish('resize' + componentID, this.is, this.width, this.height);
+
+		if (newLayout !== this.currentLayout) {
+
+			this.events.publish(newLayout, this.width, this.height);
+		
+		}
+
+	}
+	
+}
+
+module.exports = Window;
