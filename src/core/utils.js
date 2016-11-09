@@ -10,34 +10,29 @@ let utils = {
 	 */
 	mixin: (origObj, newObj) => {
 	
-		var k;
-		var origV;
-		var newV;
-		var kk;
-	
-		for (k in newObj) {
+		for (let k in newObj) {
 	
 			if (newObj.hasOwnProperty(k)) {
-	
-				newV = newObj[k];
-				origV = origObj[k];
+
+				let newV = newObj[k];
+				let origV = origObj[k];
 
 				origObj[k] = newObj[k];
 
 				if (typeof origV === 'object' && typeof newV === 'object') {
 
-					for (kk in newV) {
+					for (let kk in newV) {
 
-						if (newV.hasOwnProperty(kk)) {
+						if (newV.hasOwnProperty(k)) {
 
 							origV[kk] = newV[kk];
 
 						}
 
 					}
-
+		
 				}
-	
+
 			}
 	
 		}
@@ -47,14 +42,14 @@ let utils = {
 	/**
 	 * use array.prototype.forEach on nodelists
 	 */ 
-	forEach: window.Array.prototype.forEach,
+	forEach: Array.prototype.forEach,
 
 	/**
 	 * convenience method for finding an element in a node list
 	 */
 	contains: (list, el) => {
 
-		var i = window.Array.prototype.indexOf.apply(list, [el]);
+		var i = Array.prototype.indexOf.apply(list, [el]);
 		var doesContain;
 
 		if (i === -1) {
@@ -110,17 +105,13 @@ let utils = {
 	/**
 	 * map values of object to array
 	 */
-	values: (obj) => {
+	values: obj => {
 	
-		var array = [];
+		let array = [];
 	
-		for (var prop in obj) {
+		for (let val of obj) {
 	
-			if (obj.hasOwnProperty(prop)) {
-	
-				array.push(obj[prop]);
-	
-			}
+			array.push(val);
 	
 		}
 	
@@ -143,18 +134,18 @@ let utils = {
 	 * for getting the actual attribute
 	 * using element.getAttribute()
 	 */
-	stripBrackets: (att) => {
+	stripBrackets: att => {
 	
-		return att.replace('[', '').replace(']', '');
+		att.replace('[', '').replace(']', '');
 	
 	},
 	
 	/**
 	 * capitalize first letter of string
 	 */
-	capitalize: (str) => {
+	capitalize: str => {
 	
-		return str.charAt(0).toUpperCase() + str.slice(1);
+		str.charAt(0).toUpperCase() + str.slice(1);
 	
 	},
 
@@ -235,8 +226,11 @@ let utils = {
 	})(window.requestAnimationFrame),
 
 	isIOS: (ua => {
+		
 		return ua.match(/iphone/gi) || ua.match(/ipad/gi);
+	
 	})(window.navigator.userAgent)
+
 };
 
 module.exports = utils;

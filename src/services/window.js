@@ -12,8 +12,6 @@ import Layout from './layout';
 
 class Window {
 	constructor(events, breakpoints, debounceDelay) {
-	
-		let _this = this;
 
 		this.events = events;
 		
@@ -23,22 +21,22 @@ class Window {
 		// allows UI components to update their functionality
 		// based on layout
 		// usage:
-		// if (is['mobile']())
+		// if (is.mobile)
 		// or, dynamically, for example:
 		// for (layout in this.layouts)
-		//   if (is[layout]())
+		//   if (is[layout])
 		this.is = new Layout(this, breakpoints);
 
 		window.addEventListener('resize', utils.debounce(e => {
 	
-			_this.onResize();
+			this.onResize();
 	
 		}, debounceDelay), false);
 
 
 		window.addEventListener('scroll', e => {
 
-			_this.onScroll();
+			this.onScroll();
 
 		});
 
@@ -48,7 +46,7 @@ class Window {
 		// after images have been loaded
 		window.addEventListener('load', () => {
 
-			_this.onResize();
+			this.onResize();
 
 		});
 
@@ -57,7 +55,7 @@ class Window {
 		// pass to the via resize event
 		this.events.subscribe('update', componentID => {
 
-			_this.update(componentID);
+			this.update(componentID);
 	
 		});
 	

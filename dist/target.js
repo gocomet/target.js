@@ -46,7 +46,17 @@
 
 	'use strict';
 
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }(); /**
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      * main.js
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      * 
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      * define public Target object
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      *
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      * create .init method for initialization by user
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      *
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      * usage:
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      * `target.init(settings);`
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      */
+
 
 	var _mediatorJs = __webpack_require__(1);
 
@@ -63,6 +73,10 @@
 	var _window = __webpack_require__(7);
 
 	var _window2 = _interopRequireDefault(_window);
+
+	var _componentfactory = __webpack_require__(9);
+
+	var _componentfactory2 = _interopRequireDefault(_componentfactory);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -85,18 +99,14 @@
 				//init services
 				this.window = new _window2.default(this.events, this.config.breakpoints, this.config.debounceDelay);
 
-				// for performance's sake, only observe dom if required
-				// if (target.config.observeDom) {
-
-				// 	target.domObserver = target.DomObserver.create(target);
-
+				// for performance's sake, don't observe dom by default
+				// if (this.config.observeDom) {
+				// 	this.domObserver = new DomObserver(this);
 				// }
 
-				// target.componentFactory = target.ComponentFactory.create(target);
-				// target.api = target.API.create(target);
+				this.componentFactory = new _componentfactory2.default(this.events, this.config);
 
-				// // init components
-				// target.componentFactory.start();
+				// this.api = new API(this);
 			}
 		}]);
 
@@ -1196,25 +1206,20 @@
 	  */
 		mixin: function mixin(origObj, newObj) {
 
-			var k;
-			var origV;
-			var newV;
-			var kk;
-
-			for (k in newObj) {
+			for (var k in newObj) {
 
 				if (newObj.hasOwnProperty(k)) {
 
-					newV = newObj[k];
-					origV = origObj[k];
+					var newV = newObj[k];
+					var origV = origObj[k];
 
 					origObj[k] = newObj[k];
 
 					if ((typeof origV === 'undefined' ? 'undefined' : _typeof(origV)) === 'object' && (typeof newV === 'undefined' ? 'undefined' : _typeof(newV)) === 'object') {
 
-						for (kk in newV) {
+						for (var kk in newV) {
 
-							if (newV.hasOwnProperty(kk)) {
+							if (newV.hasOwnProperty(k)) {
 
 								origV[kk] = newV[kk];
 							}
@@ -1227,14 +1232,14 @@
 		/**
 	  * use array.prototype.forEach on nodelists
 	  */
-		forEach: window.Array.prototype.forEach,
+		forEach: Array.prototype.forEach,
 
 		/**
 	  * convenience method for finding an element in a node list
 	  */
 		contains: function contains(list, el) {
 
-			var i = window.Array.prototype.indexOf.apply(list, [el]);
+			var i = Array.prototype.indexOf.apply(list, [el]);
 			var doesContain;
 
 			if (i === -1) {
@@ -1288,11 +1293,29 @@
 
 			var array = [];
 
-			for (var prop in obj) {
+			var _iteratorNormalCompletion = true;
+			var _didIteratorError = false;
+			var _iteratorError = undefined;
 
-				if (obj.hasOwnProperty(prop)) {
+			try {
+				for (var _iterator = obj[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+					var val = _step.value;
 
-					array.push(obj[prop]);
+
+					array.push(val);
+				}
+			} catch (err) {
+				_didIteratorError = true;
+				_iteratorError = err;
+			} finally {
+				try {
+					if (!_iteratorNormalCompletion && _iterator.return) {
+						_iterator.return();
+					}
+				} finally {
+					if (_didIteratorError) {
+						throw _iteratorError;
+					}
 				}
 			}
 
@@ -1316,7 +1339,7 @@
 	  */
 		stripBrackets: function stripBrackets(att) {
 
-			return att.replace('[', '').replace(']', '');
+			att.replace('[', '').replace(']', '');
 		},
 
 		/**
@@ -1324,7 +1347,7 @@
 	  */
 		capitalize: function capitalize(str) {
 
-			return str.charAt(0).toUpperCase() + str.slice(1);
+			str.charAt(0).toUpperCase() + str.slice(1);
 		},
 
 		/**
@@ -1392,8 +1415,10 @@
 		}(window.requestAnimationFrame),
 
 		isIOS: function (ua) {
+
 			return ua.match(/iphone/gi) || ua.match(/ipad/gi);
 		}(window.navigator.userAgent)
+
 	};
 
 	module.exports = utils;
@@ -1422,15 +1447,15 @@
 			Show: 'data-target-show',
 			Hide: 'data-target-hide',
 			Clickoff: 'data-target-clickoff',
-			Increment: 'data-target-increment',
-			Decrement: 'data-target-decrement',
-			Scrollbox: 'data-target-scrollbox',
-			Grid: 'data-target-grid',
-			Src: 'data-target-src',
-			Filetext: 'data-target-filetext',
-			Accordion: 'data-target-accordion',
-			Scroll: 'data-target-scroll',
-			Height: 'data-target-height',
+			// Increment: 'data-target-increment',
+			// Decrement: 'data-target-decrement',
+			// Scrollbox: 'data-target-scrollbox',
+			// Grid: 'data-target-grid',
+			// Src: 'data-target-src',
+			// Filetext: 'data-target-filetext',
+			// Accordion: 'data-target-accordion',
+			// Scroll: 'data-target-scroll',
+			// Height: 'data-target-height',
 			disable: 'data-target-disable',
 			max: 'data-target-max',
 			min: 'data-target-min'
@@ -1482,9 +1507,9 @@
 
 	var Window = function () {
 		function Window(events, breakpoints, debounceDelay) {
-			_classCallCheck(this, Window);
-
 			var _this = this;
+
+			_classCallCheck(this, Window);
 
 			this.events = events;
 
@@ -1494,10 +1519,10 @@
 			// allows UI components to update their functionality
 			// based on layout
 			// usage:
-			// if (is['mobile']())
+			// if (is.mobile)
 			// or, dynamically, for example:
 			// for (layout in this.layouts)
-			//   if (is[layout]())
+			//   if (is[layout])
 			this.is = new _layout2.default(this, breakpoints);
 
 			window.addEventListener('resize', _utils2.default.debounce(function (e) {
@@ -1693,6 +1718,925 @@
 	}();
 
 	module.exports = Layout;
+
+/***/ },
+/* 9 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }(); /**
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      * ComponentFactory
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      *
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      * generates and manages components
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      */
+
+
+	var _utils = __webpack_require__(5);
+
+	var _utils2 = _interopRequireDefault(_utils);
+
+	var _show = __webpack_require__(10);
+
+	var _show2 = _interopRequireDefault(_show);
+
+	var _hide = __webpack_require__(12);
+
+	var _hide2 = _interopRequireDefault(_hide);
+
+	var _toggle = __webpack_require__(13);
+
+	var _toggle2 = _interopRequireDefault(_toggle);
+
+	var _clickoff = __webpack_require__(14);
+
+	var _clickoff2 = _interopRequireDefault(_clickoff);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	var COMPONENTS = {
+		Show: _show2.default,
+		Hide: _hide2.default,
+		Toggle: _toggle2.default,
+		Clickoff: _clickoff2.default
+	};
+
+	var ComponentFactory = function () {
+		function ComponentFactory(events, config) {
+			var _this = this;
+
+			_classCallCheck(this, ComponentFactory);
+
+			this.events = events;
+			this.config = config;
+
+			this.topId = 0;
+			this.components = {};
+
+			this.IGNORE_ATTS = ['disable', 'min', 'max'];
+			this.COMPONENT_CLASSES = Object.keys(this.config.attributes).filter(function (val) {
+				return !_utils2.default.contains(_this.IGNORE_ATTS, val);
+			});
+
+			if (this.config.observeDom) {
+
+				this.events.subscribe('nodeadded.mutation', this.build, {}, this);
+			}
+
+			this.start();
+		}
+
+		/**
+	  * create an element after a DOM mutation
+	  * need to check if this element is already created
+	  */
+
+
+		_createClass(ComponentFactory, [{
+			key: 'build',
+			value: function build(name, el) {
+
+				// don't initialise a component because of an att
+				// we should ignore: (disable, min, max)
+				if (this.IGNORE_ATTS.indexOf(name) !== -1) {
+
+					return;
+				}
+
+				// if the component is already initialised
+				// on the element,
+				// exit
+				if (el.getAttribute('data-target-' + name + '-id') !== null) {
+
+					return;
+				}
+
+				this.topId++;
+
+				this.components[this.topId] = new COMPONENTS[name](el, this.topId, name, this.events, this.config);
+			}
+
+			/**
+	   * initComponent
+	   * by name
+	   * for each Target element that currently exists
+	   * in DOM
+	   * if scope is used, only get elements contained within scope
+	   */
+
+		}, {
+			key: 'initComponent',
+			value: function initComponent(name, scope) {
+				var _this2 = this;
+
+				var selector = '[' + this.config.attributes[name] + ']';
+				var elList;
+
+				if (scope) {
+
+					elList = scope.querySelectorAll(selector);
+				} else {
+
+					elList = _utils2.default.qsa(selector);
+				}
+
+				_utils2.default.forEach.call(elList, function (el, i) {
+
+					_this2.topId++;
+
+					_this2.components[_this2.topId] = new COMPONENTS[name](el, _this2.topId, name, _this2.events, _this2.config);
+				});
+			}
+
+			/**
+	   * find component by DOM element
+	   * used by Target.API
+	   */
+
+		}, {
+			key: 'find',
+			value: function find(el) {
+
+				var component = false;
+
+				_utils2.default.forIn(this.components, function (id, components) {
+
+					if (components[id].el === el) {
+
+						component = components[id];
+					}
+				});
+
+				return component;
+			}
+
+			/**
+	   * get component by ID
+	   * used by target.API
+	   */
+
+		}, {
+			key: 'get',
+			value: function get(id) {
+
+				return this.components[id];
+			}
+
+			/**
+	   * component for one-time use
+	   * used by API
+	   */
+
+		}, {
+			key: 'use',
+			value: function use(name, targets) {
+
+				var el = document.createElement('div');
+
+				var Component = COMPONENTS[name];
+
+				var component = new Component(el, 'tmp', name, this.events, this.config);
+
+				component.targets = targets;
+
+				return component;
+			}
+
+			/**
+	   * start function run manually
+	   * after object instantiation
+	   */
+
+		}, {
+			key: 'start',
+			value: function start(scope) {
+				var _this3 = this;
+
+				this.COMPONENT_CLASSES.forEach(function (name) {
+					return _this3.initComponent(name, scope);
+				});
+			}
+		}]);
+
+		return ComponentFactory;
+	}();
+
+	module.exports = ComponentFactory;
+
+/***/ },
+/* 10 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _utils = __webpack_require__(5);
+
+	var _utils2 = _interopRequireDefault(_utils);
+
+	var _ui = __webpack_require__(11);
+
+	var _ui2 = _interopRequireDefault(_ui);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; } /**
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * Show
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                *
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * UI element that shows another element onclick
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                *
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * usage:
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                *
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * `<a data-target-show="#show-this">Click to show #show-this</a>`
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                */
+
+
+	var Show = function (_UI) {
+		_inherits(Show, _UI);
+
+		function Show(el, _id, name, events, config) {
+			_classCallCheck(this, Show);
+
+			var _this = _possibleConstructorReturn(this, (Show.__proto__ || Object.getPrototypeOf(Show)).call(this, el, _id, name, events, config));
+
+			_this.targets = _utils2.default.qsa(_this.el.getAttribute(_this.config.attributes.Show));
+
+			_this.addDomEventHandler('click', _this.onClick);
+
+			_this.update();
+
+			return _this;
+		}
+
+		/**
+	  * when the element is clicked,
+	  * show the target element
+	  * (using css)
+	  */
+
+
+		_createClass(Show, [{
+			key: 'onClick',
+			value: function onClick(e) {
+				var _this2 = this;
+
+				if (this.isDisabled) {
+
+					return;
+				}
+
+				if (this.NODE_NAME === 'A') {
+
+					e.preventDefault();
+				}
+
+				_utils2.default.forEach.call(this.targets, function (target) {
+					return _this2.show(target);
+				});
+			}
+		}]);
+
+		return Show;
+	}(_ui2.default);
+
+	module.exports = Show;
+
+/***/ },
+/* 11 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }(); /**
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      * target.UI
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      *
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      * Base class component object
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      *
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      * define default functionality that all UI components will share
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      */
+
+
+	var _utils = __webpack_require__(5);
+
+	var _utils2 = _interopRequireDefault(_utils);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	var UI = function () {
+		function UI(el, _id, name, events, config) {
+			_classCallCheck(this, UI);
+
+			var _this = this;
+
+			this.id = _id;
+			this.componentType = name;
+
+			this.config = config;
+			this.events = events;
+
+			// element variables
+			this.el = el;
+			this.NODE_NAME = el.nodeName;
+			this.disabled = false;
+
+			// bind id
+			this.el.setAttribute('data-target-' + name + '-id', this.id);
+
+			// event handlers
+			this.eventHandlers = {};
+			this.addEventHandler('resize', this.setDisabled);
+
+			if (this.config.observeDom) {
+
+				this.addEventHandler('attributes.mutation', this.handleAttMutation);
+			}
+
+			this.addEventHandler('show', this.onShow);
+			this.addEventHandler('hide', this.onHide);
+
+			// DOM event handlers
+			this.domEventHandlers = {};
+
+			// initialize
+			this.updateAtts();
+		}
+
+		/**
+	  * add an event handler to a UI element
+	  * using Target's internal event buss
+	  * scope callback to this object
+	  * store for removal by this.destroy
+	  */
+
+
+		_createClass(UI, [{
+			key: 'addEventHandler',
+			value: function addEventHandler(eventName, cb) {
+
+				this.eventHandlers[eventName] = this.events.subscribe(eventName, cb, {}, this);
+			}
+
+			/**
+	   * attach a callback to a DOM event handler
+	   * scope the callback to this object
+	   * store for removal by this.destroy
+	   */
+
+		}, {
+			key: 'addDomEventHandler',
+			value: function addDomEventHandler(eventName, cb, el) {
+				var _this2 = this;
+
+				var attachedCb = function attachedCb(e) {
+
+					cb.apply(_this2, [e]);
+				};
+
+				if (!el) {
+
+					el = this.el;
+				}
+
+				this.domEventHandlers[eventName] = {
+
+					cb: attachedCb,
+
+					el: el
+
+				};
+
+				el.addEventListener(eventName, attachedCb, false);
+			}
+		}, {
+			key: 'removeEventHandler',
+			value: function removeEventHandler(handler) {
+
+				this.events.remove(handler, this.eventHandlers[handler].id);
+			}
+		}, {
+			key: 'removeDomEventHandler',
+			value: function removeDomEventHandler(domHandler) {
+
+				this.domEventHandlers[domHandler] = this.domEventHandlers[domHandler].el.removeEventListener(domHandler, this.domEventHandlers[domHandler].cb);
+			}
+
+			/**
+	   * remove all events used by internal pub/sub
+	   * remove all dom events
+	   */
+
+		}, {
+			key: 'destroy',
+			value: function destroy() {
+				var _this3 = this;
+
+				_utils2.default.forIn(this.eventHandlers, function (handler) {
+					return _this3.removeEventHandler(handler);
+				});
+				_utils2.default.forIn(this.domEventHandlers, function (domHandler) {
+					return _this3.removeEventHandler(domHandler);
+				});
+			}
+
+			/**
+	   * when attributes are changed in the DOM
+	   * the DOM observer watches and will run this callback
+	   * ensure our element has been modified
+	   * if so, update the component's properties
+	   * based on the new attribute values
+	   */
+
+		}, {
+			key: 'handleAttMutation',
+			value: function handleAttMutation(target) {
+
+				if (target === this.el) {
+
+					this.updateAtts();
+				}
+			}
+
+			/**
+	   * request layout update from Window service
+	   */
+
+		}, {
+			key: 'update',
+			value: function update() {
+
+				this.events.publish('update', this.id);
+			}
+
+			/**
+	   * get attributes on element
+	   * set internal properties based on attributes
+	   * these properties are used by other methods
+	   */
+
+		}, {
+			key: 'updateAtts',
+			value: function updateAtts() {
+
+				this.disableLayouts = this.el.getAttribute(this.config.attributes.disable);
+
+				if (this.disableLayouts) {
+
+					this.disableLayouts = this.disableLayouts.split(' ');
+				} else {
+
+					this.disableLayouts = [];
+				}
+
+				this.update();
+			}
+
+			/**
+	   * on window.resize
+	   * determine whether or not a component should be disabled
+	   * if so, disable it
+	   * if not, enable it
+	   */
+
+		}, {
+			key: 'setDisabled',
+			value: function setDisabled(is) {
+
+				var disable = false;
+
+				for (var i = 0, len = this.disableLayouts.length; i < len; i++) {
+
+					var layout = this.disableLayouts[i];
+
+					if (is[layout] && !this.overrideLayouts) {
+
+						disable = true;
+						this.disable(true);
+						break;
+					}
+				}
+
+				if (!disable && !this.overrideLayouts) {
+
+					this.enable(true);
+				}
+			}
+
+			/**
+	   * get "disabled" property
+	   */
+
+		}, {
+			key: 'disable',
+
+
+			/**
+	   * set "disabled" property to true
+	   * deactivates element
+	   * when called via api, no arg passed
+	   * therefore override
+	   * so that windoe resizing doesn't
+	   * override enabled/disabled state
+	   * when set via api
+	   */
+			value: function disable(doNotOverride) {
+
+				this.overrideLayouts = !doNotOverride;
+
+				this.disabled = true;
+
+				return this;
+			}
+
+			/**
+	   * set "disabled" property to false
+	   * activates element
+	   * when called via api, no arg passed
+	   * therefore override
+	   * so that windoe resizing doesn't
+	   * override enabled/disabled state
+	   * when set via api
+	   */
+
+		}, {
+			key: 'enable',
+			value: function enable(doNotOverride) {
+
+				this.overrideLayouts = !doNotOverride;
+
+				this.disabled = false;
+
+				return this;
+			}
+
+			/**
+	   * show an element using css
+	   * could be this UI element, could be another target
+	   */
+
+		}, {
+			key: 'show',
+			value: function show(el) {
+				var _this4 = this;
+
+				if (!el.classList.contains(this.config.activeClass)) {
+
+					_utils2.default.render(function () {
+
+						el.classList.add(_this4.config.activeClass);
+
+						_this4.events.publish('show', el);
+					});
+				}
+			}
+
+			/**
+	   * hide an element using css
+	   * could be this UI element, could be another target
+	   */
+
+		}, {
+			key: 'hide',
+			value: function hide(el) {
+				var _this5 = this;
+
+				if (el.classList.contains(this.config.activeClass)) {
+
+					_utils2.default.render(function () {
+
+						el.classList.remove(_this5.config.activeClass);
+
+						_this5.events.publish('hide', el);
+					});
+				}
+			}
+
+			/**
+	   * when a target element is shown,
+	   * update this element's state
+	   */
+
+		}, {
+			key: 'onShow',
+			value: function onShow(el) {
+
+				// some UI elements don't have targets
+				if (this.targets && _utils2.default.contains(this.targets, el)) {
+
+					this.show(this.el);
+				}
+			}
+
+			/**
+	   * when a target element is shown,
+	   * update this element's state
+	   */
+
+		}, {
+			key: 'onHide',
+			value: function onHide(el) {
+
+				// some UI elements don't have targets
+				if (this.targets && _utils2.default.contains(this.targets, el)) {
+
+					this.hide(this.el);
+				}
+			}
+		}, {
+			key: 'isDisabled',
+			get: function get() {
+
+				return this.disabled;
+			}
+		}]);
+
+		return UI;
+	}();
+
+	module.exports = UI;
+
+/***/ },
+/* 12 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _utils = __webpack_require__(5);
+
+	var _utils2 = _interopRequireDefault(_utils);
+
+	var _ui = __webpack_require__(11);
+
+	var _ui2 = _interopRequireDefault(_ui);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; } /**
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * target.Hide
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                *
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * UI element that hides another element onclick
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                *
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * usage:
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                *
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * `<a data-target-hide="#my-target">Click to hide #my-target</a>`
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                */
+
+	var Hide = function (_UI) {
+		_inherits(Hide, _UI);
+
+		function Hide(el, _id, name, events, config) {
+			_classCallCheck(this, Hide);
+
+			var _this = _possibleConstructorReturn(this, (Hide.__proto__ || Object.getPrototypeOf(Hide)).call(this, el, _id, name, events, config));
+
+			_this.targets = _utils2.default.qsa(_this.el.getAttribute(_this.config.attributes.Hide));
+
+			_this.addDomEventHandler('click', _this.onClick);
+
+			return _this;
+		}
+
+		/**
+	  * when the element is clicked,
+	  * hide the target element
+	  * (using css)
+	  */
+
+
+		_createClass(Hide, [{
+			key: 'onClick',
+			value: function onClick(e) {
+				var _this2 = this;
+
+				if (this.isDisabled) {
+
+					return;
+				}
+
+				if (this.NODE_NAME === 'A') {
+
+					e.preventDefault();
+				}
+
+				_utils2.default.forEach.call(this.targets, function (target) {
+					return _this2.hide(target);
+				});
+			}
+		}]);
+
+		return Hide;
+	}(_ui2.default);
+
+	module.exports = Hide;
+
+/***/ },
+/* 13 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _utils = __webpack_require__(5);
+
+	var _utils2 = _interopRequireDefault(_utils);
+
+	var _ui = __webpack_require__(11);
+
+	var _ui2 = _interopRequireDefault(_ui);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; } /**
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                *
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * target.Toggle
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                *
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * UI element that shows/hides another element on click
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                *
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * usage:
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                *
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * `<a data-target-toggle="#my-target">Click to toggle #my-target</a>`
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                *
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * TODO: add support for checkbox inputs
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * if element.type === checkbox
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                *  bind to onchange event instead of onclick
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                *
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                */
+
+
+	var Toggle = function (_UI) {
+		_inherits(Toggle, _UI);
+
+		function Toggle(el, _id, name, events, config) {
+			_classCallCheck(this, Toggle);
+
+			var _this = _possibleConstructorReturn(this, (Toggle.__proto__ || Object.getPrototypeOf(Toggle)).call(this, el, _id, name, events, config));
+
+			_this.targets = _utils2.default.qsa(_this.el.getAttribute(_this.config.attributes.Toggle));
+
+			_this.addDomEventHandler('click', _this.onClick);
+
+			return _this;
+		}
+
+		/**
+	  * when the element is clicked
+	  * toggle the target element's visibility
+	  */
+
+
+		_createClass(Toggle, [{
+			key: 'onClick',
+			value: function onClick(e) {
+				var _this2 = this;
+
+				if (this.isDisabled) {
+
+					return;
+				}
+
+				if (this.NODE_NAME === 'A') {
+
+					e.preventDefault();
+				}
+
+				_utils2.default.forEach.call(this.targets, function (target) {
+					return _this2.toggle(target);
+				});
+			}
+
+			/**
+	   * if the target is shown, hide it
+	   * if the target is hidden, show it
+	   * all using css
+	   * also toggle state of toggle button itself
+	   */
+
+		}, {
+			key: 'toggle',
+			value: function toggle(el) {
+
+				if (!el.classList.contains(this.config.activeClass)) {
+
+					this.show(el);
+				} else {
+
+					this.hide(el);
+				}
+			}
+		}]);
+
+		return Toggle;
+	}(_ui2.default);
+
+	module.exports = Toggle;
+
+/***/ },
+/* 14 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _utils = __webpack_require__(5);
+
+	var _utils2 = _interopRequireDefault(_utils);
+
+	var _ui = __webpack_require__(11);
+
+	var _ui2 = _interopRequireDefault(_ui);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; } /**
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * target.Clickoff
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                *
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * close an element by clicking away from it
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                *
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * usage:
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                *
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * `<a data-target-clickoff>Click away from this to close</a>`
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                */
+
+
+	var Clickoff = function (_UI) {
+		_inherits(Clickoff, _UI);
+
+		function Clickoff(el, _id, name, events, config) {
+			_classCallCheck(this, Clickoff);
+
+			var _this = _possibleConstructorReturn(this, (Clickoff.__proto__ || Object.getPrototypeOf(Clickoff)).call(this, el, _id, name, events, config));
+
+			_this.addDomEventHandler('click', _this.onClick, document);
+
+			return _this;
+		}
+
+		/**
+	  * when the user clicks anywhere in the document
+	  * determine if the click came from outside this element
+	  * if so, close this element
+	  */
+
+
+		_createClass(Clickoff, [{
+			key: 'onClick',
+			value: function onClick(e) {
+
+				var hide = true;
+
+				// return if disabled
+				// or if element already hidden
+				if (this.isDisabled || !this.el.classList.contains(this.config.activeClass)) {
+
+					return true;
+				}
+
+				// check event source
+				// check if source is or is contained within clickoff element
+				// also be sure to not conflict with other targets
+				var showAtt = e.srcElement.getAttribute(this.config.attributes.Show);
+				var toggleAtt = e.srcElement.getAttribute(this.config.attributes.Toggle);
+
+				if (e.srcElement === this.el || _utils2.default.isDescendant(this.el, e.srcElement) || showAtt === '#' + this.el.id || showAtt === '.' + this.el.className || toggleAtt === '#' + this.el.id || toggleAtt === '.' + this.el.className) {
+					hide = false;
+				}
+
+				// if so, close element
+				if (hide && this.el.classList.contains(this.config.activeClass)) {
+
+					this.hide(this.el);
+				}
+			}
+		}]);
+
+		return Clickoff;
+	}(_ui2.default);
+
+	module.exports = Clickoff;
 
 /***/ }
 /******/ ]);

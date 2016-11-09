@@ -3,15 +3,15 @@
  */
 module.exports = {
   context: __dirname,
-  entry: './src/js/main.js',
+  entry: './src/main.js',
   output: {
     path: __dirname + '/dist',
-    filename: 'app.js'
+    filename: 'target.js'
   },
   module: {
     loaders: [{
       test: /\.js$/,
-      include: /src\/js/,
+      include: /src/,
       exclude: __dirname + '/node_modules',
       loader: 'babel-loader',
       query: {
