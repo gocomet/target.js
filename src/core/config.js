@@ -22,7 +22,7 @@ module.exports = {
 		// Grid: 'data-target-grid',
 		// Src: 'data-target-src',
 		// Filetext: 'data-target-filetext',
-		// Accordion: 'data-target-accordion',
+		Accordion: 'data-target-accordion',
 		// Scroll: 'data-target-scroll',
 		// Height: 'data-target-height',
 		disable: 'data-target-disable',

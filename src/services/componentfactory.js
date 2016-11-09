@@ -8,12 +8,14 @@ import Show from '../components/show';
 import Hide from '../components/hide';
 import Toggle from '../components/toggle';
 import Clickoff from '../components/clickoff';
+import Accordion from '../components/accordion';
 
 const COMPONENTS = {
 	Show,
 	Hide,
 	Toggle,
-	Clickoff
+	Clickoff,
+	Accordion
 };	
 
 class ComponentFactory {

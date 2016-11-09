@@ -1453,7 +1453,7 @@
 			// Grid: 'data-target-grid',
 			// Src: 'data-target-src',
 			// Filetext: 'data-target-filetext',
-			// Accordion: 'data-target-accordion',
+			Accordion: 'data-target-accordion',
 			// Scroll: 'data-target-scroll',
 			// Height: 'data-target-height',
 			disable: 'data-target-disable',
@@ -1752,6 +1752,10 @@
 
 	var _clickoff2 = _interopRequireDefault(_clickoff);
 
+	var _accordion = __webpack_require__(15);
+
+	var _accordion2 = _interopRequireDefault(_accordion);
+
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -1760,7 +1764,8 @@
 		Show: _show2.default,
 		Hide: _hide2.default,
 		Toggle: _toggle2.default,
-		Clickoff: _clickoff2.default
+		Clickoff: _clickoff2.default,
+		Accordion: _accordion2.default
 	};
 
 	var ComponentFactory = function () {
@@ -2637,6 +2642,158 @@
 	}(_ui2.default);
 
 	module.exports = Clickoff;
+
+/***/ },
+/* 15 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _utils = __webpack_require__(5);
+
+	var _utils2 = _interopRequireDefault(_utils);
+
+	var _ui = __webpack_require__(11);
+
+	var _ui2 = _interopRequireDefault(_ui);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; } /**
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                *
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * target.Accordion
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                *
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * UI consisting of group of toggles that work together
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                *
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * usage:
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                *
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * ```
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * <div data-target-accordion=".js-toggle, .js-content">
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                *   <h2 class="js-toggle">Click to Toggle Content</h2>
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                *   <div class="js-content">Content here</div>
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                *   <h2 class="js-toggle">Click to Toggle Content</h2>
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                *   <div class="js-content">Content here</div>
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * </div>
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * ```
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                *
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * TODO: proper event handling
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * currently, only one reference for each event name is stored
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * the accordion will require multiple event handlers of the same name to be stored
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                */
+
+
+	var Accordion = function (_UI) {
+		_inherits(Accordion, _UI);
+
+		function Accordion(el, _id, name, events, config) {
+			_classCallCheck(this, Accordion);
+
+			var _this = _possibleConstructorReturn(this, (Accordion.__proto__ || Object.getPrototypeOf(Accordion)).call(this, el, _id, name, events, config));
+
+			_this.setArgs();
+
+			_this.setToggles();
+
+			_this.setContents();
+
+			if (_this.toggles.length !== _this.contents.length) {
+
+				throw 'Target.js Error on Accordion component: component must contain an equal number of toggles and contents';
+			}
+
+			_this.current = null;
+
+			_utils2.default.forEach.call(_this.toggles, function (toggle, i) {
+
+				_this.addDomEventHandler('click', _this.toggle(toggle, i), toggle);
+			});
+
+			return _this;
+		}
+
+		_createClass(Accordion, [{
+			key: 'setArgs',
+			value: function setArgs() {
+
+				var args = this.el.getAttribute(this.config.attributes.Accordion);
+
+				args = args.split(',');
+
+				this.args = args;
+
+				if (this.args.length !== 2) {
+
+					throw 'Target.js Error on Accordion component: the value of "' + this.utils.stripBrackets(this.config.attributes.Accordion) + '" must contain two comma-separated CSS selectors';
+				}
+
+				return this.args;
+			}
+		}, {
+			key: 'setToggles',
+			value: function setToggles() {
+
+				this.toggles = this.el.querySelectorAll(this.args[0]);
+
+				return this.toggles;
+			}
+		}, {
+			key: 'setContents',
+			value: function setContents() {
+
+				this.contents = this.el.querySelectorAll(this.args[1]);
+
+				return this.contents;
+			}
+		}, {
+			key: 'toggle',
+			value: function toggle(_toggle, i) {
+				var _this2 = this;
+
+				return function (e) {
+
+					if (_this2.isDisabled) {
+
+						return;
+					}
+
+					if (_toggle.nodeType === 'A') {
+
+						e.preventDefault();
+					}
+
+					if (_this2.current === i) {
+
+						_this2.current = null;
+
+						_this2.hide(_this2.toggles[i]);
+						_this2.hide(_this2.contents[i]);
+					} else {
+
+						_this2.current = i;
+
+						_utils2.default.forEach.call(_this2.contents, function (content, i) {
+
+							_this2.hide(_this2.toggles[i]);
+							_this2.hide(content);
+						});
+
+						_this2.show(_this2.toggles[i]);
+						_this2.show(_this2.contents[i]);
+					}
+				};
+			}
+		}]);
+
+		return Accordion;
+	}(_ui2.default);
+
+	module.exports = Accordion;
 
 /***/ }
 /******/ ]);

@@ -19,118 +19,114 @@
  * currently, only one reference for each event name is stored
  * the accordion will require multiple event handlers of the same name to be stored
  */
-(function(target, undefined) {
-	
-	'use strict';
+import utils from '../core/utils';
+import UI from '../base/ui';
 
-	target.Accordion = target.UI.extend({
-	
-		init: function(el, _id, target, name) {
+class Accordion extends UI {
 
-			var _this = this;
+	constructor(el, _id, name, events, config) {
 
-			this._super.apply(this, arguments);
-			
-			this.setArgs();
+		super(el, _id, name, events, config);
 
-			this.setToggles();
+		this.setArgs();
 
-			this.setContents();
+		this.setToggles();
 
-			if (this.toggles.length !== this.contents.length) {
+		this.setContents();
 
-				throw 'Target.js Error on Accordion component: component must contain an equal number of toggles and contents';
+		if (this.toggles.length !== this.contents.length) {
 
-			}
-
-			this.current = null;
-
-			this.utils.forEach.call(this.toggles, function(toggle, i) {
-
-				_this.addDomEventHandler('click', _this.toggle(toggle, i), toggle);
-
-			});
-
-		},
-
-		setArgs: function() {
-			
-			var args = this.el.getAttribute(this.utils.stripBrackets(this.config.attributes.Accordion));
-			
-			args = args.split(',');
-			
-			this.args = args;
-
-			if (this.args.length !== 2) {
-
-				throw 'Target.js Error on Accordion component: the value of "' + this.utils.stripBrackets(this.config.attributes.Accordion) + '" must contain two comma-separated CSS selectors';
-
-			}
-
-			return this.args;
-		},
-
-		setToggles: function() {
-
-			this.toggles = this.el.querySelectorAll(this.args[0]);
-
-			return this.toggles;
-		
-		},
-
-		setContents: function() {
-
-			this.contents = this.el.querySelectorAll(this.args[1]);
-
-			return this.contents;
-
-		},
-
-		toggle: function(toggle, i) {
-
-			return function(e) {
-
-				var _this = this;
-
-				if (this.isDisabled()) {
-
-					return;
-
-				}
-
-				if (toggle.nodeType === 'A') {
-
-					e.preventDefault();
-
-				}
-
-				if (this.current === i) {
-
-					this.current = null;
-					
-					this.hide(this.toggles[i]);
-					this.hide(this.contents[i]);
-
-				} else {
-
-					this.current = i;
-					
-					this.utils.forEach.call(this.contents, function(content, i) {
-
-						_this.hide(_this.toggles[i]);
-						_this.hide(content);
-
-					});
-
-					this.show(this.toggles[i]);
-					this.show(this.contents[i]);
-				
-				}
-
-			};
+			throw 'Target.js Error on Accordion component: component must contain an equal number of toggles and contents';
 
 		}
 
-	});
+		this.current = null;
 
-})(window.target = window.target || {});
+		utils.forEach.call(this.toggles, (toggle, i) => {
+
+			this.addDomEventHandler('click', this.toggle(toggle, i), toggle);
+
+		});
+
+	}
+
+	setArgs() {
+		
+		var args = this.el.getAttribute(this.config.attributes.Accordion);
+		
+		args = args.split(',');
+		
+		this.args = args;
+
+		if (this.args.length !== 2) {
+
+			throw 'Target.js Error on Accordion component: the value of "' + this.utils.stripBrackets(this.config.attributes.Accordion) + '" must contain two comma-separated CSS selectors';
+
+		}
+
+		return this.args;
+
+	}
+
+	setToggles() {
+
+		this.toggles = this.el.querySelectorAll(this.args[0]);
+
+		return this.toggles;
+	
+	}
+
+	setContents() {
+
+		this.contents = this.el.querySelectorAll(this.args[1]);
+
+		return this.contents;
+
+	}
+
+	toggle(toggle, i) {
+
+		return e => {
+
+			if (this.isDisabled) {
+
+				return;
+
+			}
+
+			if (toggle.nodeType === 'A') {
+
+				e.preventDefault();
+
+			}
+
+			if (this.current === i) {
+
+				this.current = null;
+				
+				this.hide(this.toggles[i]);
+				this.hide(this.contents[i]);
+
+			} else {
+
+				this.current = i;
+				
+				utils.forEach.call(this.contents, (content, i) => {
+
+					this.hide(this.toggles[i]);
+					this.hide(content);
+
+				});
+
+				this.show(this.toggles[i]);
+				this.show(this.contents[i]);
+			
+			}
+
+		};
+
+	}
+
+}
+
+module.exports = Accordion;
