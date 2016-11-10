@@ -24,8 +24,6 @@ class Show extends UI {
 
 		this.addDomEventHandler('click', this.onClick);
 
-		this.update();
-
 	}
 
 	/**

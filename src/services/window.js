@@ -11,10 +11,13 @@ import utils from '../core/utils';
 import Layout from './layout';
 
 class Window {
+	
 	constructor(events, breakpoints, debounceDelay) {
 
 		this.events = events;
-		
+		this.body = document.body;
+		this.html = document.documentElement;
+
 		this.updateDims();
 		
 		// "is" object
@@ -70,8 +73,18 @@ class Window {
 	 */
 	updateDims() {
 		
-		this._w = document.documentElement.clientWidth;
-		this._h = document.documentElement.clientHeight;
+		this._w = this.html.clientWidth;
+		this._h = this.html.clientHeight;
+		
+		this._docH = Math.max(
+		
+			this.body.scrollHeight,
+			this.body.offsetHeight,
+			this.html.clientHeight,
+			this.html.scrollHeight,
+			this.html.offsetHeight
+		
+		);
 	
 	}
 
@@ -91,6 +104,15 @@ class Window {
 	
 		return this._h;
 	
+	}
+
+	/**
+	 * get height of document
+	 */
+	get docHeight() {
+
+		return this._docH;
+
 	}
 	
 	/**
@@ -150,7 +172,7 @@ class Window {
 
 		if (newLayout !== this.currentLayout) {
 
-			this.events.publish(newLayout, this.width, this.height);
+			this.events.publish(newLayout, this.width, this.height, this.docHeight);
 		
 		}
 

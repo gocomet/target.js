@@ -12,7 +12,9 @@ import Mediator from 'mediator-js';
 import utils from './core/utils';
 import config from './core/config';
 import Window from './services/window';
+import DomObserver from './services/domobserver';
 import ComponentFactory from './services/componentfactory';
+import API from './services/api';
 
 class Target {
 	
@@ -29,23 +31,26 @@ class Target {
 
 		//init services
 		this.window = new Window(
+			
 			this.events,
 			this.config.breakpoints,
 			this.config.debounceDelay
+		
 		);
 		
 		// for performance's sake, don't observe dom by default
-		// if (this.config.observeDom) {
-		// 	this.domObserver = new DomObserver(this);
-		// }
+		if (this.config.observeDom) {
+		
+			this.domObserver = new DomObserver(this.events, this.config);
+		
+		}
 
-		this.componentFactory = new ComponentFactory(
-			this.events,
-			this.config
-		);
+		this.componentFactory = new ComponentFactory(this.events, this.config);
 
-		// this.api = new API(this);
+		this.api = new API(this);
 	
+		return 'Target.js activated';
+
 	}
 
 }

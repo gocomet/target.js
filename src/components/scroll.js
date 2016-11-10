@@ -5,102 +5,87 @@
  *
  * calculate an offset on the element by the attribute value, if it exists
  */
-(function(target, undefined) {
-	
-	'use strict';
+import utils from '../core/utils';
+import UI from '../base/ui';
 
-	var PAGE_FACTOR = 0.2;
+const PAGE_FACTOR = 0.2;
 
-	target.Scroll = target.UI.extend({
+class Scroll extends UI {
+
+	constructor(el, _id, name, events, config) {
+
+		super(el, _id, name, events, config);
+			
+		this.getOffset();
+
+		this.addEventHandler('resize', this.onResize);
+		this.addEventHandler('resize' + this.id, this.onResize);
+		this.addEventHandler('scroll', this.onScroll);
 		
-		init: function(el, _id, target, name) {
-	
-			this._super.apply(this, arguments);
-			
-			this.getOffset();
+		this.update();
 
-			this.addEventHandler('resize', this.onResize);
-			this.addEventHandler('resize' + this.id, this.onResize);
-			this.addEventHandler('scroll', this.onScroll);
-			
-			this.events.publish('update', this.id);
+	}
 
-		},
+	getOffset() {
 
-		getOffset: function() {
+		this.offset = this.el.getAttribute(this.config.attributes.Scroll);
 
-			this.offset = this.el.getAttribute(
-			
-				this.utils.stripBrackets(this.config.attributes.Scroll)
-			
-			);
-
-			if (this.offset) {
-			
-				this.offset = parseInt(this.offset, 10);
-			
-			} else {
-			
-				this.offset = 0;
-			
-			}
-
-			this.top = 0;
-
-		},
+		if (this.offset) {
 		
-		calculateThreshold: function(h) {
-
-			var rect = this.el.getBoundingClientRect();
-
-			this.threshold = rect.top + this.top - (h * (1 - PAGE_FACTOR));
-
-		},
-
-		onScroll: function(top) {
-
-			this.top = top;
-
-			// if we're past threshold,
-			// or at bottom of document
-			// show el
-			if (this.top >= this.threshold + this.offset || this.top >= this.docH - this.windowH) {
-
-				this.show(this.el);
-
-			} else {
-
-				this.hide(this.el);
-
-			}
-
-		},
-
-		getDocHeight: function() {
-			
-			var body = document.body;
-			var html = document.documentElement;
-			var height = Math.max(body.scrollHeight, body.offsetHeight, html.clientHeight, html.scrollHeight, html.offsetHeight);
-			
-			return height;
+			this.offset = parseInt(this.offset, 10);
 		
-		},
-
-		/**
-		 * on window.resize
-		 * calculate or recalculate
-		 * when our element should be shown or hidden
-		 */
-		onResize: function(is, w, h) {
-
-			this.docH = this.getDocHeight();
-
-			this.windowH = h;
-
-			this.calculateThreshold(h);
-			
+		} else {
+		
+			this.offset = 0;
+		
 		}
 
-	});
+		this.top = 0;
 
-})(window.target = window.target || {});
+	}
+	
+	calculateThreshold(h) {
+
+		let rect = this.el.getBoundingClientRect();
+
+		this.threshold = rect.top + this.top - (h * (1 - PAGE_FACTOR));
+
+	}
+
+	onScroll(top) {
+
+		this.top = top;
+
+		// if we're past threshold,
+		// or at bottom of document
+		// show el
+		if (this.top >= this.threshold + this.offset || this.top >= this.docH - this.windowH) {
+
+			this.show(this.el);
+
+		} else {
+
+			this.hide(this.el);
+
+		}
+
+	}
+
+	/**
+	 * on window.resize
+	 * calculate or recalculate
+	 * when our element should be shown or hidden
+	 */
+	onResize(is, w, h, dh) {
+
+		this.docH = dh;
+
+		this.windowH = h;
+
+		this.calculateThreshold(h);
+		
+	}
+
+}
+
+module.exports = Scroll;

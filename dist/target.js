@@ -74,9 +74,17 @@
 
 	var _window2 = _interopRequireDefault(_window);
 
-	var _componentfactory = __webpack_require__(9);
+	var _domobserver = __webpack_require__(9);
+
+	var _domobserver2 = _interopRequireDefault(_domobserver);
+
+	var _componentfactory = __webpack_require__(10);
 
 	var _componentfactory2 = _interopRequireDefault(_componentfactory);
+
+	var _api = __webpack_require__(26);
+
+	var _api2 = _interopRequireDefault(_api);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -100,13 +108,16 @@
 				this.window = new _window2.default(this.events, this.config.breakpoints, this.config.debounceDelay);
 
 				// for performance's sake, don't observe dom by default
-				// if (this.config.observeDom) {
-				// 	this.domObserver = new DomObserver(this);
-				// }
+				if (this.config.observeDom) {
+
+					this.domObserver = new _domobserver2.default(this.events, this.config);
+				}
 
 				this.componentFactory = new _componentfactory2.default(this.events, this.config);
 
-				// this.api = new API(this);
+				this.api = new _api2.default(this);
+
+				return 'Target.js activated';
 			}
 		}]);
 
@@ -1447,15 +1458,15 @@
 			Show: 'data-target-show',
 			Hide: 'data-target-hide',
 			Clickoff: 'data-target-clickoff',
-			// Increment: 'data-target-increment',
-			// Decrement: 'data-target-decrement',
-			// Scrollbox: 'data-target-scrollbox',
-			// Grid: 'data-target-grid',
-			// Src: 'data-target-src',
-			// Filetext: 'data-target-filetext',
+			Increment: 'data-target-increment',
+			Decrement: 'data-target-decrement',
+			Filetext: 'data-target-filetext',
 			Accordion: 'data-target-accordion',
-			// Scroll: 'data-target-scroll',
-			// Height: 'data-target-height',
+			Scrollbox: 'data-target-scrollbox',
+			Scroll: 'data-target-scroll',
+			Height: 'data-target-height',
+			Grid: 'data-target-grid',
+			Src: 'data-target-src',
 			disable: 'data-target-disable',
 			max: 'data-target-max',
 			min: 'data-target-min'
@@ -1512,6 +1523,8 @@
 			_classCallCheck(this, Window);
 
 			this.events = events;
+			this.body = document.body;
+			this.html = document.documentElement;
 
 			this.updateDims();
 
@@ -1566,8 +1579,10 @@
 			key: 'updateDims',
 			value: function updateDims() {
 
-				this._w = document.documentElement.clientWidth;
-				this._h = document.documentElement.clientHeight;
+				this._w = this.html.clientWidth;
+				this._h = this.html.clientHeight;
+
+				this._docH = Math.max(this.body.scrollHeight, this.body.offsetHeight, this.html.clientHeight, this.html.scrollHeight, this.html.offsetHeight);
 			}
 
 			/**
@@ -1636,7 +1651,7 @@
 
 				if (newLayout !== this.currentLayout) {
 
-					this.events.publish(newLayout, this.width, this.height);
+					this.events.publish(newLayout, this.width, this.height, this.docHeight);
 				}
 			}
 		}, {
@@ -1655,6 +1670,17 @@
 			get: function get() {
 
 				return this._h;
+			}
+
+			/**
+	   * get height of document
+	   */
+
+		}, {
+			key: 'docHeight',
+			get: function get() {
+
+				return this._docH;
 			}
 		}]);
 
@@ -1726,6 +1752,135 @@
 	'use strict';
 
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }(); /**
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      * target.DomObserver
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      *
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      * watches DOM for changes
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      * triggers events
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      * to initialize, update, or destroy components
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      *
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      * NOTE: currently a performance hog
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      * TODO: look into optimizing
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      * scope smaller?
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      */
+
+
+	var _utils = __webpack_require__(5);
+
+	var _utils2 = _interopRequireDefault(_utils);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	var TEXT_NODE = 3;
+	var COMMENT_NODE = 8;
+
+	var DomObserver = function () {
+		function DomObserver(events, config) {
+			var _this = this;
+
+			_classCallCheck(this, DomObserver);
+
+			this.events = events;
+			this.config = config;
+
+			this.observer = new window.MutationObserver(function (mutations, observer) {
+
+				_this.onMutation(mutations, observer);
+			});
+
+			// define what element should be observed by the observer
+			// and what types of mutations trigger the callback
+			this.observer.observe(document.body, {
+
+				subtree: true,
+				childList: true,
+				attributes: true,
+
+				// return an array of only the attributes we use
+				attributeFilter: _utils2.default.values(this.config.attributes)
+
+			});
+		}
+
+		/**
+	  * when a node is added
+	  * strip out text nodes
+	  * then fire event
+	  * for componentfactory service to pickup
+	  * and initialize new components if required
+	  */
+
+
+		_createClass(DomObserver, [{
+			key: 'publishAddedNodes',
+			value: function publishAddedNodes(nodes) {
+				var _this2 = this;
+
+				_utils2.default.forEach.call(nodes, function (node) {
+
+					if (node.nodeType === TEXT_NODE || node.nodeType === COMMENT_NODE) {
+
+						return;
+					}
+
+					// parse attributes for target components
+					_utils2.default.forIn(_this2.config.attributes, function (prop, obj) {
+
+						var attName = obj[prop];
+
+						if (node.getAttribute(attName)) {
+
+							_this2.events.publish('nodeadded.mutation', prop, node);
+						}
+					});
+				});
+			}
+
+			/**
+	   * when a DOM mutation happens
+	   * determine the type of mutation
+	   * and fire the appropriate event
+	   */
+
+		}, {
+			key: 'onMutation',
+			value: function onMutation(mutations, observer) {
+				var _this3 = this;
+
+				mutations.forEach(function (mutation) {
+
+					switch (mutation.type) {
+
+						case 'attributes':
+							_this3.events.publish('attributes.mutation', mutation.target);
+							break;
+
+						case 'childList':
+							_this3.publishAddedNodes(mutation.addedNodes);
+							break;
+
+						default:
+							_utils2.default.noop();
+							break;
+
+					}
+				});
+			}
+		}]);
+
+		return DomObserver;
+	}();
+
+	module.exports = DomObserver;
+
+/***/ },
+/* 10 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }(); /**
 	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      * ComponentFactory
 	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      *
 	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      * generates and manages components
@@ -1736,25 +1891,57 @@
 
 	var _utils2 = _interopRequireDefault(_utils);
 
-	var _show = __webpack_require__(10);
+	var _show = __webpack_require__(11);
 
 	var _show2 = _interopRequireDefault(_show);
 
-	var _hide = __webpack_require__(12);
+	var _hide = __webpack_require__(13);
 
 	var _hide2 = _interopRequireDefault(_hide);
 
-	var _toggle = __webpack_require__(13);
+	var _toggle = __webpack_require__(14);
 
 	var _toggle2 = _interopRequireDefault(_toggle);
 
-	var _clickoff = __webpack_require__(14);
+	var _clickoff = __webpack_require__(15);
 
 	var _clickoff2 = _interopRequireDefault(_clickoff);
 
-	var _accordion = __webpack_require__(15);
+	var _accordion = __webpack_require__(16);
 
 	var _accordion2 = _interopRequireDefault(_accordion);
+
+	var _increment = __webpack_require__(17);
+
+	var _increment2 = _interopRequireDefault(_increment);
+
+	var _decrement = __webpack_require__(18);
+
+	var _decrement2 = _interopRequireDefault(_decrement);
+
+	var _filetext = __webpack_require__(19);
+
+	var _filetext2 = _interopRequireDefault(_filetext);
+
+	var _scrollbox = __webpack_require__(20);
+
+	var _scrollbox2 = _interopRequireDefault(_scrollbox);
+
+	var _height = __webpack_require__(21);
+
+	var _height2 = _interopRequireDefault(_height);
+
+	var _grid = __webpack_require__(22);
+
+	var _grid2 = _interopRequireDefault(_grid);
+
+	var _scroll = __webpack_require__(23);
+
+	var _scroll2 = _interopRequireDefault(_scroll);
+
+	var _src = __webpack_require__(24);
+
+	var _src2 = _interopRequireDefault(_src);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -1765,7 +1952,15 @@
 		Hide: _hide2.default,
 		Toggle: _toggle2.default,
 		Clickoff: _clickoff2.default,
-		Accordion: _accordion2.default
+		Accordion: _accordion2.default,
+		Increment: _increment2.default,
+		Decrement: _decrement2.default,
+		Filetext: _filetext2.default,
+		Scrollbox: _scrollbox2.default,
+		Height: _height2.default,
+		Grid: _grid2.default,
+		Scroll: _scroll2.default,
+		Src: _src2.default
 	};
 
 	var ComponentFactory = function () {
@@ -1837,7 +2032,7 @@
 				var _this2 = this;
 
 				var selector = '[' + this.config.attributes[name] + ']';
-				var elList;
+				var elList = void 0;
 
 				if (scope) {
 
@@ -1931,7 +2126,7 @@
 	module.exports = ComponentFactory;
 
 /***/ },
-/* 10 */
+/* 11 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -1942,7 +2137,7 @@
 
 	var _utils2 = _interopRequireDefault(_utils);
 
-	var _ui = __webpack_require__(11);
+	var _ui = __webpack_require__(12);
 
 	var _ui2 = _interopRequireDefault(_ui);
 
@@ -1974,8 +2169,6 @@
 			_this.targets = _utils2.default.qsa(_this.el.getAttribute(_this.config.attributes.Show));
 
 			_this.addDomEventHandler('click', _this.onClick);
-
-			_this.update();
 
 			return _this;
 		}
@@ -2014,7 +2207,7 @@
 	module.exports = Show;
 
 /***/ },
-/* 11 */
+/* 12 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -2369,7 +2562,7 @@
 	module.exports = UI;
 
 /***/ },
-/* 12 */
+/* 13 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -2380,7 +2573,7 @@
 
 	var _utils2 = _interopRequireDefault(_utils);
 
-	var _ui = __webpack_require__(11);
+	var _ui = __webpack_require__(12);
 
 	var _ui2 = _interopRequireDefault(_ui);
 
@@ -2411,6 +2604,8 @@
 			_this.targets = _utils2.default.qsa(_this.el.getAttribute(_this.config.attributes.Hide));
 
 			_this.addDomEventHandler('click', _this.onClick);
+
+			_this.update();
 
 			return _this;
 		}
@@ -2449,7 +2644,7 @@
 	module.exports = Hide;
 
 /***/ },
-/* 13 */
+/* 14 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -2460,7 +2655,7 @@
 
 	var _utils2 = _interopRequireDefault(_utils);
 
-	var _ui = __webpack_require__(11);
+	var _ui = __webpack_require__(12);
 
 	var _ui2 = _interopRequireDefault(_ui);
 
@@ -2555,7 +2750,7 @@
 	module.exports = Toggle;
 
 /***/ },
-/* 14 */
+/* 15 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -2566,7 +2761,7 @@
 
 	var _utils2 = _interopRequireDefault(_utils);
 
-	var _ui = __webpack_require__(11);
+	var _ui = __webpack_require__(12);
 
 	var _ui2 = _interopRequireDefault(_ui);
 
@@ -2644,7 +2839,7 @@
 	module.exports = Clickoff;
 
 /***/ },
-/* 15 */
+/* 16 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -2655,7 +2850,7 @@
 
 	var _utils2 = _interopRequireDefault(_utils);
 
-	var _ui = __webpack_require__(11);
+	var _ui = __webpack_require__(12);
 
 	var _ui2 = _interopRequireDefault(_ui);
 
@@ -2794,6 +2989,1714 @@
 	}(_ui2.default);
 
 	module.exports = Accordion;
+
+/***/ },
+/* 17 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _utils = __webpack_require__(5);
+
+	var _utils2 = _interopRequireDefault(_utils);
+
+	var _ui = __webpack_require__(12);
+
+	var _ui2 = _interopRequireDefault(_ui);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; } /**
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * target.Increment
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                *
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * UI element that increments the value of an input
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                *
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * usage:
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                *
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * `<a data-target-increment="#qty" data-target-max="99">+1 to #qty</a>`
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                */
+
+
+	var Increment = function (_UI) {
+		_inherits(Increment, _UI);
+
+		function Increment(el, _id, name, events, config) {
+			_classCallCheck(this, Increment);
+
+			var _this = _possibleConstructorReturn(this, (Increment.__proto__ || Object.getPrototypeOf(Increment)).call(this, el, _id, name, events, config));
+
+			_this.targets = _utils2.default.qsa(_this.el.getAttribute(_this.config.attributes.Increment));
+
+			_utils2.default.forEach.call(_this.targets, function (target) {
+
+				if (target.nodeName !== 'INPUT') {
+
+					throw 'Target.js Error on Increment component: the selector in "' + _this.config.attributes.Increment + '" must target an <input> element';
+				}
+			});
+
+			_this.setLimits();
+
+			_this.addDomEventHandler('click', _this.onClick);
+
+			return _this;
+		}
+
+		/**
+	  * get min and max values
+	  * declared on the element itself
+	  * use defaults if not declared
+	  */
+
+
+		_createClass(Increment, [{
+			key: 'setLimits',
+			value: function setLimits() {
+
+				this.max = this.el.getAttribute(this.config.attributes.max);
+				this.min = this.el.getAttribute(this.config.attributes.min);
+
+				if (this.min === null) {
+
+					this.min = 0;
+				}
+
+				if (this.max !== null) {
+
+					this.max = parseInt(this.max, 10);
+				}
+			}
+
+			/**
+	   * increment the value of the target input
+	   * only if lower than the specified maximum value
+	   */
+
+		}, {
+			key: 'increment',
+			value: function increment(target) {
+
+				var curVal = parseInt(target.value, 10);
+				var val = curVal + 1;
+
+				if (this.max !== null) {
+
+					if (this.max >= val) {
+
+						this.events.publish('max', target);
+					}
+
+					val = Math.min(val, this.max);
+				}
+
+				target.value = val;
+			}
+
+			/**
+	   * when the incrementer is clicked,
+	   * increment the target input element
+	   */
+
+		}, {
+			key: 'onClick',
+			value: function onClick(e) {
+				var _this2 = this;
+
+				if (this.isDisabled) {
+
+					return;
+				}
+
+				_utils2.default.forEach.call(this.targets, function (target) {
+					return _this2.increment(target);
+				});
+			}
+		}]);
+
+		return Increment;
+	}(_ui2.default);
+
+	module.exports = Increment;
+
+/***/ },
+/* 18 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _utils = __webpack_require__(5);
+
+	var _utils2 = _interopRequireDefault(_utils);
+
+	var _ui = __webpack_require__(12);
+
+	var _ui2 = _interopRequireDefault(_ui);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; } /**
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * target.Decrement
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                *
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * decrements the value of a target input
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                *
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * usage:
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                *
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * `<a data-target-decrement="#qty" data-target-min="0">-1 to #qty</a>`
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                */
+
+
+	var Decrement = function (_UI) {
+		_inherits(Decrement, _UI);
+
+		function Decrement(el, _id, name, events, config) {
+			_classCallCheck(this, Decrement);
+
+			var _this = _possibleConstructorReturn(this, (Decrement.__proto__ || Object.getPrototypeOf(Decrement)).call(this, el, _id, name, events, config));
+
+			_this.targets = _utils2.default.qsa(_this.el.getAttribute(_this.config.attributes.Decrement));
+
+			_utils2.default.forEach.call(_this.targets, function (target) {
+
+				if (target.nodeName !== 'INPUT') {
+
+					throw 'Target.js Error on Decrement component: the selector in "' + _this.config.attributes.Decrement + '" must target an <input> element';
+				}
+			});
+
+			_this.setLimits();
+
+			_this.addDomEventHandler('click', _this.onClick);
+
+			return _this;
+		}
+
+		/**
+	  * get min and max values
+	  * declared on the element itself
+	  * use defaults if not declared
+	  */
+
+
+		_createClass(Decrement, [{
+			key: 'setLimits',
+			value: function setLimits() {
+
+				this.max = this.el.getAttribute(this.config.attributes.max);
+				this.min = this.el.getAttribute(this.config.attributes.min);
+
+				if (this.min === null) {
+
+					this.min = 0;
+				} else {
+
+					this.min = parseInt(this.min, 10);
+				}
+
+				if (this.max !== null) {
+
+					this.max = parseInt(this.max, 10);
+				}
+			}
+
+			/**
+	   * decrement the value of the target input
+	   * only if higher than the specified minimum value
+	   */
+
+		}, {
+			key: 'decrement',
+			value: function decrement(target) {
+
+				var curVal = parseInt(target.value, 10);
+				var val = curVal - 1;
+
+				if (val <= this.min) {
+
+					this.events.publish('min', target);
+				}
+
+				val = Math.max(val, this.min);
+
+				target.value = val;
+			}
+
+			/**
+	   * when the decrementer is clicked,
+	   * decrement the target input element
+	   */
+
+		}, {
+			key: 'onClick',
+			value: function onClick(e) {
+				var _this2 = this;
+
+				if (this.isDisabled) {
+
+					return;
+				}
+
+				_utils2.default.forEach.call(this.targets, function (target) {
+					return _this2.decrement(target);
+				});
+			}
+		}]);
+
+		return Decrement;
+	}(_ui2.default);
+
+	module.exports = Decrement;
+
+/***/ },
+/* 19 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _utils = __webpack_require__(5);
+
+	var _utils2 = _interopRequireDefault(_utils);
+
+	var _ui = __webpack_require__(12);
+
+	var _ui2 = _interopRequireDefault(_ui);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; } /**
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * target.Filetext
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                *
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * gives you the text of a file input
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * allows you to style file inputs any way you like
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                *
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * usage:
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                *
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * `<input type="file" data-target-filetext="#my-filetext-element" />`
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                */
+
+
+	var Filetext = function (_UI) {
+		_inherits(Filetext, _UI);
+
+		function Filetext(el, _id, name, events, config) {
+			_classCallCheck(this, Filetext);
+
+			var _this = _possibleConstructorReturn(this, (Filetext.__proto__ || Object.getPrototypeOf(Filetext)).call(this, el, _id, name, events, config));
+
+			if (_this.NODE_NAME !== 'INPUT' || _this.el.getAttribute('type') !== 'file') {
+
+				throw 'Error on Target.Filetext component: "' + _this.config.attributes.Filetext + '" must be applied to an <input> element with \'type="file"\'';
+			}
+
+			_this.targets = _utils2.default.qsa(_this.el.getAttribute(_this.config.attributes.Filetext));
+
+			_this.addDomEventHandler('change', _this.onChange);
+
+			return _this;
+		}
+
+		/**
+	  * when the file input is changed
+	  * get filename
+	  * and set as text of target element
+	  */
+
+
+		_createClass(Filetext, [{
+			key: 'onChange',
+			value: function onChange(e) {
+
+				var filename = this.el.files && this.el.files[0];
+
+				if (this.isDisabled) {
+
+					return;
+				}
+
+				if (this.el.files.length) {
+
+					filename = this.el.files[0].name;
+
+					_utils2.default.forEach.call(this.targets, function (target) {
+						return target.innerHTML = filename;
+					});
+				}
+			}
+		}]);
+
+		return Filetext;
+	}(_ui2.default);
+
+	module.exports = Filetext;
+
+/***/ },
+/* 20 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _utils = __webpack_require__(5);
+
+	var _utils2 = _interopRequireDefault(_utils);
+
+	var _ui = __webpack_require__(12);
+
+	var _ui2 = _interopRequireDefault(_ui);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; } /**
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * target.Scrollbox
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                *
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * creates a box that automatically gets scrollbars
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * when it gets too tall
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * and loses them when it isn't
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                *
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * usage:
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                *
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * `<div data-target-scrollbox="500">This will scroll when it's 501px tall</div>`
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                *
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * or
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                *
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * `<div data-target-scrollbox="-500">This will scroll when it's taller than window.height - 500px</div>` 
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                */
+
+
+	var Scrollbox = function (_UI) {
+		_inherits(Scrollbox, _UI);
+
+		function Scrollbox(el, _id, name, events, config) {
+			_classCallCheck(this, Scrollbox);
+
+			var _this = _possibleConstructorReturn(this, (Scrollbox.__proto__ || Object.getPrototypeOf(Scrollbox)).call(this, el, _id, name, events, config));
+
+			_this.maxHeight = _this.el.getAttribute(_this.config.attributes.Scrollbox);
+			_this.maxHeight = parseInt(_this.maxHeight, 10);
+
+			if (_this.el.hasChildNodes()) {
+
+				_this.children = _this.el.childNodes;
+			}
+
+			_this.addEventHandler('resize', _this.onResize);
+			_this.addEventHandler('resize' + _this.id, _this.onResize);
+
+			_this.update();
+
+			return _this;
+		}
+
+		/**
+	  * get the user-declared max height threshold
+	  */
+
+
+		_createClass(Scrollbox, [{
+			key: 'getMaxHeight',
+			value: function getMaxHeight() {
+
+				if (this.maxHeight >= 0) {
+
+					return this.maxHeight;
+				} else {
+
+					return this.h + this.maxHeight;
+				}
+			}
+
+			/**
+	   * get the total height of all the contents
+	   * within our scrollbox element
+	   */
+
+		}, {
+			key: 'getContentsHeight',
+			value: function getContentsHeight() {
+
+				var height = 0;
+
+				_utils2.default.forEach.call(this.children, function (child) {
+					return height += child.offsetHeight;
+				});
+
+				return height;
+			}
+
+			/**
+	   * determine if we need to add a scrollbar to our element
+	   * if so, add it
+	   * if not, remove it
+	   */
+
+		}, {
+			key: 'setOverflow',
+			value: function setOverflow() {
+
+				if (this.getContentsHeight() > this.getMaxHeight() && !this.isDisabled) {
+
+					this.el.style.overflowY = 'scroll';
+				} else {
+
+					this.el.style.overflowY = 'auto';
+				}
+			}
+
+			/**
+	   * determine whether or not we need to set a maxHeight property
+	   * on element
+	   * if so, set it
+	   * if not, remove it
+	   */
+
+		}, {
+			key: 'setMaxHeight',
+			value: function setMaxHeight() {
+
+				if (this.isDisabled) {
+
+					this.el.style.maxHeight = '';
+				} else {
+
+					this.el.style.maxHeight = this.getMaxHeight() + 'px';
+				}
+			}
+
+			/**
+	   * on window.resize
+	   * determine if we need a max height on our element
+	   * determine if we need a scrollbar on our element
+	   * if so, set them
+	   */
+
+		}, {
+			key: 'onResize',
+			value: function onResize(is, w, h) {
+
+				this.h = h;
+				this.setMaxHeight();
+				this.setOverflow();
+			}
+		}]);
+
+		return Scrollbox;
+	}(_ui2.default);
+
+	module.exports = Scrollbox;
+
+/***/ },
+/* 21 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _utils = __webpack_require__(5);
+
+	var _utils2 = _interopRequireDefault(_utils);
+
+	var _ui = __webpack_require__(12);
+
+	var _ui2 = _interopRequireDefault(_ui);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; } /**
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * target.Height
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                *
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * sets the height of an element programmatically
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                *
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * defaults to window height (cross-browser)
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                *
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * updates on window.resize
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                *
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * usage:
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * `<div data-target-height="window">Is always window height</div>`
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                *
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * or
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                *
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * `<div data-target-height="-100">is always window height - 100px</div>`
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                */
+
+
+	var Height = function (_UI) {
+		_inherits(Height, _UI);
+
+		function Height(el, _id, name, events, config) {
+			_classCallCheck(this, Height);
+
+			var _this = _possibleConstructorReturn(this, (Height.__proto__ || Object.getPrototypeOf(Height)).call(this, el, _id, name, events, config));
+
+			_this.initHeight();
+
+			_this.addEventHandler('resize', _this.setHeight);
+			_this.addEventHandler('resize' + _this.id, _this.setHeight);
+
+			_this.update();
+
+			return _this;
+		}
+
+		/**
+	  * create initial height settings
+	  * based on attributes
+	  */
+
+
+		_createClass(Height, [{
+			key: 'initHeight',
+			value: function initHeight() {
+
+				this.height = this.el.getAttribute(this.config.attributes.Height);
+
+				if (!this.height || this.height === 'window') {
+
+					this.height = 0;
+				} else {
+
+					this.height = parseInt(this.height, 10);
+				}
+			}
+
+			/**
+	   * get the user-declared max height threshold
+	   */
+
+		}, {
+			key: 'getHeight',
+			value: function getHeight() {
+
+				if (this.height > 0) {
+
+					return this.height;
+				} else {
+
+					return this.windowHeight + this.height;
+				}
+			}
+
+			/**
+	   * on window.resize
+	   * if enabled, set element height
+	   * else reset height
+	   */
+
+		}, {
+			key: 'setHeight',
+			value: function setHeight(is, w, h) {
+
+				this.windowHeight = h;
+
+				if (this.isDisabled) {
+
+					this.el.style.height = '';
+				} else {
+
+					this.el.style.height = this.getHeight() + 'px';
+				}
+			}
+		}]);
+
+		return Height;
+	}(_ui2.default);
+
+	module.exports = Height;
+
+/***/ },
+/* 22 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _utils = __webpack_require__(5);
+
+	var _utils2 = _interopRequireDefault(_utils);
+
+	var _ui = __webpack_require__(12);
+
+	var _ui2 = _interopRequireDefault(_ui);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; } /**
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * target.Grid
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                *
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * gives element the same height as the other items on its row
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                *
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * usage:
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * 
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * provide a space-separated list of numbers in the data-target-grid attribute
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * this list is the number of columns per row
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * by layout -- first: mobile, second: tablet, third: desktop
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                *
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * example:
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                *
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * `<div data-target-grid="2 3 4">
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * 	 <div>Product thumbnail here</div>
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                *   <div>Product thumbnail here</div>
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                *   <div>Product thumbnail here (these will all have equal height)</div>
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                *   <div>Product thumbnail here</div>
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * </div>`
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                *
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * NOTE: this is a performance hog.
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * Just too much iterating through the DOM,
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * setting and unsetting element heights on each iteration
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * TODO: look into a better approach
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                */
+
+
+	var Grid = function (_UI) {
+		_inherits(Grid, _UI);
+
+		function Grid(el, _id, name, events, config) {
+			_classCallCheck(this, Grid);
+
+			var _this = _possibleConstructorReturn(this, (Grid.__proto__ || Object.getPrototypeOf(Grid)).call(this, el, _id, name, events, config));
+
+			_this.TEXT_NODE = 3;
+			_this.COMMENT_NODE = 8;
+
+			_this.published = false;
+
+			_this.setChildren();
+
+			_this.setBreakpoints();
+
+			_this.addEventHandler('resize', _this.onResize);
+			_this.addEventHandler('resize' + _this.id, _this.onResize);
+
+			_this.update();
+
+			// since the grid may contain images,
+			// let's update the layout on window.load as well
+			_this.addDomEventHandler('load', _this.onLoad, window);
+
+			return _this;
+		}
+
+		/**
+	  * set breakpoints
+	  * this will determine how many items are in a row
+	  * at various breakpoints (mobile, tablet, desktop, large)
+	  * also, if the breakpoint is "disable", instead of an int,
+	  * disable at that breakpoint
+	  */
+
+
+		_createClass(Grid, [{
+			key: 'setBreakpoints',
+			value: function setBreakpoints() {
+
+				var breakpoints = this.el.getAttribute(this.config.attributes.Grid).split(' ');
+
+				var disableLayouts = [];
+
+				var layouts = ['mobile', 'tablet', 'desktop', 'large'];
+
+				breakpoints.forEach(function (breakpoint, i) {
+
+					if (breakpoint === 'disable') {
+
+						disableLayouts.push(layouts[i]);
+
+						breakpoint = 0;
+					} else {
+
+						breakpoint = parseInt(breakpoint, 10);
+					}
+				});
+
+				this.breakpoints = {
+
+					mobile: breakpoints[0],
+					tablet: breakpoints[1],
+					desktop: breakpoints[2],
+					large: breakpoints[3]
+
+				};
+
+				if (disableLayouts.length) {
+
+					this.el.setAttribute(this.config.attributes.disable, disableLayouts.join(' '));
+				}
+			}
+		}, {
+			key: 'onLoad',
+			value: function onLoad(e) {
+
+				this.removeDomEventHandler('load');
+				this.update();
+			}
+
+			/**
+	   * find child nodes of element
+	   * filter out any text nodes
+	   */
+
+		}, {
+			key: 'setChildren',
+			value: function setChildren() {
+				var _this2 = this;
+
+				this.children = [];
+
+				if (!this.el.hasChildNodes()) {
+
+					return [];
+				}
+
+				var childNodes = this.el.childNodes;
+
+				_utils2.default.forEach.call(childNodes, function (child) {
+
+					if (child.nodeType !== _this2.TEXT_NODE && child.nodeType !== _this2.COMMENT_NODE) {
+
+						_this2.children.push(child);
+					}
+				});
+			}
+
+			/**
+	   * determine how many thumbnails per row
+	   * based on responsive layout
+	   * "is" object passed from our "window" service
+	   * via events
+	   */
+
+		}, {
+			key: 'setPerRow',
+			value: function setPerRow(is) {
+				var _this3 = this;
+
+				// set default
+				this.perRow = this.breakpoints.mobile;
+
+				// update with relevant media query if applicable
+				Object.keys(this.breakpoints).forEach(function (layout) {
+
+					if (_this3.breakpoints[layout] && is[layout]) {
+
+						_this3.perRow = _this3.breakpoints[layout];
+					}
+				});
+
+				return this.perRow;
+			}
+
+			/**
+	   * set which thumbnails are in a row together
+	   * based on the number of thumbs per row
+	   * which is based on the current responsive layout
+	   */
+
+		}, {
+			key: 'buildRows',
+			value: function buildRows() {
+				var _this4 = this;
+
+				var lastChild = this.children[this.children.length - 1];
+				var row = [];
+				var i = 0;
+
+				this.rows = [];
+
+				// loop through children
+				// and add element to row
+				// or if row is full
+				// add row to rows array
+				_utils2.default.forEach.call(this.children, function (child) {
+
+					if (i >= _this4.perRow) {
+
+						_this4.rows.push(row);
+
+						i = 0;
+
+						row = [];
+					}
+
+					row.push(child);
+
+					i++;
+
+					if (child === lastChild) {
+
+						_this4.rows.push(row);
+					}
+				});
+
+				return this.rows;
+			}
+
+			/**
+	   * on window.resize
+	   * if enabled
+	   * determine how many thumbs per row
+	   * group those thumbs together in rows
+	   * reset the height of thumbs to their default
+	   * get, calculate, and set the correct height
+	   * so thumbs in the same row have the same height
+	   */
+
+		}, {
+			key: 'calculateGrid',
+			value: function calculateGrid(is) {
+
+				this.setPerRow(is);
+
+				this.buildRows();
+
+				this.rows.forEach(function (row) {
+
+					var maxHeight = 0;
+
+					row.forEach(function (item) {
+
+						item.style.height = '';
+
+						maxHeight = Math.max(item.offsetHeight, maxHeight);
+					});
+
+					row.forEach(function (item) {
+
+						item.style.height = maxHeight + 'px';
+					});
+				});
+			}
+
+			/**
+	   * on window.resize
+	   * if disabled
+	   * reset heights of all children
+	   */
+
+		}, {
+			key: 'resetGrid',
+			value: function resetGrid() {
+
+				_utils2.default.forEach.call(this.children, function (child) {
+					return child.style.height = '';
+				});
+			}
+
+			/**
+	   * on window.resize
+	   * either build grid
+	   * or reset
+	   * depending on if enabled or disabled
+	   */
+
+		}, {
+			key: 'onResize',
+			value: function onResize(is) {
+
+				if (!this.isDisabled) {
+
+					this.calculateGrid(is);
+				} else {
+
+					this.resetGrid();
+				}
+			}
+		}]);
+
+		return Grid;
+	}(_ui2.default);
+
+	module.exports = Grid;
+
+/***/ },
+/* 23 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _utils = __webpack_require__(5);
+
+	var _utils2 = _interopRequireDefault(_utils);
+
+	var _ui = __webpack_require__(12);
+
+	var _ui2 = _interopRequireDefault(_ui);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; } /**
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * target.Scroll
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                *
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * show an element when it scrolls into view
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                *
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * calculate an offset on the element by the attribute value, if it exists
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                */
+
+
+	var PAGE_FACTOR = 0.2;
+
+	var Scroll = function (_UI) {
+		_inherits(Scroll, _UI);
+
+		function Scroll(el, _id, name, events, config) {
+			_classCallCheck(this, Scroll);
+
+			var _this = _possibleConstructorReturn(this, (Scroll.__proto__ || Object.getPrototypeOf(Scroll)).call(this, el, _id, name, events, config));
+
+			_this.getOffset();
+
+			_this.addEventHandler('resize', _this.onResize);
+			_this.addEventHandler('resize' + _this.id, _this.onResize);
+			_this.addEventHandler('scroll', _this.onScroll);
+
+			_this.update();
+
+			return _this;
+		}
+
+		_createClass(Scroll, [{
+			key: 'getOffset',
+			value: function getOffset() {
+
+				this.offset = this.el.getAttribute(this.config.attributes.Scroll);
+
+				if (this.offset) {
+
+					this.offset = parseInt(this.offset, 10);
+				} else {
+
+					this.offset = 0;
+				}
+
+				this.top = 0;
+			}
+		}, {
+			key: 'calculateThreshold',
+			value: function calculateThreshold(h) {
+
+				var rect = this.el.getBoundingClientRect();
+
+				this.threshold = rect.top + this.top - h * (1 - PAGE_FACTOR);
+			}
+		}, {
+			key: 'onScroll',
+			value: function onScroll(top) {
+
+				this.top = top;
+
+				// if we're past threshold,
+				// or at bottom of document
+				// show el
+				if (this.top >= this.threshold + this.offset || this.top >= this.docH - this.windowH) {
+
+					this.show(this.el);
+				} else {
+
+					this.hide(this.el);
+				}
+			}
+
+			/**
+	   * on window.resize
+	   * calculate or recalculate
+	   * when our element should be shown or hidden
+	   */
+
+		}, {
+			key: 'onResize',
+			value: function onResize(is, w, h, dh) {
+
+				this.docH = dh;
+
+				this.windowH = h;
+
+				this.calculateThreshold(h);
+			}
+		}]);
+
+		return Scroll;
+	}(_ui2.default);
+
+	module.exports = Scroll;
+
+/***/ },
+/* 24 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _utils = __webpack_require__(5);
+
+	var _utils2 = _interopRequireDefault(_utils);
+
+	var _ui = __webpack_require__(12);
+
+	var _ui2 = _interopRequireDefault(_ui);
+
+	var _imagecache = __webpack_require__(25);
+
+	var _imagecache2 = _interopRequireDefault(_imagecache);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; } /**
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * target.Src
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                *
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * Responsively loads images
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                *
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * based on current layout
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                *
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * usage:
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * 
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * add space-separated list of image urls:
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                *
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * the first is for mobile
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * the second is for tablet
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * the third is for desktop
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * the fourth is for large
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                *
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * `<img src="my_blang_img.gif" data-target-src="/mobile-img.jpg /tablet-img.jpg /desktop-img.jpg">`
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                *
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * you can use only one or two sources
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                *
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * `<img src="my_blang_img.gif" data-target-src="/mobile-img.jpg /tablet-and-desktop-img.jpg">`
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                *
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * you can specify to use the previous image by passing a null argument
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                *
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * `<img src="my_blang_img.gif" data-target-src="/mobile-and-tablet-img.jpg null /desktop-img.jpg">`
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                */
+
+	var Src = function (_UI) {
+		_inherits(Src, _UI);
+
+		function Src(el, _id, name, events, config) {
+			_classCallCheck(this, Src);
+
+			var _this = _possibleConstructorReturn(this, (Src.__proto__ || Object.getPrototypeOf(Src)).call(this, el, _id, name, events, config));
+
+			if (_this.NODE_NAME !== 'IMG' && _this.NODE_NAME !== 'DIV') {
+
+				throw 'Target.js Error on Src component: "' + _this.config.attributes.Src + '" must be applied to an <img> or <div> element';
+			}
+
+			_this.published = false;
+
+			_this.isLoading = false;
+
+			// TODO: only load when in view
+			// this.inview = false;
+			// this.queue = target.Queue.create();
+
+			_this.getSrcs();
+
+			_this.imageCache = _imagecache2.default;
+			_this.img = _this.imageCache.img;
+
+			_this.addEventHandler('resize', _this.onResize);
+			_this.addEventHandler('resize' + _this.id, _this.onResize);
+			// TODO: only load when in view
+			//this.addEventHandler('scroll', this.onScroll);
+
+			// request an update from target.Window
+			_this.update();
+
+			return _this;
+		}
+
+		/**
+	  * get list of image urls from element attribute
+	  * loop through and assign each image to a layout
+	  * make mobile-first,
+	  * so that if a layout doesn't have an image explicity assigned
+	  * it will inherit the image from the next layout down
+	  *
+	  * ex. if only two images defined, desktop layout can inherit image from tablet layout
+	  */
+
+
+		_createClass(Src, [{
+			key: 'getSrcs',
+			value: function getSrcs() {
+				var _this2 = this;
+
+				var srcAtt = this.el.getAttribute(this.config.attributes.Src);
+				var srcs = srcAtt.split(' ');
+				var latestSrc = null;
+
+				this.srcs = {
+
+					mobile: '',
+					tablet: '',
+					desktop: '',
+					large: ''
+
+				};
+
+				this.currentSrc = '';
+
+				Object.keys(this.srcs).forEach(function (layout, i) {
+
+					var src = srcs[i];
+
+					if (src && src.indexOf('/') !== -1) {
+
+						latestSrc = src;
+					}
+
+					_this2.srcs[layout] = latestSrc;
+				});
+			}
+		}, {
+			key: 'showImage',
+			value: function showImage(src) {
+
+				this.currentSrc = src;
+
+				if (this.NODE_NAME === 'IMG') {
+
+					this.el.src = src;
+				} else if (this.NODE_NAME === 'DIV') {
+
+					this.el.style.backgroundImage = 'url("' + src + '")';
+
+					this.show(this.el);
+				}
+			}
+
+			/**
+	   * once image is loaded
+	   * remove event handler
+	   * if this is an <img>
+	   * in a grid, request a layout update
+	   */
+
+		}, {
+			key: 'onLoad',
+			value: function onLoad() {
+
+				if (this.domEventHandlers.load) {
+
+					this.removeDomEventHandler('load');
+				}
+
+				if (this.isLoading) {
+
+					this.isLoading = false;
+				}
+
+				this.imageCache.add(this.loadingImg);
+
+				this.showImage(this.loadingImg);
+			}
+
+			/**
+	   * add event handler to load image
+	   */
+
+		}, {
+			key: 'load',
+			value: function load(src) {
+				var _this3 = this;
+
+				this.isLoading = true;
+
+				this.loadingImg = src;
+
+				this.addDomEventHandler('load', this.onLoad, this.img);
+
+				this.loadingFallback = setTimeout(function () {
+
+					if (_this3.isLoading) {
+
+						_this3.onLoad();
+
+						clearTimeout(_this3.loadingFallback);
+					}
+				}, 5000);
+
+				this.img.src = src;
+			}
+
+			/**
+	   * when the window is resized,
+	   * check which layout we're currently at
+	   * and load the appropriate image
+	   */
+
+		}, {
+			key: 'onResize',
+			value: function onResize(is, w, h) {
+				var _this4 = this;
+
+				Object.keys(this.srcs).forEach(function (layout) {
+
+					var src = _this4.srcs[layout];
+
+					if (is[layout] && src !== _this4.currentSrc) {
+
+						if (!_this4.imageCache.contains(src)) {
+
+							if (_this4.NODE_NAME === 'DIV') {
+
+								_this4.hide(_this4.el);
+							}
+
+							_this4.load(src);
+						} else {
+
+							_this4.showImage(src);
+						}
+					}
+				});
+			}
+		}]);
+
+		return Src;
+	}(_ui2.default);
+
+	module.exports = Src;
+
+/***/ },
+/* 25 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var _utils = __webpack_require__(5);
+
+	var _utils2 = _interopRequireDefault(_utils);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	var CACHE_NAME = 'targetJsImgsLoaded'; // utility object for tracking which images are already cached
+	// track localStorage to prevent bug
+	// in which an image stored in cache
+	// would not be loaded
+	// because target will try to load it and wait for onload event
+	// but browser will not load cached images
+
+
+	var imageCache = {
+	  init: function init() {
+
+	    if (!_utils2.default.isIOS && localStorage && localStorage[CACHE_NAME]) {
+
+	      this.images = localStorage[CACHE_NAME];
+	    } else {
+
+	      this.images = '';
+	    }
+
+	    this.img = document.createElement('img');
+	  },
+	  contains: function contains(item) {
+
+	    return this.images.indexOf(item) !== -1;
+	  },
+	  add: function add(item) {
+
+	    if (!this.contains(item)) {
+
+	      this.images += item;
+	    }
+
+	    if (!_utils2.default.isIOS && localStorage) {
+
+	      localStorage[CACHE_NAME] = this.images;
+	    }
+	  }
+	};
+
+	imageCache.init();
+
+	module.exports = imageCache;
+
+/***/ },
+/* 26 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }(); /**
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      * target.API
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      *
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      * make programmatic methods accessible
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      * in simplified api
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      * mix public methods back into global "target" object
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      */
+
+
+	var _utils = __webpack_require__(5);
+
+	var _utils2 = _interopRequireDefault(_utils);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	var API = function () {
+		function API(entry) {
+			var _this = this;
+
+			_classCallCheck(this, API);
+
+			this.events = entry.events;
+			this.componentFactory = entry.componentFactory;
+
+			this.eventHandlers = {};
+
+			// mixin public methods into global target object
+			['get', 'on', 'off', 'show', 'hide', 'toggle', 'bind'].forEach(function (method) {
+				return entry[method] = _this[method].bind(_this);
+			});
+		}
+
+		/**
+	  * normalize
+	  * return one element
+	  * to search for component
+	  */
+
+
+		_createClass(API, [{
+			key: 'normalize',
+			value: function normalize(el) {
+
+				if (typeof el === 'string') {
+
+					el = _utils2.default.qs(el);
+				}
+
+				return el;
+			}
+
+			/**
+	   * normalize els
+	   * return Array or NodeList
+	   * of elements
+	   * (to be used as targets)
+	   */
+
+		}, {
+			key: 'normalizeEls',
+			value: function normalizeEls(els) {
+
+				if (typeof els === 'string') {
+
+					els = _utils2.default.qsa(els);
+				} else if (els.length) {
+
+					els = els;
+				} else {
+
+					els = [els];
+				}
+
+				return els;
+			}
+
+			/**
+	   * get component by element
+	   * accepts only one DOM element
+	   * or css selector to return only one DOM element
+	   */
+
+		}, {
+			key: 'get',
+			value: function get(el) {
+
+				el = this.normalize(el);
+
+				var component = this.componentFactory.find(el);
+
+				if (!component) {
+
+					throw 'Target.js Error at target.get(): ' + el.toString() + ' is not a Target.js element.';
+				}
+
+				return component;
+			}
+
+			/**
+	   * show a target (or targets) programmatically
+	   */
+
+		}, {
+			key: 'show',
+			value: function show(els) {
+
+				var component = this.componentFactory.use('Show', this.normalizeEls(els));
+
+				_utils2.default.forEach.call(component.targets, function (target) {
+					return component.show(target);
+				});
+
+				return this;
+			}
+
+			/**
+	   * hide a target (or targets) programmatically
+	   */
+
+		}, {
+			key: 'hide',
+			value: function hide(els) {
+
+				var component = this.componentFactory.use('Hide', this.normalizeEls(els));
+
+				_utils2.default.forEach.call(component.targets, function (target) {
+					return component.hide(target);
+				});
+
+				return this;
+			}
+
+			/**
+	   * toggle a target (or targets) programmatically
+	   */
+
+		}, {
+			key: 'toggle',
+			value: function toggle(els) {
+
+				var component = this.componentFactory.use('Toggle', this.normalizeEls(els));
+
+				_utils2.default.forEach.call(component.targets, function (target) {
+					return component.toggle(target);
+				});
+
+				return this;
+			}
+
+			/**
+	   * add event handler meant for our window service
+	   * (resize, mobile, tablet, desktop)
+	   */
+
+		}, {
+			key: 'onWindowEvent',
+			value: function onWindowEvent(eventName, cb) {
+
+				if (!this.eventHandlers[eventName]) {
+
+					this.eventHandlers[eventName] = [];
+				}
+
+				this.eventHandlers[eventName].push({
+
+					cb: cb,
+
+					event: this.events.subscribe(eventName, cb)
+
+				});
+
+				return this;
+			}
+
+			/**
+	   * remove event handler for our window service
+	   */
+
+		}, {
+			key: 'offWindowEvent',
+			value: function offWindowEvent(eventName, cb) {
+				var _this2 = this;
+
+				var handlersCopy = [];
+
+				this.eventHandlers[eventName].forEach(function (handler) {
+
+					if (handler.cb !== cb) {
+
+						handlersCopy.push(handler);
+					} else {
+
+						_this2.events.remove(eventName, handler.event.id);
+					}
+				});
+
+				this.eventHandlers[eventName] = handlersCopy;
+
+				return this;
+			}
+
+			/**
+	   * add event handler for Target component events
+	   */
+
+		}, {
+			key: 'onElEvent',
+			value: function onElEvent(eventName, els, cb) {
+				var _this3 = this;
+
+				els = this.normalizeEls(els);
+
+				if (!this.eventHandlers[eventName]) {
+
+					this.eventHandlers[eventName] = [];
+				}
+
+				_utils2.default.forEach.call(els, function (el) {
+
+					// will return object containing id for removal
+					_this3.eventHandlers[eventName].push({
+
+						cb: cb,
+						el: el,
+						event: _this3.events.subscribe(eventName, function (el) {
+
+							return function (evEl) {
+
+								if (evEl === el) {
+
+									cb(el);
+								}
+							};
+						}(el))
+
+					});
+				});
+
+				return this;
+			}
+
+			/**
+	   * remove event handler for Target events
+	   */
+
+		}, {
+			key: 'offElEvent',
+			value: function offElEvent(eventName, els, cb) {
+				var _this4 = this;
+
+				var handlersCopy = [];
+
+				els = this.normalizeEls(els);
+
+				this.eventHandlers[eventName].forEach(function (handler) {
+
+					if (_utils2.default.contains(els, handler.el) && cb === cb) {
+
+						_this4.events.remove(eventName, handler.event.id);
+					} else {
+
+						handlersCopy.push(handler);
+					}
+				});
+
+				this.eventHandlers[eventName] = handlersCopy;
+
+				return this;
+			}
+
+			/**
+	   * normalize on handler
+	   * (facade pattern)
+	   * allow user to just call the .on method
+	   * internally figure out which type of event we should bind
+	   * because we could be binding to component events or our window service events
+	   */
+
+		}, {
+			key: 'on',
+			value: function on(eventName, arg2, arg3) {
+
+				if (typeof arg2 === 'function') {
+
+					this.onWindowEvent(eventName, arg2);
+				} else {
+
+					this.onElEvent(eventName, arg2, arg3);
+				}
+
+				return this;
+			}
+
+			/**
+	   * facade for removing event handlers
+	   */
+
+		}, {
+			key: 'off',
+			value: function off(eventName, arg2, arg3) {
+
+				if (typeof arg2 === 'function') {
+
+					this.offWindowEvent(eventName, arg2);
+				} else {
+
+					this.offElEvent(eventName, arg2, arg3);
+				}
+
+				return this;
+			}
+
+			/**
+	   * bind target to an element/document fragment
+	   *
+	   * search within the element
+	   * and initialize any components
+	   * declared on elements within
+	   *
+	   * useful for binding to elements after being rendered dynamically
+	   */
+
+		}, {
+			key: 'bind',
+			value: function bind(el) {
+
+				el = this.normalize(el);
+
+				this.componentFactory.start(el);
+			}
+		}]);
+
+		return API;
+	}();
+
+	module.exports = API;
 
 /***/ }
 /******/ ]);

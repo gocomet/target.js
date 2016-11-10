@@ -9,13 +9,29 @@ import Hide from '../components/hide';
 import Toggle from '../components/toggle';
 import Clickoff from '../components/clickoff';
 import Accordion from '../components/accordion';
+import Increment from '../components/increment';
+import Decrement from '../components/decrement';
+import Filetext from '../components/filetext';
+import Scrollbox from '../components/scrollbox';
+import Height from '../components/height';
+import Grid from '../components/grid';
+import Scroll from '../components/scroll';
+import Src from '../components/src';
 
 const COMPONENTS = {
 	Show,
 	Hide,
 	Toggle,
 	Clickoff,
-	Accordion
+	Accordion,
+	Increment,
+	Decrement,
+	Filetext,
+	Scrollbox,
+	Height,
+	Grid,
+	Scroll,
+	Src
 };	
 
 class ComponentFactory {
@@ -81,8 +97,8 @@ class ComponentFactory {
 	 */
 	initComponent(name, scope) {
 
-		var selector = '[' + this.config.attributes[name] + ']';
-		var elList;
+		let selector = '[' + this.config.attributes[name] + ']';
+		let elList;
 
 		if (scope) {
 
@@ -116,7 +132,7 @@ class ComponentFactory {
 	 */
 	find(el) {
 		
-		var component = false;
+		let component = false;
 		
 		utils.forIn(this.components, (id, components) => {
 
@@ -148,11 +164,11 @@ class ComponentFactory {
 	 */
 	use(name, targets) {
 
-		var el = document.createElement('div');
+		let el = document.createElement('div');
 
-		var Component = COMPONENTS[name];
+		let Component = COMPONENTS[name];
 
-		var component = new Component(el, 'tmp', name, this.events, this.config);
+		let component = new Component(el, 'tmp', name, this.events, this.config);
 
 		component.targets = targets;
 

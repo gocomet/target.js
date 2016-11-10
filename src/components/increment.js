@@ -7,109 +7,102 @@
  *
  * `<a data-target-increment="#qty" data-target-max="99">+1 to #qty</a>`
  */
-(function(target, undefined) {
-	
-	'use strict';
+import utils from '../core/utils';
+import UI from '../base/ui';
 
-	target.Increment = target.UI.extend({
-	
-		init: function(el, _id, target, name) {
+class Increment extends UI {
 
-			var _this = this;
+	constructor(el, _id, name, events, config) {
 
-			this._super.apply(this, arguments);
+		super(el, _id, name, events, config);
 
-			this.targets = this.utils.qsa(
-	
-				this.el.getAttribute(this.utils.stripBrackets(this.config.attributes.Increment))
-	
-			);
+		this.targets = utils.qsa(
 
-			this.utils.forEach.call(this.targets, function(target) {
+			this.el.getAttribute(this.config.attributes.Increment)
 
-				if (target.nodeName !== 'INPUT') {
+		);
 
-					throw 'Target.js Error on Increment component: the selector in "' + _this.utils.stripBrackets(_this.config.attributes.Increment) + '" must target an <input> element';
-				
-				}
+		utils.forEach.call(this.targets, target => {
 
-			});
+			if (target.nodeName !== 'INPUT') {
 
-			this.setLimits();
-
-			this.addDomEventHandler('click', this.onClick);
-
-		},
-
-		/**
-		 * get min and max values
-		 * declared on the element itself
-		 * use defaults if not declared
-		 */
-		setLimits: function() {
-
-			this.max = this.el.getAttribute(this.config.attributes.max);
-			this.min = this.el.getAttribute(this.config.attributes.min);
-
-			if (this.min === null) {
-		
-				this.min = 0;
+				throw 'Target.js Error on Increment component: the selector in "' + this.config.attributes.Increment + '" must target an <input> element';
 			
 			}
 
-			if (this.max !== null) {
-			
-				this.max = parseInt(this.max, 10);
-			
-			}
+		});
 
-		},
+		this.setLimits();
 
-		/**
-		 * increment the value of the target input
-		 * only if lower than the specified maximum value
-		 */
-		increment: function(target) {
+		this.addDomEventHandler('click', this.onClick);
 
-			var curVal = parseInt(target.value, 10);
-			var val = curVal + 1;
-			
-			if (this.max !== null) {
-				
-				if (this.max >= val) {
+	}
 
-					this.events.publish('max', target);
+	/**
+	 * get min and max values
+	 * declared on the element itself
+	 * use defaults if not declared
+	 */
+	setLimits() {
 
-				}
+		this.max = this.el.getAttribute(this.config.attributes.max);
+		this.min = this.el.getAttribute(this.config.attributes.min);
 
-				val = Math.min(val, this.max);
-			
-			}
-			
-			target.value = val;
-		
-		},
-
-		/**
-		 * when the incrementer is clicked,
-		 * increment the target input element
-		 */
-		onClick: function(e) {
-
-			var _this = this;
-
-			if (!this.isDisabled()) {
-			
-				this.utils.forEach.call(this.targets, function(target) {
-
-					_this.increment(target);
-
-				});
-
-			}
+		if (this.min === null) {
+	
+			this.min = 0;
 		
 		}
 
-	});
+		if (this.max !== null) {
+		
+			this.max = parseInt(this.max, 10);
+		
+		}
 
-})(window.target = window.target || {});
+	}
+
+	/**
+	 * increment the value of the target input
+	 * only if lower than the specified maximum value
+	 */
+	increment(target) {
+
+		var curVal = parseInt(target.value, 10);
+		var val = curVal + 1;
+		
+		if (this.max !== null) {
+			
+			if (this.max >= val) {
+
+				this.events.publish('max', target);
+
+			}
+
+			val = Math.min(val, this.max);
+		
+		}
+		
+		target.value = val;
+	
+	}
+
+	/**
+	 * when the incrementer is clicked,
+	 * increment the target input element
+	 */
+	onClick(e) {
+
+		if (this.isDisabled) {
+
+			return;
+
+		}
+		
+		utils.forEach.call(this.targets, target => this.increment(target));
+
+	}
+
+}
+
+module.exports = Increment;

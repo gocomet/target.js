@@ -4,112 +4,107 @@
  * watches DOM for changes
  * triggers events
  * to initialize, update, or destroy components
+ *
+ * NOTE: currently a performance hog
+ * TODO: look into optimizing
+ * scope smaller?
  */
-(function(target, undefined) {
+import utils from '../core/utils';
+
+const TEXT_NODE = 3;
+const COMMENT_NODE = 8;
+
+class DomObserver {
+
+	constructor(events, config) {
 	
-	'use strict';
+		this.events = events;
+		this.config = config;
+
+		this.observer = new window.MutationObserver((mutations, observer) => {
+
+			this.onMutation(mutations, observer);
+
+		});
+
+		// define what element should be observed by the observer
+		// and what types of mutations trigger the callback
+		this.observer.observe(document.body, {
 	
-	target.DomObserver = window.Proto.extend({
-		
-		init: function(target) {
-		
-			var _this = this;
+			subtree: true,
+			childList: true,
+			attributes: true,
 
-			this.TEXT_NODE = 3;
-			this.COMMENT_NODE = 8;
+			// return an array of only the attributes we use
+			attributeFilter: utils.values(this.config.attributes)
+	
+		});
+	
+	}
 
-			this.events = target.events;
-			this.config = target.config;
-			this.utils 	= target.utils;	
+	/**
+	 * when a node is added
+	 * strip out text nodes
+	 * then fire event
+	 * for componentfactory service to pickup
+	 * and initialize new components if required
+	 */
+	publishAddedNodes(nodes) {
 
-			this.observer = new window.MutationObserver(function(mutations, observer) {
+		utils.forEach.call(nodes, node => {
 
-				_this.onMutation(mutations, observer);
+			if (node.nodeType === TEXT_NODE || node.nodeType === COMMENT_NODE) {
 
-			});
+				return;
 
-			// define what element should be observed by the observer
-			// and what types of mutations trigger the callback
-			this.observer.observe(document.body, {
-		
-				subtree: true,
-				childList: true,
-				attributes: true,
+			}
 
-				// return an array of only the attributes we use
-				attributeFilter: target.utils.values(_this.config.attributes)
-		
-			});
-		
-		},
+			// parse attributes for target components
+			utils.forIn(this.config.attributes, (prop, obj) => {
 
-		/**
-		 * when a node is added
-		 * strip out text nodes
-		 * then fire event
-		 * for componentfactory service to pickup
-		 * and initialize new components if required
-		 */
-		publishAddedNodes: function(nodes) {
+				var attName = obj[prop];
 
-			var _this = this;
+				if (node.getAttribute(attName)) {
 
-			this.utils.forEach.call(nodes, function(node) {
-
-				if (node.nodeType === _this.TEXT_NODE || node.nodeType === _this.COMMENT_NODE) {
-
-					return;
+					this.events.publish('nodeadded.mutation', prop, node);
 
 				}
 
-				// parse attributes for target components
-				_this.utils.forIn(_this.config.attributes, function(prop, obj) {
-
-					var attName = obj[prop];
-
-					if (node.getAttribute(attName)) {
-
-						_this.events.publish('nodeadded.mutation', prop, node);
-
-					}
-
-				});
-
 			});
 
-		},
+		});
 
-		/**
-		 * when a DOM mutation happens
-		 * determine the type of mutation
-		 * and fire the appropriate event
-		 */
-		onMutation: function(mutations, observer) {
+	}
 
-			var _this = this;
+	/**
+	 * when a DOM mutation happens
+	 * determine the type of mutation
+	 * and fire the appropriate event
+	 */
+	onMutation(mutations, observer) {
 
-			mutations.forEach(function(mutation) {
-				
-				switch (mutation.type) {
-				
-					case 'attributes':
-						_this.events.publish('attributes.mutation', mutation.target);
-						break;
-				
-					case 'childList':
-						_this.publishAddedNodes(mutation.addedNodes);
-						break;
-				
-					default:
-						_this.utils.noop();
-						break;
-				
-				}
-				
-			});
+		mutations.forEach(mutation => {
+			
+			switch (mutation.type) {
+			
+				case 'attributes':
+					this.events.publish('attributes.mutation', mutation.target);
+					break;
+			
+				case 'childList':
+					this.publishAddedNodes(mutation.addedNodes);
+					break;
+			
+				default:
+					utils.noop();
+					break;
+			
+			}
+			
+		});
 
-		}
-	
-	});
+	}
 
-})(window.target = window.target || {});
+}
+
+module.exports = DomObserver;

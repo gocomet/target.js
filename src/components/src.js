@@ -24,276 +24,194 @@
  *
  * `<img src="my_blang_img.gif" data-target-src="/mobile-and-tablet-img.jpg null /desktop-img.jpg">`
  */
-(function(target, undefined) {
-	
-	'use strict';
 
-	// utility object for tracking which images are already cached
-	// track localStorage to prevent bug
-	// in which an image stored in cache
-	// would not be loaded
-	// because target will try to load it and wait for onload event
-	// but browser will not load cached images
-	var CACHE_NAME = 'targetJsImgsLoaded';
-	
-	var imageCache = {
-		
-		contains: function(item) {
-		
-			return this.images.indexOf(item) !== -1;
-	
-		},
-	
-		add: function(item) {
-	
-			if (!this.contains(item)) {
-	
-				this.images += item;
-	
-			}
-			
-			if (!target.utils.isIOS && localStorage) {
-	
-				localStorage[CACHE_NAME] = this.images;
-	
-			}
-	
-		},
-	
-		init: function() {
-	
-			if (!target.utils.isIOS && localStorage && localStorage[CACHE_NAME]) {
-	
-				this.images = localStorage[CACHE_NAME];
-	
-			} else {
-	
-				this.images = '';
-	
+import utils from '../core/utils';
+import UI from '../base/ui';
+import imageCache from '../base/imagecache';
 
-			}
-	
+class Src extends UI {
+
+	constructor(el, _id, name, events, config) {
+
+		super(el, _id, name, events, config);
+
+		if (this.NODE_NAME !== 'IMG' && this.NODE_NAME !== 'DIV') {
+
+			throw 'Target.js Error on Src component: "' + this.config.attributes.Src + '" must be applied to an <img> or <div> element';
+		
 		}
-	
-	};
-	
-	imageCache.init();
 
-	var img = document.createElement('img');
+		this.published = false;
 
-	target.Src = target.UI.extend({
+		this.isLoading = false;
+
+		// TODO: only load when in view
+		// this.inview = false;
+		// this.queue = target.Queue.create();
+
+		this.getSrcs();
+
+		this.imageCache = imageCache;
+		this.img = this.imageCache.img;
 	
-		init: function(el, _id, target, name) {
+		this.addEventHandler('resize', this.onResize);
+		this.addEventHandler('resize' + this.id, this.onResize);
+		// TODO: only load when in view
+		//this.addEventHandler('scroll', this.onScroll);
+
+		// request an update from target.Window
+		this.update();
 	
-			this._super.apply(this, arguments);
+	}
 
-			if (this.NODE_NAME !== 'IMG' && this.NODE_NAME !== 'DIV') {
+	/**
+	 * get list of image urls from element attribute
+	 * loop through and assign each image to a layout
+	 * make mobile-first,
+	 * so that if a layout doesn't have an image explicity assigned
+	 * it will inherit the image from the next layout down
+	 *
+	 * ex. if only two images defined, desktop layout can inherit image from tablet layout
+	 */
+	getSrcs() {
 
-				throw 'Target.js Error on Src component: "' + this.utils.stripBrackets(this.config.attributes.Src) + '" must be applied to an <img> or <div> element';
+		let srcAtt = this.el.getAttribute(this.config.attributes.Src);
+		let srcs = srcAtt.split(' ');
+		let latestSrc = null;
+
+		this.srcs = {
 			
+			mobile: '',
+			tablet: '',
+			desktop: '',
+			large: ''
+		
+		};
+
+		this.currentSrc = '';
+
+		Object.keys(this.srcs).forEach((layout, i) => {
+
+			let src = srcs[i];
+
+			if (src && src.indexOf('/') !== -1) {
+
+				latestSrc = src;
+
 			}
 
-			this.published = false;
+			this.srcs[layout] = latestSrc;
+
+		});
+
+	}
+
+	showImage(src) {
+
+		this.currentSrc = src;
+
+		if (this.NODE_NAME === 'IMG') {
+
+			this.el.src = src;
+		
+		} else if (this.NODE_NAME === 'DIV') {
+
+			this.el.style.backgroundImage = 'url("' + src + '")';
+
+			this.show(this.el);
+
+		}
+
+	}
+
+	/**
+	 * once image is loaded
+	 * remove event handler
+	 * if this is an <img>
+	 * in a grid, request a layout update
+	 */
+	onLoad() {
+
+		if (this.domEventHandlers.load) {
+			
+			this.removeDomEventHandler('load');
+		
+		}
+
+		if (this.isLoading) {
 
 			this.isLoading = false;
 
-			this.img = img;
-
-			// TODO: only load when in view
-			// this.inview = false;
-			// this.queue = target.Queue.create();
-
-			this.getSrcs();
-
-			this.imageCache = imageCache;
+		}
 		
-			this.addEventHandler('resize', this.onResize);
-			this.addEventHandler('resize' + this.id, this.onResize);
-			// TODO: only load when in view
-			//this.addEventHandler('scroll', this.onScroll);
+		this.imageCache.add(this.loadingImg);
 
-			// request an update from target.Window
-			this.events.publish('update', this.id);
-		
-		},
+		this.showImage(this.loadingImg);
 
-		/**
-		 * get list of image urls from element attribute
-		 * loop through and assign each image to a layout
-		 * make mobile-first,
-		 * so that if a layout doesn't have an image explicity assigned
-		 * it will inherit the image from the next layout down
-		 *
-		 * ex. if only two images defined, desktop layout can inherit image from tablet layout
-		 */
-		getSrcs: function() {
+	}
 
-			var _this = this;
-			var srcAtt = this.el.getAttribute(this.config.attributes.Src);
-			var srcs = srcAtt.split(' ');
-			var latestSrc = null;
+	/**
+	 * add event handler to load image
+	 */
+	load(src) {
 
-			this.srcs = {
-				mobile: '',
-				tablet: '',
-				desktop: '',
-				large: ''
-			};
+		this.isLoading = true;
 
-			this.currentSrc = '';
+		this.loadingImg = src;
 
-			Object.keys(this.srcs).forEach(function(layout, i) {
+		this.addDomEventHandler('load', this.onLoad, this.img);
 
-				var src = srcs[i];
-
-				if (src) {
-
-					if (src.indexOf('/') !== -1) {
-
-						latestSrc = src;
-
-					}
-
-				}
-
-				_this.srcs[layout] = latestSrc;
-
-			});
-
-		},
-
-
-		showImage: function(src) {
-
-			var _this = this;
-
-			this.currentSrc = src;
-
-			if (this.NODE_NAME === 'IMG') {
-
-				this.el.src = src;
-				
-				// TODO: update application
-				// after changing page layout
-				// this.published = true;
-				// this.events.publish('update');
-				// can't currently because choke up the browser
-				// if too many update fire at once
-				// (because they cause a reflow)
-			
-			} else if (this.NODE_NAME === 'DIV') {
-
-				this.el.style.backgroundImage = 'url("' + src + '")';
-
-				// wait for next repaint frame _after_ new src is painted
-				// TODO:
-				// this will still have animation problems
-				// if we're transitioning the hide method,
-				// then the transition will still be happening
-				// when the show method is applied
-
-				this.utils.render(function() {
-
-					_this.show(_this.el);
-
-				});
-
-			}
-
-		},
-
-		/**
-		 * once image is loaded
-		 * remove event handler
-		 * if this is an <img>
-		 * in a grid, request a layout update
-		 */
-		onLoad: function() {
-
-			if (this.domEventHandlers.load) {
-				
-				this.removeDomEventHandler('load');
-			
-			}
+		this.loadingFallback = setTimeout(() => {
 
 			if (this.isLoading) {
 
-				this.isLoading = false;
+				this.onLoad();
+
+				clearTimeout(this.loadingFallback);
 
 			}
-			
-			this.imageCache.add(this.loadingImg);
 
-			this.showImage(this.loadingImg);
+		}, 5000);
 
-		},
+		this.img.src = src;
 
-		/**
-		 * add event handler to load image
-		 */
-		load: function(src) {
+	}
 
-			var _this = this;
+	/**
+	 * when the window is resized,
+	 * check which layout we're currently at
+	 * and load the appropriate image
+	 */
+	onResize(is, w, h) {
 
-			this.isLoading = true;
+		Object.keys(this.srcs).forEach(layout => {
 
-			this.loadingImg = src;
+			let src = this.srcs[layout];
 
-			this.addDomEventHandler('load', this.onLoad, this.img);
-
-			this.loadingFallback = setTimeout(function() {
-
-				if (_this.isLoading) {
-
-					_this.onLoad();
-
-					clearTimeout(_this.loadingFallback);
-
-				}
-
-			}, 5000);
-
-			this.img.src = src;
-
-		},
-
-		/**
-		 * when the window is resized,
-		 * check which layout we're currently at
-		 * and load the appropriate image
-		 */
-		onResize: function(is, w, h) {
-
-			var _this = this;
-
-			Object.keys(this.srcs).forEach(function(layout) {
-
-				var src = _this.srcs[layout];
-
-				if (is[layout]() && src !== _this.currentSrc) {
+			if (is[layout] && src !== this.currentSrc) {
+				
+				if (!this.imageCache.contains(src)) {
 					
-					if (!_this.imageCache.contains(src)) {
-						
-						if (_this.NODE_NAME === 'DIV') {
+					if (this.NODE_NAME === 'DIV') {
 
-							_this.hide(_this.el);
-						
-						}
-
-						_this.load(src);
+						this.hide(this.el);
 					
-					} else {
-
-						_this.showImage(src);
-
 					}
 
+					this.load(src);
+				
+				} else {
+
+					this.showImage(src);
+
 				}
 
-			});
+			}
 
-		}
+		});
 
-	});
+	}
 
-})(window.target = window.target || {});
+}
+
+module.exports = Src;
