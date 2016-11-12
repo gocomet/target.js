@@ -63,31 +63,18 @@ Target.js elements and their targets communicate with each other via events; thi
 
 ## Usage
 
-### 1. Include the files under `dist/` from your markup:
-
-- `proto.es5.js` (a target.js dependency -- used for object inheritance)
-- `mediator.min.js` (a target.js dependency -- used as the event buss)
-- `weakmap.js` (a polyfill -- only include for IE9 support)
-- `MutationObserver.js` (a polyfill -- only include for IE9 support)
-- `target.js`
+### 1. Include target.js (or target.min.js) from your markup.
 
 For example:
 
 ```html
-<script src="my-js-folder/weakmap.js"></script>
-<script src="my-js-folder/classlist.js"></script>
-<script src="my-js-folder/MutationObserver.js"></script>
-<script src="my-js-folder/mediator.min.js"></script>
-<script src="my-js-folder/proto.es5.js"></script>
 <script src="my-js-folder/target.js"></script>
 ```
-
->_Note: the first 3 scripts are polyfills for browser support in IE 9_
 
 or:
 
 ```html
-<script src="my-js-folder/target.bundled.js"></script>
+<script src="my-js-folder/target.min.js"></script>
 ```
 
 ### 2. Initialize Target.js
