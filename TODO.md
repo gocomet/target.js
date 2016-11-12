@@ -1,28 +1,16 @@
 
 # TODO
 
-- fix dom event handling in Accordion component
-- add documentation for new Accordion component
 - add documentation for `observeDom` config option
 - fix Src component responsive img loading bugs
 
 ## Improvements
 
-- performance - hook into requestAnimationFrame before making DOM changes?
 - error messaging from every component on incorrect initialization
-
-## Bugfixes
-
-- examine and fix current Clickoff bug
 
 ## Examples
 
 - create and document
-
-## usage error messaging
-
-- make
-- document
 
 ## allow library consumers to create their own UI components
 

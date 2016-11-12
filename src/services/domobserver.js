@@ -9,6 +9,8 @@
  * TODO: look into optimizing
  * scope smaller?
  */
+import WeakMap from 'weak-map';
+import MutationObserver from 'mutation-observer';
 import utils from '../core/utils';
 
 const TEXT_NODE = 3;
@@ -21,7 +23,7 @@ class DomObserver {
 		this.events = events;
 		this.config = config;
 
-		this.observer = new window.MutationObserver((mutations, observer) => {
+		this.observer = new MutationObserver((mutations, observer) => {
 
 			this.onMutation(mutations, observer);
 

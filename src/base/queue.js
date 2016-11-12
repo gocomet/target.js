@@ -1,40 +1,43 @@
 /**
- * target.queue
+ * Queue
  *
- * queue functionality can be added to UI components
+ * queue functionality to be mixed into UI components
  */ 
-(function(target, undefined) {
+
+class Queue {
 	
-	'use strict';
+	constructor(items) {
+	
+		if (items) {
 
-	target.Queue = window.Proto.extend({
+			this.items = items;
 		
-		init: function() {
-		
+		} else {
+
 			this.items = [];
-		
-		},
 
-		push: function(cb) {
+		}
+	
+	}
 
-			this.items.push(cb);
+	push(cb) {
 
-		},
+		this.items.push(cb);
 
-		next: function() {
+	}
 
-			var cb;
+	next() {
 
-			if (this.items.length) {
+		if (this.items.length) {
 
-				cb = this.items.shift();
+			let cb = this.items.shift();
 
-				cb();
-
-			}
+			cb();
 
 		}
 
-	});
+	}
 
-})(window.target = window.target || {});
+}
+
+module.exports = Queue;

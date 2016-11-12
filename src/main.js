@@ -8,6 +8,7 @@
  * usage:
  * `target.init(settings);`
  */
+import Classlist from 'classlist-polyfill';
 import Mediator from 'mediator-js';
 import utils from './core/utils';
 import config from './core/config';
