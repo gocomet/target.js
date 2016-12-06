@@ -9,7 +9,7 @@
  * `target.init(settings);`
  */
 import Classlist from 'classlist-polyfill';
-import Mediator from 'mediator-js';
+import {Mediator} from 'mediator-js';
 import utils from './core/utils';
 import config from './core/config';
 import Window from './services/window';
@@ -56,4 +56,13 @@ class Target {
 
 }
 
-window.target = new Target(config);
+// export module
+var target = new Target(config);
+
+if (window) {
+
+	window.target = target;
+
+}
+
+module.exports = target;
